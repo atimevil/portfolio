@@ -1,0 +1,69 @@
+{
+  "nav": {
+    "blog": "블로그",
+    "about": "소개",
+    "gallery": "갤러리"
+  },
+  "blog": {
+    "title": "블로그",
+    "readMore": "더 읽기",
+    "readingTime": "읽기 {min}분",
+    "prev": "이전 글",
+    "next": "다음 글",
+    "noPost": "글이 없습니다.",
+    "tags": "태그"
+  },
+  "about": {
+    "title": "소개",
+    "projects": "프로젝트",
+    "activities": "활동",
+    "awards": "수상"
+  },
+  "gallery": {
+    "title": "갤러리",
+    "all": "전체",
+    "noImage": "이미지가 없습니다."
+  },
+  "admin": {
+    "dashboard": "대시보드",
+    "blog": "블로그",
+    "projects": "프로젝트",
+    "gallery": "갤러리",
+    "settings": "설정",
+    "logout": "로그아웃",
+    "login": "로그인",
+    "password": "비밀번호",
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "edit": "수정",
+    "new": "새 글 작성",
+    "publish": "발행하기",
+    "draft": "임시저장",
+    "title": "제목",
+    "slug": "슬러그",
+    "tags": "태그",
+    "devMode": "개발중 모드",
+    "devModeDesc": "ON 시 방문자 차단, 관리자는 정상 접근",
+    "profile": "프로필 편집",
+    "name": "이름",
+    "bio": "한 줄 소개",
+    "skills": "기술 스택",
+    "github": "GitHub URL",
+    "linkedin": "LinkedIn URL",
+    "aboutText": "소개 텍스트",
+    "totalPosts": "블로그 글",
+    "totalProjects": "프로젝트",
+    "totalImages": "이미지",
+    "recentPosts": "최근 글",
+    "upload": "업로드",
+    "category": "카테고리",
+    "description": "설명"
+  },
+  "common": {
+    "loading": "로딩 중...",
+    "error": "오류가 발생했습니다.",
+    "confirm": "확인",
+    "close": "닫기"
+  }
+}

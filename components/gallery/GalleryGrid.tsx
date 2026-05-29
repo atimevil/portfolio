@@ -49,6 +49,10 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
               transition={{ delay: idx * 0.04 }}
               className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group bg-surface"
               onClick={() => setSelected(image)}
+              onMouseEnter={() => {
+                const img = new window.Image()
+                img.src = `/uploads/gallery/${image.filename}`
+              }}
             >
               <Image
                 src={`/uploads/gallery/${image.filename}`}

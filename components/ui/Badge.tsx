@@ -8,7 +8,7 @@ export default function Badge({ children, variant = 'tag', className = '' }: Bad
   const base = 'inline-flex items-center px-2 py-0.5 rounded text-xs font-medium'
   const variants = {
     tag: 'bg-surface text-text-secondary',
-    skill: 'bg-primary-light text-primary',
+    skill: 'bg-surface text-text-primary',
   }
   return <span className={`${base} ${variants[variant]} ${className}`}>{children}</span>
 }

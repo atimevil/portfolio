@@ -16,7 +16,7 @@ export default async function AdminBlogPage() {
         <h1 className="text-lg font-semibold text-text-primary">블로그 관리</h1>
         <Link
           href="/admin/blog/new"
-          className="px-3 py-1.5 bg-primary text-white text-sm rounded-md hover:bg-primary-hover transition-colors"
+          className="px-3 py-1.5 bg-text-primary text-bg text-sm rounded-md hover:bg-text-secondary transition-colors"
         >
           + 새 글 작성
         </Link>

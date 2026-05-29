@@ -27,8 +27,8 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
             onClick={() => setActiveCategory(cat)}
             className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
               activeCategory === cat
-                ? 'bg-primary text-white border-primary'
-                : 'border-border text-text-secondary hover:border-primary hover:text-primary'
+                ? 'bg-text-primary text-bg border-text-primary'
+                : 'border-border text-text-secondary hover:border-text-muted hover:text-text-primary'
             }`}
           >
             {cat}

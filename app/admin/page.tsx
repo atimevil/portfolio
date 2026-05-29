@@ -35,9 +35,9 @@ export default async function AdminDashboardPage() {
           <Link
             key={stat.label}
             href={stat.href}
-            className="group px-5 py-4 bg-bg-secondary border border-border rounded-lg hover:border-primary/40 transition-colors"
+            className="group px-5 py-4 bg-bg-secondary border border-border rounded-lg hover:border-text-muted transition-colors"
           >
-            <p className="text-2xl font-bold text-text-primary group-hover:text-primary transition-colors">
+            <p className="text-2xl font-bold text-text-primary group-hover:text-text-primary transition-colors">
               {stat.value}
             </p>
             <p className="text-xs text-text-muted mt-1">{stat.label}</p>
@@ -50,7 +50,7 @@ export default async function AdminDashboardPage() {
           <h2 className="text-sm font-medium text-text-primary">최근 글</h2>
           <Link
             href="/admin/blog/new"
-            className="text-xs text-primary hover:underline"
+            className="text-xs text-text-primary hover:underline"
           >
             + 새 글 작성
           </Link>
@@ -86,7 +86,7 @@ export default async function AdminDashboardPage() {
                   </span>
                   <Link
                     href={`/admin/blog/edit/${post.slug}`}
-                    className="text-xs text-text-secondary hover:text-primary transition-colors"
+                    className="text-xs text-text-secondary hover:text-text-primary transition-colors"
                   >
                     수정
                   </Link>

@@ -44,7 +44,7 @@ export default function AdminBlogList({ posts: initialPosts }: AdminBlogListProp
             </span>
             <Link
               href={`/admin/blog/edit/${post.slug}`}
-              className="text-xs text-text-secondary hover:text-primary transition-colors"
+              className="text-xs text-text-secondary hover:text-text-primary transition-colors"
             >
               수정
             </Link>

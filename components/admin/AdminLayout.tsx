@@ -40,7 +40,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   href={item.href}
                   className={`flex items-center px-2.5 py-1.5 rounded-md text-sm transition-colors ${
                     active
-                      ? 'bg-primary/10 text-primary font-medium'
+                      ? 'bg-surface text-text-primary font-medium'
                       : 'text-text-secondary hover:text-text-primary hover:bg-surface'
                   }`}
                 >

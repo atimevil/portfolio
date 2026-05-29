@@ -52,7 +52,7 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
 
       {/* 업로드 */}
       <div className="bg-bg-secondary border border-border rounded-xl p-5 mb-6">
-        <div className="border-2 border-dashed border-border rounded-lg p-8 text-center mb-4 cursor-pointer hover:border-primary transition-colors"
+        <div className="border-2 border-dashed border-border rounded-lg p-8 text-center mb-4 cursor-pointer hover:border-text-muted transition-colors"
           onClick={() => fileRef.current?.click()}>
           <p className="text-text-secondary">클릭하여 이미지 업로드</p>
           <p className="text-xs text-text-muted mt-1">JPG, PNG, GIF, WebP</p>
@@ -66,7 +66,7 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="카테고리 입력"
-              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-primary transition-colors"
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
             />
           </div>
           <div>
@@ -76,7 +76,7 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="이미지 설명"
-              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-primary transition-colors"
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
             />
           </div>
         </div>

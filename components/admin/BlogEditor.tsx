@@ -100,7 +100,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
           placeholder="제목"
-          className="w-full px-4 py-3 text-xl font-semibold bg-transparent border-b border-border text-text-primary placeholder-text-muted focus:outline-none focus:border-primary transition-colors"
+          className="w-full px-4 py-3 text-xl font-semibold bg-transparent border-b border-border text-text-primary placeholder-text-muted focus:outline-none focus:border-text-muted transition-colors"
         />
         <div className="flex gap-3">
           <div className="flex-1">
@@ -109,7 +109,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
               type="text"
               value={slug}
               onChange={(e) => setSlug(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-primary transition-colors"
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
             />
           </div>
           <div className="flex-1">
@@ -119,7 +119,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
               value={tags}
               onChange={(e) => setTags(e.target.value)}
               placeholder="React, TypeScript, ..."
-              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-primary transition-colors"
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
             />
           </div>
           <div className="flex-1">

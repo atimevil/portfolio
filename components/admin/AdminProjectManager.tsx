@@ -99,7 +99,7 @@ export default function AdminProjectManager({ initialProjects }: AdminProjectMan
               </div>
             </div>
             <div className="flex gap-3">
-              <button onClick={() => startEdit(project)} className="text-xs text-text-secondary hover:text-primary transition-colors">수정</button>
+              <button onClick={() => startEdit(project)} className="text-xs text-text-secondary hover:text-text-primary transition-colors">수정</button>
               <button onClick={() => handleDelete(project.id)} className="text-xs text-text-secondary hover:text-red-500 transition-colors">삭제</button>
             </div>
           </div>
@@ -126,7 +126,7 @@ export default function AdminProjectManager({ initialProjects }: AdminProjectMan
                   value={form[key as keyof typeof form] as string}
                   onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
                   placeholder={placeholder}
-                  className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-primary transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
                 />
               </div>
             ))}
@@ -136,7 +136,7 @@ export default function AdminProjectManager({ initialProjects }: AdminProjectMan
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 rows={3}
-                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-primary transition-colors resize-none"
+                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors resize-none"
               />
             </div>
           </div>

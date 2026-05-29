@@ -5,6 +5,7 @@ import AdminLayout from '@/components/admin/AdminLayout'
 import { getAllPostsAdmin } from '@/lib/blog'
 import { getProjects } from '@/lib/projects'
 import { getGalleryImages } from '@/lib/gallery'
+import { getAllViews } from '@/lib/views'
 
 export default async function AdminDashboardPage() {
   const session = await getServerSession()
@@ -13,6 +14,7 @@ export default async function AdminDashboardPage() {
   const posts = getAllPostsAdmin()
   const projects = getProjects()
   const images = getGalleryImages()
+  const allViews = getAllViews()
 
   const stats = [
     { label: '블로그 글', value: posts.length, href: '/admin/blog' },
@@ -67,7 +69,12 @@ export default async function AdminDashboardPage() {
               >
                 <div className="min-w-0 flex-1">
                   <p className="text-sm text-text-primary truncate">{post.title}</p>
-                  <p className="text-xs text-text-muted mt-0.5">{post.date}</p>
+                  <p className="text-xs text-text-muted mt-0.5">
+                    {post.date}
+                    {(allViews[post.slug] ?? 0) > 0 && (
+                      <span className="ml-2">· {allViews[post.slug].toLocaleString()} views</span>
+                    )}
+                  </p>
                 </div>
                 <div className="flex items-center gap-3 ml-4 shrink-0">
                   <span className={`text-xs px-2 py-0.5 rounded-full ${

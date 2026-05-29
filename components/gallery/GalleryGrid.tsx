@@ -6,6 +6,33 @@ import { motion } from 'framer-motion'
 import Modal from '@/components/ui/Modal'
 import type { GalleryImage } from '@/types'
 
+// 블러 플레이스홀더 → 원본 크로스페이드
+function ModalImage({ filename, alt }: { filename: string; alt: string }) {
+  const [loaded, setLoaded] = useState(false)
+  const thumb = `/_next/image?url=${encodeURIComponent(`/uploads/gallery/${filename}`)}&w=400&q=60`
+  const full = `/uploads/gallery/${filename}`
+
+  return (
+    <div className="relative w-full rounded-t-xl overflow-hidden bg-surface">
+      {/* 썸네일: 즉시 표시, 원본 로드되면 숨김 */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={thumb}
+        alt={alt}
+        aria-hidden
+        className={`w-full max-h-[72vh] object-contain transition-opacity duration-300 ${loaded ? 'opacity-0 absolute inset-0' : 'opacity-100 blur-sm scale-105'}`}
+      />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={full}
+        alt={alt}
+        onLoad={() => setLoaded(true)}
+        className={`w-full max-h-[72vh] object-contain transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0 absolute inset-0'}`}
+      />
+    </div>
+  )
+}
+
 interface GalleryGridProps {
   images: GalleryImage[]
 }
@@ -75,11 +102,7 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
         {selected && (
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`/uploads/gallery/${selected.filename}`}
-              alt={selected.description}
-              className="w-full max-h-[72vh] object-contain rounded-t-xl bg-surface"
-            />
+            <ModalImage filename={selected.filename} alt={selected.description} />
             {(selected.description || selected.category) && (
               <div className="px-5 py-4">
                 {selected.description && (

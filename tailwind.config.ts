@@ -12,20 +12,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          DEFAULT: 'var(--color-primary)',
-          hover: 'var(--color-primary-hover)',
-          light: 'var(--color-primary-light)',
-        },
         bg: {
-          DEFAULT: 'var(--color-bg)',
+          DEFAULT:   'var(--color-bg)',
           secondary: 'var(--color-bg-secondary)',
         },
         surface: 'var(--color-surface)',
         border: 'var(--color-border)',
-        'text-primary': 'var(--color-text-primary)',
+        'text-primary':   'var(--color-text-primary)',
         'text-secondary': 'var(--color-text-secondary)',
-        'text-muted': 'var(--color-text-muted)',
+        'text-muted':     'var(--color-text-muted)',
       },
       fontFamily: {
         sans: ['Pretendard', 'Inter', 'system-ui', 'sans-serif'],

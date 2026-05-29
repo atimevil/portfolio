@@ -3,29 +3,23 @@
 @tailwind utilities;
 
 :root {
-  --color-primary:        #18181B;
-  --color-primary-hover:  #27272A;
-  --color-primary-light:  #F4F4F5;
-  --color-bg:             #FAFAFA;
-  --color-bg-secondary:   #F4F4F5;
-  --color-surface:        #EFEFEF;
-  --color-border:         #E4E4E7;
-  --color-text-primary:   #09090B;
-  --color-text-secondary: #52525B;
-  --color-text-muted:     #A1A1AA;
+  --color-bg:             #ffffff;
+  --color-bg-secondary:   #fafafa;
+  --color-surface:        #f5f5f5;
+  --color-border:         #e5e5e5;
+  --color-text-primary:   #171717;
+  --color-text-secondary: #737373;
+  --color-text-muted:     #a3a3a3;
 }
 
 .dark {
-  --color-primary:        #FAFAFA;
-  --color-primary-hover:  #E4E4E7;
-  --color-primary-light:  #27272A;
-  --color-bg:             #09090B;
-  --color-bg-secondary:   #111113;
-  --color-surface:        #18181B;
-  --color-border:         #27272A;
-  --color-text-primary:   #FAFAFA;
-  --color-text-secondary: #A1A1AA;
-  --color-text-muted:     #52525B;
+  --color-bg:             #0a0a0a;
+  --color-bg-secondary:   #141414;
+  --color-surface:        #1f1f1f;
+  --color-border:         #262626;
+  --color-text-primary:   #ededed;
+  --color-text-secondary: #a3a3a3;
+  --color-text-muted:     #525252;
 }
 
 * {
@@ -80,7 +74,7 @@ code {
 }
 
 .prose blockquote {
-  border-left: 4px solid var(--color-primary);
+  border-left: 4px solid var(--color-border);
   color: var(--color-text-secondary);
 }
 

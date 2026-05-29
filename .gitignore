@@ -40,3 +40,8 @@ next-env.d.ts
 
 # claude code local settings (machine-specific permissions)
 .claude/settings.local.json
+
+# claude code project files
+.claude/
+_workspace/
+.superpowers/

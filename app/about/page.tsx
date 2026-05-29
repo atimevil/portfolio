@@ -81,43 +81,37 @@ export default async function AboutPage() {
           </section>
         )}
 
-        {/* 활동 & 수상 */}
-        <section>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {profile.activities.length > 0 && (
-              <div>
-                <h2 className="text-lg font-bold text-text-primary mb-4">활동</h2>
-                <ul className="flex flex-col gap-3">
-                  {profile.activities.map((item, i) => (
-                    <li key={i} className="text-sm">
-                      <span className="text-text-muted mr-2">{item.year}</span>
-                      <span className="text-text-primary">{item.title}</span>
-                      {item.description && (
-                        <p className="text-xs text-text-secondary mt-0.5 ml-8">{item.description}</p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
+        {/* 활동 & 수상 타임라인 */}
+        {(profile.activities.length > 0 || profile.awards.length > 0) && (() => {
+          const events = [
+            ...profile.activities.map((a) => ({ ...a, type: '활동' as const })),
+            ...profile.awards.map((a) => ({ ...a, type: '수상' as const })),
+          ].sort((a, b) => b.year.localeCompare(a.year))
+
+          return (
+            <section>
+              <h2 className="text-lg font-bold text-text-primary mb-6">활동 & 수상</h2>
+              <div className="relative pl-6">
+                <div className="absolute left-[5px] top-1 bottom-1 w-px bg-border" />
+                {events.map((item, i) => (
+                  <div key={i} className="relative mb-6 last:mb-0">
+                    <div className="absolute -left-6 top-[5px] w-[11px] h-[11px] rounded-full bg-bg border-2 border-border" />
+                    <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1 mb-0.5">
+                      <span className="text-xs text-text-muted tabular-nums">{item.year}</span>
+                      <span className="text-sm text-text-primary">{item.title}</span>
+                      <span className="text-[10px] text-text-muted border border-border rounded px-1.5 py-px">
+                        {item.type}
+                      </span>
+                    </div>
+                    {item.description && (
+                      <p className="text-xs text-text-secondary">{item.description}</p>
+                    )}
+                  </div>
+                ))}
               </div>
-            )}
-            {profile.awards.length > 0 && (
-              <div>
-                <h2 className="text-lg font-bold text-text-primary mb-4">수상</h2>
-                <ul className="flex flex-col gap-3">
-                  {profile.awards.map((item, i) => (
-                    <li key={i} className="text-sm">
-                      <span className="text-text-muted mr-2">{item.year}</span>
-                      <span className="text-text-primary">{item.title}</span>
-                      {item.description && (
-                        <p className="text-xs text-text-secondary mt-0.5 ml-8">{item.description}</p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        </section>
+            </section>
+          )
+        })()}
       </main>
       <Footer />
     </div>

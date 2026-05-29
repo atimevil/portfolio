@@ -69,20 +69,22 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
       {/* 이미지 모달 */}
       <Modal open={!!selected} onClose={() => setSelected(null)}>
         {selected && (
-          <div className="p-4">
-            <div className="relative w-full" style={{ aspectRatio: '4/3', maxHeight: '70vh' }}>
-              <Image
-                src={`/uploads/gallery/${selected.filename}`}
-                alt={selected.description}
-                fill
-                className="object-contain rounded-lg"
-              />
-            </div>
-            {selected.description && (
-              <p className="mt-3 text-sm text-text-secondary text-center">{selected.description}</p>
-            )}
-            {selected.category && (
-              <p className="mt-1 text-xs text-text-muted text-center">{selected.category}</p>
+          <div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`/uploads/gallery/${selected.filename}`}
+              alt={selected.description}
+              className="w-full max-h-[72vh] object-contain rounded-t-xl bg-surface"
+            />
+            {(selected.description || selected.category) && (
+              <div className="px-5 py-4">
+                {selected.description && (
+                  <p className="text-sm text-text-primary">{selected.description}</p>
+                )}
+                {selected.category && (
+                  <p className="mt-1 text-xs text-text-muted">{selected.category}</p>
+                )}
+              </div>
             )}
           </div>
         )}

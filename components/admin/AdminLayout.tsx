@@ -13,6 +13,7 @@ const navItems = [
   { href: '/admin/blog', label: '블로그' },
   { href: '/admin/projects', label: '프로젝트' },
   { href: '/admin/gallery', label: '갤러리' },
+  { href: '/admin/categories', label: '카테고리' },
   { href: '/admin/settings', label: '설정' },
 ]
 

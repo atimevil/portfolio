@@ -57,32 +57,31 @@ export default async function AboutPage() {
             <section>
               <h2 className="text-base font-semibold text-text-primary mb-5">프로젝트</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {projects.map((project) => (
-                  <div key={project.id}
-                    className="border border-border rounded-lg p-4 bg-bg-secondary">
-                    {project.thumbnail && (
-                      <img src={project.thumbnail} alt={project.name}
-                        className="w-full h-32 object-cover rounded-md mb-3 bg-surface" />
-                    )}
-                    <h3 className="font-semibold text-text-primary text-sm mb-1">{project.name}</h3>
-                    <p className="text-xs text-text-secondary mb-3 line-clamp-2">{project.description}</p>
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {project.skills.map((s) => (
-                        <span key={s} className="text-xs px-2 py-0.5 rounded bg-surface text-text-muted">{s}</span>
-                      ))}
-                    </div>
-                    <div className="flex gap-3 text-xs text-text-muted">
-                      {project.github && (
-                        <a href={project.github} target="_blank" rel="noopener noreferrer"
-                          className="hover:text-text-primary transition-colors">GitHub</a>
+                {projects.map((project) => {
+                  const href = project.github || project.link
+                  const Card = (
+                    <div className={`border border-border rounded-lg p-4 bg-bg-secondary h-full flex flex-col ${href ? 'hover:border-text-muted transition-colors cursor-pointer' : ''}`}>
+                      {project.thumbnail && (
+                        <img src={project.thumbnail} alt={project.name}
+                          className="w-full h-32 object-cover rounded-md mb-3 bg-surface" />
                       )}
-                      {project.link && (
-                        <a href={project.link} target="_blank" rel="noopener noreferrer"
-                          className="hover:text-text-primary transition-colors">링크 →</a>
-                      )}
+                      <h3 className="font-semibold text-text-primary text-sm mb-1">{project.name}</h3>
+                      <p className="text-xs text-text-secondary mb-3 line-clamp-2">{project.description}</p>
+                      <div className="flex flex-wrap gap-1.5 mt-auto">
+                        {project.skills.map((s) => (
+                          <span key={s} className="text-xs px-2 py-0.5 rounded bg-surface text-text-muted">{s}</span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                  return href ? (
+                    <a key={project.id} href={href} target="_blank" rel="noopener noreferrer">
+                      {Card}
+                    </a>
+                  ) : (
+                    <div key={project.id}>{Card}</div>
+                  )
+                })}
               </div>
             </section>
           )}

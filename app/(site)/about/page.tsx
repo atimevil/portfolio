@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import { getSettings } from '@/lib/settings'
 import { getProjects } from '@/lib/projects'
+import TimelineItem from '@/components/about/TimelineItem'
 
 export default async function AboutPage() {
   const settings = getSettings()
@@ -95,19 +96,13 @@ export default async function AboutPage() {
               <div className="relative pl-5">
                 <div className="absolute left-[4px] top-1 bottom-1 w-px bg-border" />
                 {events.map((item, i) => (
-                  <div key={i} className="relative mb-5 last:mb-0">
-                    <div className="absolute -left-5 top-[5px] w-[9px] h-[9px] rounded-full bg-bg border-2 border-border" />
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="text-[10px] text-text-muted tabular-nums">{item.year}</span>
-                      <span className="text-[9px] text-text-muted border border-border rounded px-1 py-px leading-none">
-                        {item.type}
-                      </span>
-                    </div>
-                    <p className="text-xs text-text-primary leading-snug">{item.title}</p>
-                    {item.description && (
-                      <p className="text-[10px] text-text-muted mt-0.5 leading-snug">{item.description}</p>
-                    )}
-                  </div>
+                  <TimelineItem
+                    key={i}
+                    year={item.year}
+                    type={item.type}
+                    title={item.title}
+                    description={item.description}
+                  />
                 ))}
               </div>
             </div>

@@ -27,8 +27,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen bg-bg flex">
       <nav className="w-48 shrink-0 bg-bg-secondary border-r border-border flex flex-col">
-        <div className="px-4 h-11 flex items-center border-b border-border">
+        <div className="px-4 h-11 flex items-center justify-between border-b border-border">
           <span className="text-sm font-semibold text-text-primary tracking-tight">Admin</span>
+          <Link
+            href="/"
+            className="text-xs text-text-muted hover:text-text-primary transition-colors"
+            title="블로그 보기"
+          >
+            ↗
+          </Link>
         </div>
 
         <ul className="flex-1 py-2 px-2 flex flex-col gap-0.5">

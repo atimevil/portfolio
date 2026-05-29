@@ -3,6 +3,8 @@ import Footer from '@/components/layout/Footer'
 import { getSettings } from '@/lib/settings'
 import { getProjects } from '@/lib/projects'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AboutPage() {
   const settings = getSettings()
   const projects = getProjects()

@@ -3,16 +3,12 @@ import { redirect } from 'next/navigation'
 import AdminLayout from '@/components/admin/AdminLayout'
 import BlogEditor from '@/components/admin/BlogEditor'
 
-interface Props {
-  params: { locale: string }
-}
-
-export default async function NewBlogPage({ params: { locale } }: Props) {
+export default async function NewBlogPage() {
   const session = await getServerSession()
-  if (!session) redirect(`/${locale}/admin/login`)
+  if (!session) redirect('/admin/login')
   return (
     <AdminLayout>
-      <BlogEditor locale={locale} />
+      <BlogEditor locale="" />
     </AdminLayout>
   )
 }

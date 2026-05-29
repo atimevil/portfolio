@@ -4,13 +4,9 @@ import AdminLayout from '@/components/admin/AdminLayout'
 import AdminGalleryManager from '@/components/admin/AdminGalleryManager'
 import { getGalleryImages } from '@/lib/gallery'
 
-interface Props {
-  params: { locale: string }
-}
-
-export default async function AdminGalleryPage({ params: { locale } }: Props) {
+export default async function AdminGalleryPage() {
   const session = await getServerSession()
-  if (!session) redirect(`/${locale}/admin/login`)
+  if (!session) redirect('/admin/login')
   const images = getGalleryImages()
   return (
     <AdminLayout>

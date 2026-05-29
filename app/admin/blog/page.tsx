@@ -5,13 +5,9 @@ import AdminLayout from '@/components/admin/AdminLayout'
 import AdminBlogList from '@/components/admin/AdminBlogList'
 import { getAllPostsAdmin } from '@/lib/blog'
 
-interface Props {
-  params: { locale: string }
-}
-
-export default async function AdminBlogPage({ params: { locale } }: Props) {
+export default async function AdminBlogPage() {
   const session = await getServerSession()
-  if (!session) redirect(`/${locale}/admin/login`)
+  if (!session) redirect('/admin/login')
   const posts = getAllPostsAdmin()
 
   return (
@@ -19,13 +15,13 @@ export default async function AdminBlogPage({ params: { locale } }: Props) {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-lg font-semibold text-text-primary">블로그 관리</h1>
         <Link
-          href={`/${locale}/admin/blog/new`}
+          href="/admin/blog/new"
           className="px-3 py-1.5 bg-primary text-white text-sm rounded-md hover:bg-primary-hover transition-colors"
         >
           + 새 글 작성
         </Link>
       </div>
-      <AdminBlogList posts={posts} locale={locale} />
+      <AdminBlogList posts={posts} locale="" />
     </AdminLayout>
   )
 }

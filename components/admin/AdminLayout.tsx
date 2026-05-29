@@ -3,22 +3,20 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
-import { useLocale } from 'next-intl'
 
 interface AdminLayoutProps {
   children: React.ReactNode
 }
 
-const navItems = (locale: string) => [
-  { href: `/${locale}/admin`, label: '대시보드', exact: true },
-  { href: `/${locale}/admin/blog`, label: '블로그' },
-  { href: `/${locale}/admin/projects`, label: '프로젝트' },
-  { href: `/${locale}/admin/gallery`, label: '갤러리' },
-  { href: `/${locale}/admin/settings`, label: '설정' },
+const navItems = [
+  { href: '/admin', label: '대시보드', exact: true },
+  { href: '/admin/blog', label: '블로그' },
+  { href: '/admin/projects', label: '프로젝트' },
+  { href: '/admin/gallery', label: '갤러리' },
+  { href: '/admin/settings', label: '설정' },
 ]
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const locale = useLocale()
   const pathname = usePathname()
 
   function isActive(href: string, exact = false) {
@@ -33,7 +31,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
 
         <ul className="flex-1 py-2 px-2 flex flex-col gap-0.5">
-          {navItems(locale).map((item) => {
+          {navItems.map((item) => {
             const active = isActive(item.href, item.exact)
             return (
               <li key={item.href}>
@@ -54,7 +52,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         <div className="px-2 pb-3">
           <button
-            onClick={() => signOut({ callbackUrl: `/${locale}/admin/login` })}
+            onClick={() => signOut({ callbackUrl: '/admin/login' })}
             className="w-full flex items-center px-2.5 py-1.5 rounded-md text-sm text-text-muted hover:text-red-500 hover:bg-surface transition-colors"
           >
             로그아웃

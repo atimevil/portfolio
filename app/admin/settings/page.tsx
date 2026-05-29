@@ -4,13 +4,9 @@ import AdminLayout from '@/components/admin/AdminLayout'
 import AdminSettingsForm from '@/components/admin/AdminSettingsForm'
 import { getSettings } from '@/lib/settings'
 
-interface Props {
-  params: { locale: string }
-}
-
-export default async function AdminSettingsPage({ params: { locale } }: Props) {
+export default async function AdminSettingsPage() {
   const session = await getServerSession()
-  if (!session) redirect(`/${locale}/admin/login`)
+  if (!session) redirect('/admin/login')
   const settings = getSettings()
   return (
     <AdminLayout>

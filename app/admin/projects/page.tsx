@@ -4,13 +4,9 @@ import AdminLayout from '@/components/admin/AdminLayout'
 import AdminProjectManager from '@/components/admin/AdminProjectManager'
 import { getProjects } from '@/lib/projects'
 
-interface Props {
-  params: { locale: string }
-}
-
-export default async function AdminProjectsPage({ params: { locale } }: Props) {
+export default async function AdminProjectsPage() {
   const session = await getServerSession()
-  if (!session) redirect(`/${locale}/admin/login`)
+  if (!session) redirect('/admin/login')
   const projects = getProjects()
   return (
     <AdminLayout>

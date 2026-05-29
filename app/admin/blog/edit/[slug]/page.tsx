@@ -5,17 +5,17 @@ import BlogEditor from '@/components/admin/BlogEditor'
 import { getPostBySlug } from '@/lib/blog'
 
 interface Props {
-  params: { locale: string; slug: string }
+  params: { slug: string }
 }
 
-export default async function EditBlogPage({ params: { locale, slug } }: Props) {
+export default async function EditBlogPage({ params: { slug } }: Props) {
   const session = await getServerSession()
-  if (!session) redirect(`/${locale}/admin/login`)
+  if (!session) redirect('/admin/login')
   const post = getPostBySlug(slug)
   if (!post) notFound()
   return (
     <AdminLayout>
-      <BlogEditor locale={locale} initialPost={post} />
+      <BlogEditor locale="" initialPost={post} />
     </AdminLayout>
   )
 }

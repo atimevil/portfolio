@@ -6,22 +6,18 @@ import { getAllPostsAdmin } from '@/lib/blog'
 import { getProjects } from '@/lib/projects'
 import { getGalleryImages } from '@/lib/gallery'
 
-interface Props {
-  params: { locale: string }
-}
-
-export default async function AdminDashboardPage({ params: { locale } }: Props) {
+export default async function AdminDashboardPage() {
   const session = await getServerSession()
-  if (!session) redirect(`/${locale}/admin/login`)
+  if (!session) redirect('/admin/login')
 
   const posts = getAllPostsAdmin()
   const projects = getProjects()
   const images = getGalleryImages()
 
   const stats = [
-    { label: '블로그 글', value: posts.length, href: `/${locale}/admin/blog` },
-    { label: '프로젝트', value: projects.length, href: `/${locale}/admin/projects` },
-    { label: '이미지', value: images.length, href: `/${locale}/admin/gallery` },
+    { label: '블로그 글', value: posts.length, href: '/admin/blog' },
+    { label: '프로젝트', value: projects.length, href: '/admin/projects' },
+    { label: '이미지', value: images.length, href: '/admin/gallery' },
   ]
 
   const recentPosts = posts.slice(0, 5)
@@ -51,7 +47,7 @@ export default async function AdminDashboardPage({ params: { locale } }: Props) 
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-sm font-medium text-text-primary">최근 글</h2>
           <Link
-            href={`/${locale}/admin/blog/new`}
+            href="/admin/blog/new"
             className="text-xs text-primary hover:underline"
           >
             + 새 글 작성
@@ -82,7 +78,7 @@ export default async function AdminDashboardPage({ params: { locale } }: Props) 
                     {post.status === 'published' ? '발행' : '임시'}
                   </span>
                   <Link
-                    href={`/${locale}/admin/blog/edit/${post.slug}`}
+                    href={`/admin/blog/edit/${post.slug}`}
                     className="text-xs text-text-secondary hover:text-primary transition-colors"
                   >
                     수정

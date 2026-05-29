@@ -36,15 +36,17 @@ function htmlToMarkdown(html: string): string {
 }
 
 interface BlogEditorProps {
-  initialPost?: BlogPost
+  initialPost?: Partial<BlogPost>
+  categories: string[]
 }
 
-export default function BlogEditor({ initialPost }: BlogEditorProps) {
+export default function BlogEditor({ initialPost, categories }: BlogEditorProps) {
   const router = useRouter()
   const [title, setTitle] = useState(initialPost?.title ?? '')
   const [slug, setSlug] = useState(initialPost?.slug ?? '')
-  const [tags, setTags] = useState(initialPost?.tags.join(', ') ?? '')
+  const [tags, setTags] = useState(initialPost?.tags?.join(', ') ?? '')
   const [content, setContent] = useState(initialPost?.content ?? '')
+  const [category, setCategory] = useState(initialPost?.category ?? '')
   const [loading, setLoading] = useState(false)
 
   function handleTitleChange(value: string) {
@@ -62,6 +64,7 @@ export default function BlogEditor({ initialPost }: BlogEditorProps) {
       title: title.trim(),
       date: initialPost?.date ?? new Date().toISOString().slice(0, 10),
       tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
+      category: category.trim(),
       excerpt: htmlToMarkdown(content).slice(0, 150),
       content: htmlToMarkdown(content),
       status,
@@ -118,6 +121,19 @@ export default function BlogEditor({ initialPost }: BlogEditorProps) {
               placeholder="React, TypeScript, ..."
               className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-primary transition-colors"
             />
+          </div>
+          <div className="flex-1">
+            <label className="block text-xs text-text-muted mb-1">카테고리</label>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
+            >
+              <option value="">카테고리 없음</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
         </div>
       </div>

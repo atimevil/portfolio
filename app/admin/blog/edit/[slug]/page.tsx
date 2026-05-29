@@ -3,6 +3,7 @@ import { redirect, notFound } from 'next/navigation'
 import AdminLayout from '@/components/admin/AdminLayout'
 import BlogEditor from '@/components/admin/BlogEditor'
 import { getPostBySlug } from '@/lib/blog'
+import { getCategories } from '@/lib/categories'
 
 interface Props {
   params: { slug: string }
@@ -13,9 +14,10 @@ export default async function EditBlogPage({ params: { slug } }: Props) {
   if (!session) redirect('/admin/login')
   const post = getPostBySlug(slug)
   if (!post) notFound()
+  const categories = getCategories()
   return (
     <AdminLayout>
-      <BlogEditor initialPost={post} />
+      <BlogEditor initialPost={post} categories={categories} />
     </AdminLayout>
   )
 }

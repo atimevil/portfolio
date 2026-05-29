@@ -15,7 +15,7 @@ export default async function EditBlogPage({ params: { slug } }: Props) {
   if (!post) notFound()
   return (
     <AdminLayout>
-      <BlogEditor locale="" initialPost={post} />
+      <BlogEditor initialPost={post} />
     </AdminLayout>
   )
 }

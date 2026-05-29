@@ -21,7 +21,7 @@ export default async function AdminBlogPage() {
           + 새 글 작성
         </Link>
       </div>
-      <AdminBlogList posts={posts} locale="" />
+      <AdminBlogList posts={posts} />
     </AdminLayout>
   )
 }

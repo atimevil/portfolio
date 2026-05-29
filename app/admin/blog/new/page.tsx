@@ -8,7 +8,7 @@ export default async function NewBlogPage() {
   if (!session) redirect('/admin/login')
   return (
     <AdminLayout>
-      <BlogEditor locale="" />
+      <BlogEditor />
     </AdminLayout>
   )
 }

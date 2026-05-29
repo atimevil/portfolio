@@ -36,11 +36,10 @@ function htmlToMarkdown(html: string): string {
 }
 
 interface BlogEditorProps {
-  locale: string
   initialPost?: BlogPost
 }
 
-export default function BlogEditor({ locale, initialPost }: BlogEditorProps) {
+export default function BlogEditor({ initialPost }: BlogEditorProps) {
   const router = useRouter()
   const [title, setTitle] = useState(initialPost?.title ?? '')
   const [slug, setSlug] = useState(initialPost?.slug ?? '')
@@ -80,7 +79,7 @@ export default function BlogEditor({ locale, initialPost }: BlogEditorProps) {
 
     setLoading(false)
     if (res.ok) {
-      router.push(`/${locale}/admin/blog`)
+      router.push(`/admin/blog`)
       router.refresh()
     } else {
       alert('저장 실패')

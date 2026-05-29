@@ -24,9 +24,9 @@ export default async function HomePage({ searchParams }: Props) {
   )
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-bg flex flex-col">
       <NavBar />
-      <main className="max-w-5xl mx-auto px-4 md:px-8 py-8">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 md:px-8 py-8">
         {/* 모바일: Sidebar 대신 이름 + 소개 한 줄 */}
         <div className="lg:hidden mb-6 pb-6 border-b border-border">
           <p className="text-sm font-semibold text-text-primary">{settings.profile.name}</p>

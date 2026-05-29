@@ -36,9 +36,9 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
   const nextPost = idx > 0 ? allPosts[idx - 1] : null
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-bg flex flex-col">
       <NavBar />
-      <main className="max-w-5xl mx-auto px-4 md:px-8 py-8">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 md:px-8 py-8">
         <div className="flex gap-12">
           <Sidebar settings={settings} />
           <article className="flex-1 min-w-0">

@@ -17,7 +17,7 @@ const handler = NextAuth({
     }),
   ],
   pages: {
-    signIn: '/ko/admin/login',
+    signIn: '/admin/login',
   },
   session: {
     strategy: 'jwt',

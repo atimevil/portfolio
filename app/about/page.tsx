@@ -15,9 +15,9 @@ export default async function AboutPage() {
       : '')
 
   return (
-    <div className="min-h-screen bg-bg">
+    <div className="min-h-screen bg-bg flex flex-col">
       <NavBar />
-      <main className="max-w-5xl mx-auto px-4 md:px-8 py-12">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 md:px-8 py-12">
         {/* 프로필 */}
         <section className="flex gap-8 items-start mb-12 pb-12 border-b border-border">
           <div className="w-24 h-24 rounded-full bg-surface border border-border overflow-hidden shrink-0">

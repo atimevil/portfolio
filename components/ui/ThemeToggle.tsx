@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 export default function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false)
+  const [isDark, setIsDark] = useState(true)
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'))
@@ -23,11 +23,21 @@ export default function ThemeToggle() {
 
   return (
     <button
-      onClick={toggle}
-      className="p-2 rounded-md text-text-secondary hover:text-text-primary hover:bg-surface transition-colors"
+      role="switch"
+      aria-checked={isDark}
       aria-label={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
+      onClick={toggle}
+      className={`relative inline-flex w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-text-muted ${
+        isDark ? 'bg-surface border border-border' : 'bg-border'
+      }`}
     >
-      {isDark ? '☀️' : '🌙'}
+      <span
+        className={`absolute top-0.5 w-5 h-5 rounded-full shadow-sm transition-transform duration-200 ${
+          isDark
+            ? 'translate-x-5 bg-text-primary'
+            : 'translate-x-0.5 bg-text-primary'
+        }`}
+      />
     </button>
   )
 }

@@ -26,7 +26,7 @@ function ToolbarButton({
       title={title}
       className={`p-1.5 rounded text-sm transition-colors ${
         active
-          ? 'bg-primary text-white'
+          ? 'bg-text-primary text-bg'
           : 'text-text-secondary hover:text-text-primary hover:bg-surface'
       }`}
     >

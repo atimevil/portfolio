@@ -16,7 +16,7 @@ export default function Pagination({ currentPage, totalPages, basePath }: Pagina
       {currentPage > 1 && (
         <Link
           href={`${basePath}?page=${currentPage - 1}`}
-          className="px-3 py-1.5 text-sm text-text-secondary hover:text-primary border border-border rounded-md hover:border-primary transition-colors"
+          className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary border border-border rounded-md hover:border-text-muted transition-colors"
         >
           ← 이전
         </Link>
@@ -27,8 +27,8 @@ export default function Pagination({ currentPage, totalPages, basePath }: Pagina
           href={`${basePath}?page=${page}`}
           className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
             page === currentPage
-              ? 'bg-primary text-white border-primary'
-              : 'border-border text-text-secondary hover:text-primary hover:border-primary'
+              ? 'bg-text-primary text-bg border-text-primary'
+              : 'border-border text-text-secondary hover:text-text-primary hover:border-text-muted'
           }`}
         >
           {page}
@@ -37,7 +37,7 @@ export default function Pagination({ currentPage, totalPages, basePath }: Pagina
       {currentPage < totalPages && (
         <Link
           href={`${basePath}?page=${currentPage + 1}`}
-          className="px-3 py-1.5 text-sm text-text-secondary hover:text-primary border border-border rounded-md hover:border-primary transition-colors"
+          className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary border border-border rounded-md hover:border-text-muted transition-colors"
         >
           다음 →
         </Link>

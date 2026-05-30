@@ -95,7 +95,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
               aria-checked={devMode}
               onClick={() => setDevMode(!devMode)}
               className={`relative inline-flex w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none overflow-hidden shrink-0 ${
-                devMode ? 'bg-primary' : 'bg-border'
+                devMode ? 'bg-text-primary' : 'bg-border'
               }`}
             >
               <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${
@@ -149,7 +149,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                   value={profile[key as keyof typeof profile] as string}
                   onChange={(e) => setProfile((p) => ({ ...p, [key]: e.target.value }))}
                   placeholder={placeholder}
-                  className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors"
                 />
               </div>
             ))}
@@ -162,7 +162,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
               value={profile.aboutText}
               onChange={(e) => setProfile((p) => ({ ...p, aboutText: e.target.value }))}
               rows={4}
-              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors resize-none"
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors resize-none"
             />
           </div>
 
@@ -184,7 +184,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                 onChange={(e) => setSkillInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
                 placeholder="기술 스택 추가 후 Enter"
-                className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary transition-colors"
+                className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors"
               />
               <Button variant="secondary" size="sm" onClick={addSkill}>추가</Button>
             </div>
@@ -208,7 +208,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                   value={item.year}
                   onChange={(e) => updateActivity('activities', idx, 'year', e.target.value)}
                   placeholder="연도"
-                  className="w-16 px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-primary transition-colors"
+                  className="w-16 px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
                 />
                 <div className="flex-1 flex flex-col gap-1.5">
                   <input
@@ -216,14 +216,14 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                     value={item.title}
                     onChange={(e) => updateActivity('activities', idx, 'title', e.target.value)}
                     placeholder="제목"
-                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
                   />
                   <input
                     type="text"
                     value={item.description ?? ''}
                     onChange={(e) => updateActivity('activities', idx, 'description', e.target.value)}
                     placeholder="설명 (선택)"
-                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-muted focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-muted focus:outline-none focus:border-text-muted transition-colors"
                   />
                 </div>
                 <button onClick={() => removeActivity('activities', idx)} className="text-text-muted hover:text-red-500 transition-colors pt-1 text-sm">×</button>
@@ -249,7 +249,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                   value={item.year}
                   onChange={(e) => updateActivity('awards', idx, 'year', e.target.value)}
                   placeholder="연도"
-                  className="w-16 px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-primary transition-colors"
+                  className="w-16 px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
                 />
                 <div className="flex-1 flex flex-col gap-1.5">
                   <input
@@ -257,14 +257,14 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                     value={item.title}
                     onChange={(e) => updateActivity('awards', idx, 'title', e.target.value)}
                     placeholder="수상명"
-                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
                   />
                   <input
                     type="text"
                     value={item.description ?? ''}
                     onChange={(e) => updateActivity('awards', idx, 'description', e.target.value)}
                     placeholder="설명 (선택)"
-                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-muted focus:outline-none focus:border-primary transition-colors"
+                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-muted focus:outline-none focus:border-text-muted transition-colors"
                   />
                 </div>
                 <button onClick={() => removeActivity('awards', idx)} className="text-text-muted hover:text-red-500 transition-colors pt-1 text-sm">×</button>

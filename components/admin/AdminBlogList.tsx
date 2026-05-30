@@ -6,10 +6,9 @@ import type { BlogPost } from '@/types'
 
 interface AdminBlogListProps {
   posts: BlogPost[]
-  locale: string
 }
 
-export default function AdminBlogList({ posts: initialPosts, locale }: AdminBlogListProps) {
+export default function AdminBlogList({ posts: initialPosts }: AdminBlogListProps) {
   const [posts, setPosts] = useState(initialPosts)
 
   async function handleDelete(slug: string) {
@@ -44,8 +43,8 @@ export default function AdminBlogList({ posts: initialPosts, locale }: AdminBlog
               {post.status === 'published' ? '발행' : '임시'}
             </span>
             <Link
-              href={`/${locale}/admin/blog/edit/${post.slug}`}
-              className="text-xs text-text-secondary hover:text-primary transition-colors"
+              href={`/admin/blog/edit/${post.slug}`}
+              className="text-xs text-text-secondary hover:text-text-primary transition-colors"
             >
               수정
             </Link>

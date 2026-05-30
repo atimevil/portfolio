@@ -22,6 +22,18 @@ const handler = NextAuth({
   session: {
     strategy: 'jwt',
     maxAge: 7 * 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
+  },
+  cookies: {
+    sessionToken: {
+      name: 'next-auth.session-token',
+      options: {
+        httpOnly: true,
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 7 * 24 * 60 * 60,
+      },
+    },
   },
   secret: process.env.NEXTAUTH_SECRET,
 })

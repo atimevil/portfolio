@@ -21,7 +21,7 @@ const handler = NextAuth({
   },
   session: {
     strategy: 'jwt',
-    maxAge: 7 * 24 * 60 * 60,
+    maxAge: 24 * 60 * 60,
     updateAge: 24 * 60 * 60,
   },
   cookies: {
@@ -31,7 +31,7 @@ const handler = NextAuth({
         httpOnly: true,
         sameSite: 'lax',
         path: '/',
-        maxAge: 7 * 24 * 60 * 60,
+        maxAge: 24 * 60 * 60,
       },
     },
   },

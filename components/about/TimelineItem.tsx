@@ -13,29 +13,33 @@ interface TimelineItemProps {
 function Popup({ year, type, title, description, onClose }: TimelineItemProps & { onClose: () => void }) {
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-6"
       onClick={onClose}
     >
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-0 bg-black/60" />
       <div
-        className="relative z-10 w-full max-w-sm bg-bg border border-border rounded-xl p-6 shadow-2xl"
+        className="relative z-10 w-full max-w-lg bg-bg border border-border rounded-xl shadow-2xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-xs text-text-muted tabular-nums">{year}</span>
-          <span className="text-[10px] text-text-muted border border-border rounded px-1.5 py-px">
-            {type}
-          </span>
+        <div className="px-6 py-5 border-b border-border flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-text-muted tabular-nums">{year}</span>
+            <span className="text-[10px] text-text-muted border border-border rounded px-1.5 py-px">
+              {type}
+            </span>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-text-muted hover:text-text-primary transition-colors text-sm shrink-0"
+            aria-label="닫기"
+          >
+            ✕
+          </button>
         </div>
-        <p className="text-sm font-semibold text-text-primary mb-3">{title}</p>
-        <p className="text-xs text-text-secondary leading-relaxed">{description}</p>
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-text-muted hover:text-text-primary transition-colors text-xs p-1"
-          aria-label="닫기"
-        >
-          ✕
-        </button>
+        <div className="px-6 py-5">
+          <p className="text-base font-semibold text-text-primary mb-4">{title}</p>
+          <p className="text-sm text-text-secondary leading-relaxed">{description}</p>
+        </div>
       </div>
     </div>,
     document.body
@@ -48,18 +52,30 @@ export default function TimelineItem({ year, type, title, description }: Timelin
 
   return (
     <div className="relative mb-5 last:mb-0">
-      <div className="absolute -left-5 top-[5px] w-[9px] h-[9px] rounded-full bg-bg border-2 border-border" />
+      {/* 클릭 가능 여부에 따라 dot 색상 구분 */}
+      <div className={`absolute -left-5 top-[5px] w-[9px] h-[9px] rounded-full border-2 ${
+        hasDesc ? 'bg-text-primary border-text-primary' : 'bg-bg border-border'
+      }`} />
+
       <button
         className={`w-full text-left ${hasDesc ? 'cursor-pointer group' : 'cursor-default'}`}
         onClick={() => hasDesc && setOpen(true)}
+        disabled={!hasDesc}
       >
         <div className="flex items-center gap-1.5 mb-0.5">
           <span className="text-[10px] text-text-muted tabular-nums">{year}</span>
           <span className="text-[9px] text-text-muted border border-border rounded px-1 py-px leading-none">
             {type}
           </span>
+          {hasDesc && (
+            <span className="text-[9px] text-text-muted ml-auto opacity-50 group-hover:opacity-100 transition-opacity">
+              +
+            </span>
+          )}
         </div>
-        <p className={`text-xs leading-snug text-text-primary ${hasDesc ? 'group-hover:underline' : ''}`}>
+        <p className={`text-xs leading-snug text-text-primary ${
+          hasDesc ? 'group-hover:underline underline-offset-2' : ''
+        }`}>
           {title}
         </p>
       </button>

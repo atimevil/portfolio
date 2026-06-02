@@ -31,7 +31,7 @@ export default async function AboutPage() {
 
   return (
     <main className="flex-1 max-w-5xl mx-auto w-full px-4 md:px-8 py-8">
-      <div className="flex gap-10">
+      <div className="flex flex-col lg:flex-row gap-10">
 
         {/* 메인: 프로필 + 프로젝트 */}
         <div className="flex-1 min-w-0">
@@ -97,8 +97,8 @@ export default async function AboutPage() {
 
         {/* 오른쪽: 활동 & 수상 */}
         {hasEvents && (
-          <aside className="hidden lg:block w-52 shrink-0">
-            <div className="sticky top-20">
+          <aside className="w-full lg:w-52 shrink-0 border-t border-border pt-8 lg:border-t-0 lg:pt-0">
+            <div className="lg:sticky lg:top-20">
               <h2 className="text-sm font-semibold text-text-primary mb-5">활동 & 수상</h2>
               <div className="relative pl-5">
                 <div className="absolute left-[4px] top-1 bottom-1 w-px bg-border" />

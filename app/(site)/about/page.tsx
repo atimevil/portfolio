@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { getSettings } from '@/lib/settings'
 import { getProjects, getTimeline } from '@/lib/items'
 import { buildPageMetadata } from '@/lib/site'
+import ProfileHeader from '@/components/layout/ProfileHeader'
 import TimelineItem from '@/components/about/TimelineItem'
 
 export function generateMetadata() {
@@ -20,13 +21,6 @@ export default async function AboutPage() {
   const projects = getProjects()
   const timeline = getTimeline()
   const { profile } = settings
-
-  const avatarSrc =
-    profile.avatar ||
-    (profile.github
-      ? `https://avatars.githubusercontent.com/${profile.github.split('/').pop()}`
-      : '')
-
   const hasEvents = timeline.length > 0
 
   return (
@@ -35,31 +29,7 @@ export default async function AboutPage() {
 
         {/* 메인: 프로필 + 프로젝트 */}
         <div className="flex-1 min-w-0">
-          <section className="mb-10 pb-10 border-b border-border flex gap-6 items-start">
-            <div className="w-20 h-20 rounded-full bg-surface border border-border overflow-hidden shrink-0">
-              {avatarSrc ? (
-                <img src={avatarSrc} alt={profile.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-3xl text-text-muted">👤</div>
-              )}
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-text-primary mb-2">{profile.name}</h1>
-              <p className="text-sm text-text-secondary mb-3 whitespace-pre-line">
-                {profile.aboutText || profile.bio}
-              </p>
-              <div className="flex gap-4 text-xs text-text-muted">
-                {profile.github && (
-                  <a href={profile.github} target="_blank" rel="noopener noreferrer"
-                    className="hover:text-text-primary transition-colors">GitHub</a>
-                )}
-                {profile.linkedin && (
-                  <a href={profile.linkedin} target="_blank" rel="noopener noreferrer"
-                    className="hover:text-text-primary transition-colors">LinkedIn</a>
-                )}
-              </div>
-            </div>
-          </section>
+          <ProfileHeader profile={profile} />
 
           {projects.length > 0 && (
             <section>

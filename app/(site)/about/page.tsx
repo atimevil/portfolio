@@ -2,7 +2,18 @@ export const dynamic = 'force-dynamic'
 
 import { getSettings } from '@/lib/settings'
 import { getProjects } from '@/lib/projects'
+import { buildPageMetadata } from '@/lib/site'
 import TimelineItem from '@/components/about/TimelineItem'
+
+export function generateMetadata() {
+  const { profile } = getSettings()
+  const name = profile.name?.trim() || '포트폴리오'
+  return buildPageMetadata({
+    path: '/about',
+    title: '소개',
+    description: `${name}의 프로젝트, 기술 스택, 활동 및 수상 내역`,
+  })
+}
 
 export default async function AboutPage() {
   const settings = getSettings()

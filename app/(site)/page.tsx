@@ -5,11 +5,19 @@ import BlogListItem from '@/components/blog/BlogListItem'
 import Pagination from '@/components/blog/Pagination'
 import { getAllPosts } from '@/lib/blog'
 import { getSettings } from '@/lib/settings'
+import { buildPageMetadata } from '@/lib/site'
 
 const POSTS_PER_PAGE = 10
 
 interface Props {
   searchParams: { page?: string }
+}
+
+export function generateMetadata() {
+  const { profile } = getSettings()
+  const name = profile.name?.trim() || '포트폴리오'
+  const description = profile.bio?.trim() || profile.aboutText?.trim() || '개발자 포트폴리오 · 블로그'
+  return buildPageMetadata({ path: '', title: name, description })
 }
 
 export default async function HomePage({ searchParams }: Props) {

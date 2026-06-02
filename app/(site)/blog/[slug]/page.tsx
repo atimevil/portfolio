@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { getPostBySlug, getAllPosts } from '@/lib/blog'
+import { buildPageMetadata } from '@/lib/site'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
@@ -23,7 +24,12 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props) {
   const post = getPostBySlug(params.slug)
   if (!post) return {}
-  return { title: post.title, description: post.excerpt }
+  const meta = buildPageMetadata({
+    path: `/blog/${params.slug}`,
+    title: post.title,
+    description: post.excerpt,
+  })
+  return { ...meta, openGraph: { ...meta.openGraph, type: 'article' } }
 }
 
 export default async function BlogPostPage({ params: { slug } }: Props) {

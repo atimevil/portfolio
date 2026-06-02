@@ -1,10 +1,39 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import 'katex/dist/katex.min.css'
+import { getSettings } from '@/lib/settings'
+import { OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/site'
 
-export const metadata: Metadata = {
-  title: '포트폴리오',
-  description: '개발자 포트폴리오',
+export function generateMetadata(): Metadata {
+  const { profile } = getSettings()
+  const name = profile.name?.trim() || '포트폴리오'
+  const description = profile.bio?.trim() || profile.aboutText?.trim() || '개발자 포트폴리오'
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: name,
+      template: `%s · ${SITE_NAME}`,
+    },
+    description,
+    applicationName: SITE_NAME,
+    openGraph: {
+      siteName: SITE_NAME,
+      type: 'website',
+      locale: 'ko_KR',
+      title: name,
+      description,
+      images: [OG_IMAGE],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: name,
+      description,
+      images: [OG_IMAGE],
+    },
+    robots: { index: true, follow: true },
+    icons: { icon: '/icon.svg' },
+  }
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

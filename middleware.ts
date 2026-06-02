@@ -40,5 +40,7 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|api|.*\\..*).*)'],
+  // Exclude internals, API, and the file-convention metadata route
+  // opengraph-image (robots.txt / sitemap.xml already excluded by the dot rule).
+  matcher: ['/((?!_next|api|opengraph-image|.*\\..*).*)'],
 }

@@ -9,6 +9,11 @@ const nextConfig = {
         port: '3000',
         pathname: '/uploads/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'foxibu.is-a.dev',
+        pathname: '/uploads/**',
+      },
     ],
   },
   async headers() {

@@ -31,9 +31,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <span className="text-sm font-semibold text-text-primary tracking-tight">Admin</span>
           <Link
             href="/"
-            target="_blank"
             className="text-xs text-text-muted hover:text-text-primary transition-colors"
-            title="사이트 보기 (새 탭)"
+            title="사이트 보기"
           >
             사이트 ↗
           </Link>

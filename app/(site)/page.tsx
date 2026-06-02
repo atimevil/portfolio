@@ -38,7 +38,7 @@ export default async function HomePage({ searchParams }: Props) {
       : '')
 
   return (
-    <main className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
+    <main className="flex-1 max-w-5xl mx-auto w-full px-4 md:px-8 py-8">
       {/* 정체성 스트립 */}
       <section className="mb-8 pb-6 border-b border-border flex items-center gap-4">
         <div className="w-14 h-14 rounded-full bg-surface border border-border overflow-hidden shrink-0">

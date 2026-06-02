@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 
 interface TimelineItemProps {
   year: string
-  type: '활동' | '수상'
+  type: '활동' | '수상' | '프로젝트'
   title: string
   description?: string
 }

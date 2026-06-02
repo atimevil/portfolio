@@ -14,8 +14,6 @@ const DEFAULT_SETTINGS: SiteSettings = {
     github: '',
     linkedin: '',
     aboutText: '소개 텍스트를 입력하세요.',
-    activities: [],
-    awards: [],
   },
 }
 

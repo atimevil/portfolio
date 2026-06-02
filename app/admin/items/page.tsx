@@ -1,16 +1,15 @@
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import AdminLayout from '@/components/admin/AdminLayout'
-import AdminProjectManager from '@/components/admin/AdminProjectManager'
-import { getProjects } from '@/lib/projects'
+import AdminItemManager from '@/components/admin/AdminItemManager'
+import { getItems } from '@/lib/items'
 
-export default async function AdminProjectsPage() {
+export default async function AdminItemsPage() {
   const session = await getServerSession()
   if (!session) redirect('/admin/login')
-  const projects = getProjects()
   return (
     <AdminLayout>
-      <AdminProjectManager initialProjects={projects} />
+      <AdminItemManager initialItems={getItems()} />
     </AdminLayout>
   )
 }

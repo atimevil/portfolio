@@ -35,6 +35,19 @@ export interface Activity {
   description?: string
 }
 
+export interface PortfolioItem {
+  id: string
+  type: 'project' | 'activity' | 'award'
+  year: string
+  title: string
+  description?: string
+  skills?: string[]
+  github?: string
+  link?: string
+  thumbnail?: string
+  order?: number
+}
+
 export interface SiteSettings {
   devMode: boolean
   profile: {
@@ -45,7 +58,5 @@ export interface SiteSettings {
     github: string
     linkedin: string
     aboutText: string
-    activities: Activity[]
-    awards: Activity[]
   }
 }

@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import { getSettings } from '@/lib/settings'
-import { getProjects } from '@/lib/projects'
+import { getProjects, getTimeline } from '@/lib/items'
 import { buildPageMetadata } from '@/lib/site'
 import TimelineItem from '@/components/about/TimelineItem'
 
@@ -18,6 +18,7 @@ export function generateMetadata() {
 export default async function AboutPage() {
   const settings = getSettings()
   const projects = getProjects()
+  const timeline = getTimeline()
   const { profile } = settings
 
   const avatarSrc =
@@ -26,11 +27,7 @@ export default async function AboutPage() {
       ? `https://avatars.githubusercontent.com/${profile.github.split('/').pop()}`
       : '')
 
-  const hasEvents = profile.activities.length > 0 || profile.awards.length > 0
-  const events = [
-    ...profile.activities.map((a) => ({ ...a, type: '활동' as const })),
-    ...profile.awards.map((a) => ({ ...a, type: '수상' as const })),
-  ].sort((a, b) => b.year.localeCompare(a.year))
+  const hasEvents = timeline.length > 0
 
   return (
     <main className="flex-1 max-w-5xl mx-auto w-full px-4 md:px-8 py-8">
@@ -73,13 +70,13 @@ export default async function AboutPage() {
                   const Card = (
                     <div className={`border border-border rounded-lg p-4 bg-bg-secondary h-full flex flex-col ${href ? 'hover:border-text-muted transition-colors cursor-pointer' : ''}`}>
                       {project.thumbnail && (
-                        <img src={project.thumbnail} alt={project.name}
+                        <img src={project.thumbnail} alt={project.title}
                           className="w-full h-32 object-cover rounded-md mb-3 bg-surface" />
                       )}
-                      <h3 className="font-semibold text-text-primary text-sm mb-1">{project.name}</h3>
+                      <h3 className="font-semibold text-text-primary text-sm mb-1">{project.title}</h3>
                       <p className="text-xs text-text-secondary mb-3 line-clamp-2">{project.description}</p>
                       <div className="flex flex-wrap gap-1.5 mt-auto">
-                        {project.skills.map((s) => (
+                        {project.skills?.map((s) => (
                           <span key={s} className="text-xs px-2 py-0.5 rounded bg-surface text-text-muted">{s}</span>
                         ))}
                       </div>
@@ -105,11 +102,11 @@ export default async function AboutPage() {
               <h2 className="text-sm font-semibold text-text-primary mb-5">활동 & 수상</h2>
               <div className="relative pl-5">
                 <div className="absolute left-[4px] top-1 bottom-1 w-px bg-border" />
-                {events.map((item, i) => (
+                {timeline.map((item) => (
                   <TimelineItem
-                    key={i}
+                    key={item.id}
                     year={item.year}
-                    type={item.type}
+                    type={item.type === 'project' ? '프로젝트' : item.type === 'award' ? '수상' : '활동'}
                     title={item.title}
                     description={item.description}
                   />

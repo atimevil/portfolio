@@ -2,14 +2,10 @@
 
 import { useRef, useState } from 'react'
 import Button from '@/components/ui/Button'
-import type { Activity, SiteSettings } from '@/types'
+import type { SiteSettings } from '@/types'
 
 interface AdminSettingsFormProps {
   initialSettings: SiteSettings
-}
-
-function emptyActivity(): Activity {
-  return { year: '', title: '', description: '' }
 }
 
 export default function AdminSettingsForm({ initialSettings }: AdminSettingsFormProps) {
@@ -46,22 +42,6 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
     } finally {
       setUploading(false)
     }
-  }
-
-  function addActivity(type: 'activities' | 'awards') {
-    setProfile((p) => ({ ...p, [type]: [...p[type], emptyActivity()] }))
-  }
-
-  function updateActivity(type: 'activities' | 'awards', idx: number, field: keyof Activity, value: string) {
-    setProfile((p) => {
-      const list = [...p[type]]
-      list[idx] = { ...list[idx], [field]: value }
-      return { ...p, [type]: list }
-    })
-  }
-
-  function removeActivity(type: 'activities' | 'awards', idx: number) {
-    setProfile((p) => ({ ...p, [type]: p[type].filter((_, i) => i !== idx) }))
   }
 
   async function handleSave() {
@@ -191,87 +171,6 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
           </div>
         </section>
 
-        {/* 활동 */}
-        <section className="bg-bg-secondary border border-border rounded-lg p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-medium text-text-primary">활동</h2>
-            <Button variant="secondary" size="sm" onClick={() => addActivity('activities')}>+ 추가</Button>
-          </div>
-          {profile.activities.length === 0 && (
-            <p className="text-xs text-text-muted">활동 내역이 없습니다.</p>
-          )}
-          <div className="flex flex-col gap-3">
-            {profile.activities.map((item, idx) => (
-              <div key={idx} className="flex gap-2 items-start">
-                <input
-                  type="text"
-                  value={item.year}
-                  onChange={(e) => updateActivity('activities', idx, 'year', e.target.value)}
-                  placeholder="연도"
-                  className="w-16 px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
-                />
-                <div className="flex-1 flex flex-col gap-1.5">
-                  <input
-                    type="text"
-                    value={item.title}
-                    onChange={(e) => updateActivity('activities', idx, 'title', e.target.value)}
-                    placeholder="제목"
-                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
-                  />
-                  <input
-                    type="text"
-                    value={item.description ?? ''}
-                    onChange={(e) => updateActivity('activities', idx, 'description', e.target.value)}
-                    placeholder="설명 (선택)"
-                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-muted focus:outline-none focus:border-text-muted transition-colors"
-                  />
-                </div>
-                <button onClick={() => removeActivity('activities', idx)} className="text-text-muted hover:text-red-500 transition-colors pt-1 text-sm">×</button>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* 수상 */}
-        <section className="bg-bg-secondary border border-border rounded-lg p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-medium text-text-primary">수상</h2>
-            <Button variant="secondary" size="sm" onClick={() => addActivity('awards')}>+ 추가</Button>
-          </div>
-          {profile.awards.length === 0 && (
-            <p className="text-xs text-text-muted">수상 내역이 없습니다.</p>
-          )}
-          <div className="flex flex-col gap-3">
-            {profile.awards.map((item, idx) => (
-              <div key={idx} className="flex gap-2 items-start">
-                <input
-                  type="text"
-                  value={item.year}
-                  onChange={(e) => updateActivity('awards', idx, 'year', e.target.value)}
-                  placeholder="연도"
-                  className="w-16 px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
-                />
-                <div className="flex-1 flex flex-col gap-1.5">
-                  <input
-                    type="text"
-                    value={item.title}
-                    onChange={(e) => updateActivity('awards', idx, 'title', e.target.value)}
-                    placeholder="수상명"
-                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
-                  />
-                  <input
-                    type="text"
-                    value={item.description ?? ''}
-                    onChange={(e) => updateActivity('awards', idx, 'description', e.target.value)}
-                    placeholder="설명 (선택)"
-                    className="w-full px-2 py-1.5 text-xs border border-border rounded-md bg-bg text-text-muted focus:outline-none focus:border-text-muted transition-colors"
-                  />
-                </div>
-                <button onClick={() => removeActivity('awards', idx)} className="text-text-muted hover:text-red-500 transition-colors pt-1 text-sm">×</button>
-              </div>
-            ))}
-          </div>
-        </section>
       </div>
 
       <div className="flex justify-end mt-5">

@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import AdminLayout from '@/components/admin/AdminLayout'
 import { getAllPostsAdmin } from '@/lib/blog'
-import { getProjects } from '@/lib/projects'
+import { getItems } from '@/lib/items'
 import { getGalleryImages } from '@/lib/gallery'
 import { getAllViews } from '@/lib/views'
 
@@ -12,13 +12,13 @@ export default async function AdminDashboardPage() {
   if (!session) redirect('/admin/login')
 
   const posts = getAllPostsAdmin()
-  const projects = getProjects()
+  const items = getItems()
   const images = getGalleryImages()
   const allViews = getAllViews()
 
   const stats = [
     { label: '블로그 글', value: posts.length, href: '/admin/blog' },
-    { label: '프로젝트', value: projects.length, href: '/admin/projects' },
+    { label: '이력', value: items.length, href: '/admin/items' },
     { label: '이미지', value: images.length, href: '/admin/gallery' },
   ]
 

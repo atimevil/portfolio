@@ -1,31 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { z } from 'zod'
-import { getProjects, createProject, updateProject, deleteProject } from '@/lib/projects'
+import { getItems, createItem, updateItem, deleteItem } from '@/lib/items'
 
-const ProjectSchema = z.object({
-  name: z.string().min(1),
-  description: z.string(),
-  skills: z.array(z.string()),
+const ItemSchema = z.object({
+  type: z.enum(['project', 'activity', 'award']),
+  year: z.string().min(1),
+  title: z.string().min(1),
+  description: z.string().optional(),
+  skills: z.array(z.string()).optional(),
   github: z.string().optional(),
   link: z.string().optional(),
   thumbnail: z.string().optional(),
-  order: z.number().default(0),
+  order: z.number().optional(),
 })
 
 export async function GET() {
-  const projects = getProjects()
-  return NextResponse.json(projects)
+  return NextResponse.json(getItems())
 }
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const body = await req.json()
-  const result = ProjectSchema.safeParse(body)
+  const result = ItemSchema.safeParse(await req.json())
   if (!result.success) return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
-  const project = createProject(result.data)
-  return NextResponse.json(project, { status: 201 })
+  return NextResponse.json(createItem(result.data), { status: 201 })
 }
 
 export async function PUT(req: NextRequest) {
@@ -33,7 +32,7 @@ export async function PUT(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { id, ...updates } = await req.json()
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
-  updateProject(id, updates)
+  updateItem(id, updates)
   return NextResponse.json({ ok: true })
 }
 
@@ -42,6 +41,6 @@ export async function DELETE(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { id } = await req.json()
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
-  deleteProject(id)
+  deleteItem(id)
   return NextResponse.json({ ok: true })
 }

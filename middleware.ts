@@ -12,7 +12,9 @@ export async function middleware(req: NextRequest) {
     const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
     if (!token) {
       const loginUrl = new URL('/admin/login', req.url)
-      loginUrl.searchParams.set('callbackUrl', req.url)
+      // Use the relative path (not req.url, which resolves to the internal
+      // 0.0.0.0:3000 host behind the proxy) so post-login returns to /admin.
+      loginUrl.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(loginUrl)
     }
   }

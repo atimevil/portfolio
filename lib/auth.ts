@@ -24,16 +24,8 @@ export const authOptions: NextAuthOptions = {
     maxAge: 24 * 60 * 60,
     updateAge: 24 * 60 * 60,
   },
-  cookies: {
-    sessionToken: {
-      name: 'next-auth.session-token',
-      options: {
-        httpOnly: true,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 24 * 60 * 60,
-      },
-    },
-  },
+  // NOTE: no custom `cookies` override on purpose. Over HTTPS, NextAuth uses
+  // the `__Secure-next-auth.session-token` cookie and getToken() looks for that
+  // same name — forcing the non-secure name here breaks middleware auth.
   secret: process.env.NEXTAUTH_SECRET,
 }

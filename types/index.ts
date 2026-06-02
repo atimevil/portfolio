@@ -10,29 +10,12 @@ export interface BlogPost {
   readingTime: number
 }
 
-export interface Project {
-  id: string
-  name: string
-  description: string
-  skills: string[]
-  github?: string
-  link?: string
-  thumbnail?: string
-  order: number
-}
-
 export interface GalleryImage {
   id: string
   filename: string
   category: string
   description: string
   createdAt: string
-}
-
-export interface Activity {
-  year: string
-  title: string
-  description?: string
 }
 
 export interface PortfolioItem {

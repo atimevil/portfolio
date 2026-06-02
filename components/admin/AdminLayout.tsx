@@ -31,10 +31,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <span className="text-sm font-semibold text-text-primary tracking-tight">Admin</span>
           <Link
             href="/"
+            target="_blank"
             className="text-xs text-text-muted hover:text-text-primary transition-colors"
-            title="블로그 보기"
+            title="사이트 보기 (새 탭)"
           >
-            ↗
+            사이트 ↗
           </Link>
         </div>
 
@@ -60,7 +61,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         <div className="px-2 pb-3">
           <button
-            onClick={() => signOut({ callbackUrl: '/blog' })}
+            onClick={() => signOut({ callbackUrl: '/' })}
             className="w-full flex items-center px-2.5 py-1.5 rounded-md text-sm text-text-muted hover:text-red-500 hover:bg-surface transition-colors"
           >
             로그아웃

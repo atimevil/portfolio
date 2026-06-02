@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { getSettings, updateSettings } from '@/lib/settings'
 
+// Without this, Next statically prerenders the GET-only route and the PUT
+// handler is never served (PUT → 405 Allow: GET, HEAD), so saving silently fails.
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   const settings = getSettings()
   return NextResponse.json(settings)

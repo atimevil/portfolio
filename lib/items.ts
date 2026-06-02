@@ -23,16 +23,23 @@ export function getItems(): PortfolioItem[] {
   return read()
 }
 
-/** 프로젝트만, order(없으면 year desc) 정렬 */
+/** "2025" 또는 "2025.03"/"2025-3" 형태의 시점을 정렬용 숫자(연*100+월)로 변환. 월 없으면 0 */
+function timeKey(value: string): number {
+  const m = value.match(/(\d{4})(?:[.\-/]\s*(\d{1,2}))?/)
+  if (!m) return 0
+  return parseInt(m[1], 10) * 100 + (m[2] ? parseInt(m[2], 10) : 0)
+}
+
+/** 프로젝트만, order(없으면 시점 desc) 정렬 */
 export function getProjects(): PortfolioItem[] {
   return read()
     .filter((i) => i.type === 'project')
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || b.year.localeCompare(a.year))
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || timeKey(b.year) - timeKey(a.year))
 }
 
-/** 전체 항목, 연도 desc 정렬 (타임라인용) */
+/** 전체 항목, 시점 desc 정렬 (타임라인용) */
 export function getTimeline(): PortfolioItem[] {
-  return read().sort((a, b) => b.year.localeCompare(a.year))
+  return read().sort((a, b) => timeKey(b.year) - timeKey(a.year))
 }
 
 export function createItem(item: Omit<PortfolioItem, 'id'>): PortfolioItem {

@@ -55,7 +55,7 @@ export default function AdminItemManager({ initialItems }: Props) {
 
   async function handleSave() {
     if (!form.title.trim()) { alert('제목을 입력하세요.'); return }
-    if (!form.year.trim()) { alert('연도를 입력하세요.'); return }
+    if (!form.year.trim()) { alert('시점(연도 또는 연.월)을 입력하세요.'); return }
     setLoading(true)
     const isProject = form.type === 'project'
     const body = {
@@ -152,9 +152,9 @@ export default function AdminItemManager({ initialItems }: Props) {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-text-muted mb-1">연도 *</label>
+              <label className="block text-xs text-text-muted mb-1">시점 * (연도 또는 연.월)</label>
               <input
-                type="text" value={form.year} placeholder="2025"
+                type="text" value={form.year} placeholder="2025 또는 2025.03"
                 onChange={(e) => setForm((f) => ({ ...f, year: e.target.value }))}
                 className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
               />

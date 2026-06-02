@@ -1,5 +1,6 @@
 import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import { verifyPassword } from '@/lib/auth-password'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -9,7 +10,7 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        if (credentials?.password === process.env.ADMIN_PASSWORD) {
+        if (credentials?.password && verifyPassword(credentials.password)) {
           return { id: '1', name: 'Admin', email: 'admin@portfolio' }
         }
         return null

@@ -17,6 +17,30 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
+  const [pw, setPw] = useState({ current: '', next: '', confirm: '' })
+  const [pwSaving, setPwSaving] = useState(false)
+  const [pwMsg, setPwMsg] = useState<{ ok: boolean; text: string } | null>(null)
+
+  async function handlePasswordChange() {
+    if (pw.next.length < 8) { setPwMsg({ ok: false, text: '새 비밀번호는 8자 이상이어야 합니다.' }); return }
+    if (pw.next !== pw.confirm) { setPwMsg({ ok: false, text: '새 비밀번호 확인이 일치하지 않습니다.' }); return }
+    setPwSaving(true)
+    setPwMsg(null)
+    const res = await fetch('/api/password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword: pw.current, newPassword: pw.next }),
+    })
+    setPwSaving(false)
+    if (res.ok) {
+      setPw({ current: '', next: '', confirm: '' })
+      setPwMsg({ ok: true, text: '비밀번호가 변경되었습니다.' })
+    } else {
+      const data = await res.json().catch(() => ({}))
+      setPwMsg({ ok: false, text: data.error || '변경에 실패했습니다.' })
+    }
+  }
+
   function addSkill() {
     const s = skillInput.trim()
     if (s && !profile.skills.includes(s)) {
@@ -168,6 +192,37 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
               />
               <Button variant="secondary" size="sm" onClick={addSkill}>추가</Button>
             </div>
+          </div>
+        </section>
+
+        {/* 비밀번호 변경 */}
+        <section className="bg-bg-secondary border border-border rounded-lg p-5">
+          <h2 className="text-sm font-medium text-text-primary mb-1">비밀번호 변경</h2>
+          <p className="text-xs text-text-muted mb-4">관리자 로그인 비밀번호를 변경합니다.</p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <input
+              type="password" value={pw.current} placeholder="현재 비밀번호" autoComplete="current-password"
+              onChange={(e) => setPw((p) => ({ ...p, current: e.target.value }))}
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors"
+            />
+            <input
+              type="password" value={pw.next} placeholder="새 비밀번호 (8자 이상)" autoComplete="new-password"
+              onChange={(e) => setPw((p) => ({ ...p, next: e.target.value }))}
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors"
+            />
+            <input
+              type="password" value={pw.confirm} placeholder="새 비밀번호 확인" autoComplete="new-password"
+              onChange={(e) => setPw((p) => ({ ...p, confirm: e.target.value }))}
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors"
+            />
+          </div>
+          <div className="flex items-center justify-between mt-3">
+            <span className={`text-xs ${pwMsg ? (pwMsg.ok ? 'text-green-600' : 'text-red-500') : ''}`}>
+              {pwMsg?.text ?? ''}
+            </span>
+            <Button variant="secondary" size="sm" onClick={handlePasswordChange} disabled={pwSaving}>
+              {pwSaving ? '변경 중...' : '변경'}
+            </Button>
           </div>
         </section>
 

@@ -60,7 +60,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         <div className="px-2 pb-3">
           <button
-            onClick={() => signOut({ callbackUrl: '/admin/login' })}
+            onClick={() => signOut({ callbackUrl: '/blog' })}
             className="w-full flex items-center px-2.5 py-1.5 rounded-md text-sm text-text-muted hover:text-red-500 hover:bg-surface transition-colors"
           >
             로그아웃

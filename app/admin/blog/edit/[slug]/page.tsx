@@ -1,4 +1,5 @@
 import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { redirect, notFound } from 'next/navigation'
 import AdminLayout from '@/components/admin/AdminLayout'
 import BlogEditor from '@/components/admin/BlogEditor'
@@ -10,7 +11,7 @@ interface Props {
 }
 
 export default async function EditBlogPage({ params: { slug } }: Props) {
-  const session = await getServerSession()
+  const session = await getServerSession(authOptions)
   if (!session) redirect('/admin/login')
   const post = getPostBySlug(slug)
   if (!post) notFound()

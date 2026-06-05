@@ -8,6 +8,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import ViewIncrementer from '@/components/blog/ViewIncrementer'
+import TagBadges from '@/components/blog/TagBadges'
 
 interface Props {
   params: { slug: string }
@@ -71,6 +72,7 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
           <p className="text-sm text-text-muted">
             {post.date} · {post.readingTime}분 읽기
           </p>
+          <TagBadges tags={post.tags} category={post.category} className="mt-3" />
         </header>
 
         <div className="prose prose-neutral dark:prose-invert max-w-none">

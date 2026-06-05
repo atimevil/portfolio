@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { BlogPost } from '@/types'
+import TagBadges from '@/components/blog/TagBadges'
 
 interface BlogListItemProps {
   post: BlogPost
@@ -17,6 +18,7 @@ export default function BlogListItem({ post }: BlogListItemProps) {
         {post.date} · {post.readingTime}분 읽기
       </p>
       <p className="text-sm text-text-secondary line-clamp-2">{post.excerpt}</p>
+      <TagBadges tags={post.tags} category={post.category} className="mt-2.5" />
     </article>
   )
 }

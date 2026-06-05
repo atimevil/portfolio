@@ -8,6 +8,7 @@ const PostSchema = z.object({
   title: z.string().min(1),
   date: z.string(),
   tags: z.array(z.string()),
+  category: z.string().optional(),
   excerpt: z.string(),
   content: z.string(),
   status: z.enum(['published', 'draft']),

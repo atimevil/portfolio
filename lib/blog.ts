@@ -38,15 +38,49 @@ export function getAllPosts(): BlogPost[] {
     .sort((a, b) => (a.date < b.date ? 1 : -1))
 }
 
+// URL route params for Korean slugs can arrive percent-encoded or in a
+// different Unicode normalization (NFD) than the NFC filenames on disk, so an
+// exact `${slug}.mdx` lookup misses. Resolve the real filename robustly.
+function resolvePostFile(slug: string): string | null {
+  // Candidate raw strings: as-given and percent-decoded (decode may throw on
+  // a stray '%', so guard it).
+  const raws = [slug]
+  try {
+    const decoded = decodeURIComponent(slug)
+    if (decoded !== slug) raws.push(decoded)
+  } catch {
+    /* not encoded — ignore */
+  }
+
+  // Direct existence check across both normalizations (fast path).
+  for (let i = 0; i < raws.length; i++) {
+    const forms = [raws[i], raws[i].normalize('NFC'), raws[i].normalize('NFD')]
+    for (let j = 0; j < forms.length; j++) {
+      if (fs.existsSync(path.join(POSTS_DIR, `${forms[j]}.mdx`))) {
+        return `${forms[j]}.mdx`
+      }
+    }
+  }
+
+  // Fallback: scan the directory and match on NFC-normalized stems.
+  const wanted = raws.map((r) => r.normalize('NFC'))
+  const match = fs
+    .readdirSync(POSTS_DIR)
+    .filter((f) => f.endsWith('.mdx'))
+    .find((f) => wanted.indexOf(f.replace(/\.mdx$/, '').normalize('NFC')) !== -1)
+  return match ?? null
+}
+
 export function getPostBySlug(slug: string): BlogPost | null {
   ensurePostsDir()
-  const filePath = path.join(POSTS_DIR, `${slug}.mdx`)
-  if (!fs.existsSync(filePath)) return null
-  const raw = fs.readFileSync(filePath, 'utf-8')
+  const fileName = resolvePostFile(slug)
+  if (!fileName) return null
+  const raw = fs.readFileSync(path.join(POSTS_DIR, fileName), 'utf-8')
   const { data, content } = matter(raw)
+  const resolvedSlug = fileName.replace(/\.mdx$/, '')
   return {
-    slug,
-    title: data.title ?? slug,
+    slug: resolvedSlug,
+    title: data.title ?? resolvedSlug,
     date: data.date ? String(data.date) : '',
     tags: data.tags ?? [],
     category: data.category ?? undefined,

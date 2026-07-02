@@ -30,6 +30,7 @@ services:
       - ./certbot/www:/var/www/certbot:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./public/uploads:/usr/share/nginx/uploads:ro
+      - /home/ubuntu/tiny-legion/dist:/usr/share/nginx/game:ro
     depends_on:
       - app
     networks:

@@ -26,6 +26,9 @@ function parseSpan(raw: string): { start: number; end: number } | null {
   return { start, end }
 }
 
+// 다크 퍼플 테마와 어울리는 쿨톤 팔레트 — 항목별 구분용.
+const PALETTE = ['#9d8cd8', '#7aa2f7', '#c99ae0', '#67c9c4', '#e0a3c4', '#8b93f0']
+
 interface Props {
   items: PortfolioItem[]
 }
@@ -82,6 +85,8 @@ export default function AwardsGantt({ items }: Props) {
   const pos = (mi: number) => ((Math.min(Math.max(mi, min), max) - min) / total) * 100
   const shownBase = year !== null ? base.filter((e) => e.span.end >= min && e.span.start < max) : base
   const events = packLanes(shownBase)
+  // 색은 전체 목록 기준으로 고정 (연도 필터해도 같은 항목=같은 색)
+  const colorById = new Map(base.map((e, i) => [e.it.id, PALETTE[i % PALETTE.length]]))
 
   const ticks = Array.from({ length: 5 }, (_, i) => {
     const mi = Math.round(min + (total * i) / 4)
@@ -100,20 +105,22 @@ export default function AwardsGantt({ items }: Props) {
     const left = pos(Math.max(e.span.start, min))
     const width = pos(Math.min(e.span.end, max - 1) + 1) - left
     const c = left + width / 2
+    const color = colorById.get(e.it.id)
     return (
       <div
         className={`group absolute w-[128px] -translate-x-1/2 text-center ${side === 'top' ? 'bottom-0' : 'top-0'}`}
         style={{ left: `${c}%` }}
       >
-        {side === 'bottom' && <div className="mx-auto h-3 w-px bg-accent/50" />}
+        {side === 'bottom' && <div className="mx-auto h-3 w-px" style={{ backgroundColor: color, opacity: 0.5 }} />}
         <div className={`line-clamp-2 text-[11.5px] font-medium leading-tight text-text-primary ${side === 'bottom' ? 'mt-1' : ''}`}>
-          {isAward && <span className="text-accent">★ </span>}
+          <span className="mr-1 inline-block h-2 w-2 rounded-full align-middle" style={{ backgroundColor: color }} />
+          {isAward && <span style={{ color }}>★ </span>}
           {e.it.title.trim()}
         </div>
-        <div className="mt-0.5 font-mono text-[10px] text-accent">
+        <div className="mt-0.5 font-mono text-[10px]" style={{ color }}>
           {e.it.year.trim()} · {months}개월
         </div>
-        {side === 'top' && <div className="mx-auto mt-1 h-3 w-px bg-accent/50" />}
+        {side === 'top' && <div className="mx-auto mt-1 h-3 w-px" style={{ backgroundColor: color, opacity: 0.5 }} />}
       </div>
     )
   }
@@ -165,13 +172,19 @@ export default function AwardsGantt({ items }: Props) {
               const isAbove = e.lane % 2 === 0
               const left = pos(Math.max(e.span.start, min))
               const width = pos(Math.min(e.span.end, max - 1) + 1) - left
+              const color = colorById.get(e.it.id)
               return (
                 <motion.div
                   key={e.it.id}
-                  className={`absolute h-2.5 origin-left rounded-full bg-accent ${
+                  className={`absolute h-2.5 origin-left rounded-full ${
                     isAbove ? 'bottom-1/2 mb-[2px]' : 'top-1/2 mt-[2px]'
-                  } ${isAward ? 'shadow-[0_0_10px_-2px_var(--color-accent)]' : ''}`}
-                  style={{ left: `${left}%`, width: `${Math.max(width, 1.5)}%` }}
+                  }`}
+                  style={{
+                    left: `${left}%`,
+                    width: `${Math.max(width, 1.5)}%`,
+                    backgroundColor: color,
+                    boxShadow: isAward ? `0 0 10px -2px ${color}` : undefined,
+                  }}
                   variants={{ hidden: { scaleX: 0 }, show: { scaleX: 1 } }}
                   transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
                   title={e.it.description || `${e.it.year} · ${e.span.end - e.span.start + 1}개월`}

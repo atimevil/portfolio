@@ -33,21 +33,28 @@ export default async function AboutPage() {
 
           {projects.length > 0 && (
             <section>
-              <h2 className="text-base font-semibold text-text-primary mb-5">프로젝트</h2>
+              <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-5">Projects</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {projects.map((project) => {
                   const href = project.github || project.link
                   const Card = (
-                    <div className={`border border-border rounded-lg p-4 bg-bg-secondary h-full flex flex-col ${href ? 'hover:border-text-muted transition-colors cursor-pointer' : ''}`}>
+                    <div className={`group h-full flex flex-col rounded-xl border border-border bg-bg-secondary p-5 transition-all ${href ? 'hover:border-accent hover:-translate-y-0.5 cursor-pointer' : ''}`}>
                       {project.thumbnail && (
                         <img src={project.thumbnail} alt={project.title}
-                          className="w-full h-32 object-cover rounded-md mb-3 bg-surface" />
+                          className="w-full h-32 object-cover rounded-lg mb-3 bg-surface" />
                       )}
-                      <h3 className="font-semibold text-text-primary text-sm mb-1">{project.title}</h3>
-                      <p className="text-xs text-text-secondary mb-3 line-clamp-2">{project.description}</p>
+                      <div className="flex items-baseline justify-between gap-2">
+                        <h3 className="font-bold text-[15px] text-text-primary transition-colors group-hover:text-accent-hover">
+                          {project.title}
+                        </h3>
+                        {project.year && (
+                          <span className="shrink-0 font-mono text-[11px] text-text-muted">{project.year}</span>
+                        )}
+                      </div>
+                      <p className="text-xs leading-relaxed text-text-secondary mt-2 mb-4 line-clamp-3">{project.description}</p>
                       <div className="flex flex-wrap gap-1.5 mt-auto">
                         {project.skills?.map((s) => (
-                          <span key={s} className="text-xs px-2 py-0.5 rounded bg-surface text-text-muted">{s}</span>
+                          <span key={s} className="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-medium text-accent">{s}</span>
                         ))}
                       </div>
                     </div>

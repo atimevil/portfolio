@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 import type { PortfolioItem } from '@/types'
 
 // "2025.03~09" / "2025.10~11" / "2026.01~02" / "2025.04" 를 월 인덱스 구간으로.
@@ -31,8 +32,8 @@ interface Props {
 }
 type Evt = { it: PortfolioItem; span: NonNullable<ReturnType<typeof parseSpan>> }
 
-// 활동 & 수상 간트: 항목마다 한 줄(레인). 모든 줄이 같은 시간축을 공유하므로
-// 막대 위치=시점, 막대 길이=기간(개월)이 정확히 비례한다. 수상은 ★.
+// 활동 & 수상 인터랙티브 간트: 항목마다 한 줄, 같은 시간축 공유(막대 길이=기간).
+// 스크롤 진입 시 막대가 차오르고, 호버하면 설명이 펼쳐진다. 수상은 ★ + 글로우.
 export default function AwardsGantt({ items }: Props) {
   const evts = useMemo<Evt[]>(
     () =>
@@ -100,16 +101,30 @@ export default function AwardsGantt({ items }: Props) {
 
       <div className="overflow-x-auto pb-2">
         <div className="min-w-[560px]">
-          <div className="flex flex-col gap-4">
+          <motion.div
+            key={String(year)}
+            className="flex flex-col gap-4"
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.25 }}
+            variants={{ show: { transition: { staggerChildren: 0.1 } } }}
+          >
             {shown.map(({ it, span }) => {
               const isAward = it.type === 'award'
               const months = span.end - span.start + 1
               const left = pos(Math.max(span.start, min))
               const width = pos(Math.min(span.end, max - 1) + 1) - left
               return (
-                <div key={it.id}>
+                <motion.div
+                  key={it.id}
+                  className="group"
+                  variants={{
+                    hidden: { opacity: 0, y: 12 },
+                    show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: 'easeOut' } },
+                  }}
+                >
                   <div className="mb-1.5 flex items-baseline justify-between gap-3">
-                    <span className="text-sm leading-snug text-text-primary">
+                    <span className="text-sm leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
                       {isAward && <span className="text-accent">★ </span>}
                       {it.title.trim()}
                     </span>
@@ -119,15 +134,26 @@ export default function AwardsGantt({ items }: Props) {
                   </div>
                   <div className="relative h-3">
                     <div className="absolute inset-0 rounded-full bg-surface" />
-                    <div
-                      className="absolute inset-y-0 rounded-full bg-accent"
+                    <motion.div
+                      className={`absolute inset-y-0 origin-left rounded-full bg-accent transition-shadow duration-300 group-hover:shadow-[0_0_14px_-2px_var(--color-accent)] ${
+                        isAward ? 'shadow-[0_0_10px_-3px_var(--color-accent)]' : ''
+                      }`}
                       style={{ left: `${left}%`, width: `${Math.max(width, 1.5)}%` }}
+                      variants={{ hidden: { scaleX: 0 }, show: { scaleX: 1 } }}
+                      transition={{ duration: 0.7, ease: [0.22, 0.61, 0.36, 1] }}
                     />
                   </div>
-                </div>
+                  {it.description && (
+                    <div className="grid grid-rows-[0fr] opacity-0 transition-all duration-300 group-hover:grid-rows-[1fr] group-hover:opacity-100">
+                      <div className="overflow-hidden">
+                        <p className="pt-2 text-xs leading-relaxed text-text-secondary">{it.description}</p>
+                      </div>
+                    </div>
+                  )}
+                </motion.div>
               )
             })}
-          </div>
+          </motion.div>
 
           {/* 시간축 눈금 */}
           <div className="relative mt-3 h-4 border-t border-border">
@@ -149,7 +175,7 @@ export default function AwardsGantt({ items }: Props) {
           )}
 
           <p className="mt-5 text-[11px] text-text-muted">
-            막대 길이 = 활동 기간 · <span className="text-accent">★</span> = 수상
+            막대 길이 = 활동 기간 · <span className="text-accent">★</span> = 수상 · 항목에 마우스를 올리면 설명이 펼쳐집니다
           </p>
         </div>
       </div>

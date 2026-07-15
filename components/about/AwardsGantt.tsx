@@ -133,31 +133,23 @@ export default function AwardsGantt({ items }: Props) {
           <div className="relative h-5">
             <div className="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-border" />
             {ranges.map(({ it, span }) => {
-              const isAward = it.type === 'award'
               const l = pos(cStart(span))
               const w = pos(cEnd(span) + 1) - l
               return (
                 <div
                   key={it.id}
-                  className={`absolute top-1/2 h-3.5 -translate-y-1/2 rounded-full ${
-                    isAward ? 'bg-accent shadow-[0_0_10px_-1px_var(--color-accent)]' : 'bg-accent/75'
-                  }`}
+                  className="absolute top-1/2 h-3.5 -translate-y-1/2 rounded-full bg-accent"
                   style={{ left: `calc(${l}% + 2px)`, width: `calc(${w}% - 4px)` }}
                 />
               )
             })}
-            {points.map(({ it, span }) => {
-              const isAward = it.type === 'award'
-              return (
-                <div
-                  key={it.id}
-                  className={`absolute top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-bg ${
-                    isAward ? 'bg-accent shadow-[0_0_0_3px_var(--color-accent-soft)]' : 'bg-accent/80'
-                  }`}
-                  style={{ left: `${dot(span)}%` }}
-                />
-              )
-            })}
+            {points.map(({ it, span }) => (
+              <div
+                key={it.id}
+                className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-bg bg-accent"
+                style={{ left: `${dot(span)}%` }}
+              />
+            ))}
           </div>
 
           {/* 아래쪽: 단발 이벤트 라벨 */}
@@ -204,13 +196,13 @@ export default function AwardsGantt({ items }: Props) {
           {/* 범례 */}
           <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-text-muted">
             <span className="flex items-center gap-1.5">
-              <span className="inline-block h-2 w-5 rounded-full bg-accent/75" />기간 활동
+              <span className="inline-block h-2 w-5 rounded-full bg-accent" />기간 (막대 길이 = 활동 기간)
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="inline-block h-2 w-5 rounded-full bg-accent" />수상 기간
+              <span className="inline-block h-2.5 w-2.5 rounded-full bg-accent" />단발 (1개월)
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-accent/80" />단발 이벤트
+              <span className="text-accent">★</span> = 수상
             </span>
           </div>
         </div>

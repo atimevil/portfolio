@@ -28,7 +28,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Nanum Gothic', 'Wanted Sans Variable', 'Pretendard', 'system-ui', 'sans-serif'],
+        sans: ['Maru Buri', 'Pretendard', 'system-ui', 'serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       maxWidth: {

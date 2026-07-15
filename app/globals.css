@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/fonts-archive/MaruBuri/MaruBuri.css');
 
 @tailwind base;
 @tailwind components;
@@ -39,7 +39,7 @@
 body {
   background-color: var(--color-bg);
   color: var(--color-text-primary);
-  font-family: 'Nanum Gothic', 'Wanted Sans Variable', 'Pretendard', system-ui, sans-serif;
+  font-family: 'Maru Buri', 'Pretendard', system-ui, serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s, color 0.2s;
 }

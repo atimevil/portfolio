@@ -7,7 +7,7 @@ import type { PortfolioItem } from '@/types'
 function monthIndex(y: number, m: number) {
   return y * 12 + (m - 1)
 }
-function parseSpan(raw: string): { start: number; end: number; isRange: boolean } | null {
+function parseSpan(raw: string): { start: number; end: number } | null {
   const s = raw.replace(/\s/g, '')
   const parts = s.split(/[~–]/)
   const pym = (str: string) => {
@@ -23,7 +23,7 @@ function parseSpan(raw: string): { start: number; end: number; isRange: boolean 
   }
   const start = monthIndex(a.y, a.m)
   const end = Math.max(start, monthIndex(b.y, b.m))
-  return { start, end, isRange: end > start }
+  return { start, end }
 }
 
 interface Props {
@@ -31,15 +31,15 @@ interface Props {
 }
 type Evt = { it: PortfolioItem; span: NonNullable<ReturnType<typeof parseSpan>> }
 
-// 활동 & 수상 가로 타임라인 + 연도 탭 필터.
-// [전체]/[연도] 버튼으로 보기 전환. 연도 선택 시 그 해(1~12월)로 축을 맞추고
-// 해당 연도에 걸치는 항목만, 막대는 그 해 범위로 잘라서 보여준다.
+// 활동 & 수상 간트: 항목마다 한 줄(레인). 모든 줄이 같은 시간축을 공유하므로
+// 막대 위치=시점, 막대 길이=기간(개월)이 정확히 비례한다. 수상은 ★.
 export default function AwardsGantt({ items }: Props) {
   const evts = useMemo<Evt[]>(
     () =>
       items
         .map((it) => ({ it, span: parseSpan(it.year) }))
-        .filter((r): r is Evt => r.span !== null),
+        .filter((r): r is Evt => r.span !== null)
+        .sort((a, b) => a.span.start - b.span.start),
     [items]
   )
 
@@ -65,13 +65,7 @@ export default function AwardsGantt({ items }: Props) {
 
   const total = Math.max(1, max - min)
   const pos = (mi: number) => ((Math.min(Math.max(mi, min), max) - min) / total) * 100
-  const cStart = (s: Evt['span']) => Math.max(s.start, min)
-  const cEnd = (s: Evt['span']) => Math.min(s.end, max - 1)
-  const dot = (s: Evt['span']) => pos(s.start) + (0.5 / total) * 100
-
   const shown = year !== null ? evts.filter((e) => e.span.end >= min && e.span.start < max) : evts
-  const ranges = shown.filter((e) => e.span.isRange)
-  const points = shown.filter((e) => !e.span.isRange)
 
   const ticks = Array.from({ length: 5 }, (_, i) => {
     const mi = Math.round(min + (total * i) / 4)
@@ -105,77 +99,38 @@ export default function AwardsGantt({ items }: Props) {
       </div>
 
       <div className="overflow-x-auto pb-2">
-        <div className="min-w-[600px] px-8">
-          {/* 위쪽: 기간 활동 라벨 */}
-          <div className="relative h-16">
-            {ranges.map(({ it, span }) => {
+        <div className="min-w-[560px]">
+          <div className="flex flex-col gap-4">
+            {shown.map(({ it, span }) => {
               const isAward = it.type === 'award'
-              const c = (pos(cStart(span)) + pos(cEnd(span) + 1)) / 2
+              const months = span.end - span.start + 1
+              const left = pos(Math.max(span.start, min))
+              const width = pos(Math.min(span.end, max - 1) + 1) - left
               return (
-                <div
-                  key={it.id}
-                  className="absolute bottom-0 w-[132px] -translate-x-1/2 text-center"
-                  style={{ left: `${c}%` }}
-                  title={it.title.trim()}
-                >
-                  <div className="line-clamp-2 text-[11.5px] font-medium leading-tight text-text-primary">
-                    {isAward && <span className="text-accent">★ </span>}
-                    {it.title.trim()}
+                <div key={it.id}>
+                  <div className="mb-1.5 flex items-baseline justify-between gap-3">
+                    <span className="text-sm leading-snug text-text-primary">
+                      {isAward && <span className="text-accent">★ </span>}
+                      {it.title.trim()}
+                    </span>
+                    <span className="shrink-0 font-mono text-[11px] text-accent">
+                      {it.year.trim()} · {months}개월
+                    </span>
                   </div>
-                  <div className="mt-0.5 font-mono text-[10px] text-accent">{it.year.trim()}</div>
-                  <div className="mx-auto mt-1 h-3 w-px bg-accent/50" />
-                </div>
-              )
-            })}
-          </div>
-
-          {/* 축 + 막대 + 핀 */}
-          <div className="relative h-5">
-            <div className="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-border" />
-            {ranges.map(({ it, span }) => {
-              const l = pos(cStart(span))
-              const w = pos(cEnd(span) + 1) - l
-              return (
-                <div
-                  key={it.id}
-                  className="absolute top-1/2 h-3.5 -translate-y-1/2 rounded-full bg-accent"
-                  style={{ left: `calc(${l}% + 2px)`, width: `calc(${w}% - 4px)` }}
-                />
-              )
-            })}
-            {points.map(({ it, span }) => (
-              <div
-                key={it.id}
-                className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-bg bg-accent"
-                style={{ left: `${dot(span)}%` }}
-              />
-            ))}
-          </div>
-
-          {/* 아래쪽: 단발 이벤트 라벨 */}
-          <div className="relative h-16">
-            {points.map(({ it, span }) => {
-              const isAward = it.type === 'award'
-              return (
-                <div
-                  key={it.id}
-                  className="absolute top-0 w-[132px] -translate-x-1/2 text-center"
-                  style={{ left: `${dot(span)}%` }}
-                  title={it.title.trim()}
-                >
-                  <div className="mx-auto h-3 w-px bg-accent/50" />
-                  <div className="mt-1 line-clamp-2 text-[11.5px] font-medium leading-tight text-text-primary">
-                    {isAward && <span className="text-accent">★ </span>}
-                    {it.title.trim()}
+                  <div className="relative h-3">
+                    <div className="absolute inset-0 rounded-full bg-surface" />
+                    <div
+                      className="absolute inset-y-0 rounded-full bg-accent"
+                      style={{ left: `${left}%`, width: `${Math.max(width, 1.5)}%` }}
+                    />
                   </div>
-                  <div className="mt-0.5 font-mono text-[10px] text-accent">{it.year.trim()}</div>
                 </div>
               )
             })}
           </div>
 
           {/* 시간축 눈금 */}
-          <div className="relative mt-1 h-4 border-t border-border">
+          <div className="relative mt-3 h-4 border-t border-border">
             {ticks.map((t, i) => (
               <span
                 key={i}
@@ -193,18 +148,9 @@ export default function AwardsGantt({ items }: Props) {
             <p className="mt-6 text-center text-xs text-text-muted">해당 연도 항목이 없습니다.</p>
           )}
 
-          {/* 범례 */}
-          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-text-muted">
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block h-2 w-5 rounded-full bg-accent" />기간 (막대 길이 = 활동 기간)
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-accent" />단발 (1개월)
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="text-accent">★</span> = 수상
-            </span>
-          </div>
+          <p className="mt-5 text-[11px] text-text-muted">
+            막대 길이 = 활동 기간 · <span className="text-accent">★</span> = 수상
+          </p>
         </div>
       </div>
     </section>

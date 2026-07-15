@@ -8,6 +8,8 @@ interface TimelineItemProps {
   type: '활동' | '수상' | '프로젝트'
   title: string
   description?: string
+  /** 기간 막대: pct=최장 대비 비율(0~100), months=개월 수. 단발 이벤트면 생략 */
+  bar?: { pct: number; months: number }
 }
 
 function Popup({ year, type, title, description, onClose }: TimelineItemProps & { onClose: () => void }) {
@@ -46,7 +48,7 @@ function Popup({ year, type, title, description, onClose }: TimelineItemProps & 
   )
 }
 
-export default function TimelineItem({ year, type, title, description }: TimelineItemProps) {
+export default function TimelineItem({ year, type, title, description, bar }: TimelineItemProps) {
   const [open, setOpen] = useState(false)
   const hasDesc = !!description
   const isAward = type === '수상'
@@ -84,6 +86,16 @@ export default function TimelineItem({ year, type, title, description }: Timelin
           {title}
         </p>
       </button>
+
+      {/* 기간 막대 — 최장 활동 대비 길이로 '얼마나 오래' 했는지 시각화 */}
+      {bar && (
+        <div className="mt-2">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-border">
+            <div className="h-full rounded-full bg-accent" style={{ width: `${bar.pct}%` }} />
+          </div>
+          <span className="mt-1 block font-mono text-[10px] text-text-muted">{bar.months}개월</span>
+        </div>
+      )}
 
       {open && (
         <Popup

@@ -6,6 +6,27 @@ import { buildPageMetadata } from '@/lib/site'
 import ProfileHeader from '@/components/layout/ProfileHeader'
 import TimelineItem from '@/components/about/TimelineItem'
 
+// "2025.03~09" / "2025.10~11" / "2026.01~02" 같은 문자열에서 기간(개월)을 계산.
+// 단발("2025.04")이나 파싱 불가면 isRange=false.
+function parsePeriod(raw: string): { months: number; isRange: boolean } {
+  const s = raw.replace(/\s/g, '')
+  const parts = s.split(/[~–]/)
+  const parseYM = (str: string) => {
+    const [y, m] = str.split('.')
+    return { y: parseInt(y, 10), m: m ? parseInt(m, 10) : NaN }
+  }
+  if (parts.length < 2 || parts[1] === '') return { months: 1, isRange: false }
+  const start = parseYM(parts[0])
+  const end = parts[1].includes('.')
+    ? parseYM(parts[1])
+    : { y: start.y, m: parseInt(parts[1], 10) }
+  if ([start.y, start.m, end.y, end.m].some((n) => Number.isNaN(n))) {
+    return { months: 1, isRange: false }
+  }
+  const months = (end.y - start.y) * 12 + (end.m - start.m) + 1
+  return { months: Math.max(1, months), isRange: months >= 2 }
+}
+
 export function generateMetadata() {
   const { profile } = getSettings()
   const name = profile.name?.trim() || '포트폴리오'
@@ -79,15 +100,26 @@ export default async function AboutPage() {
               <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-5">Awards &amp; Activity</h2>
               <div className="relative pl-6">
                 <div className="absolute left-[5px] top-1.5 bottom-1.5 w-px bg-border" />
-                {timeline.map((item) => (
-                  <TimelineItem
-                    key={item.id}
-                    year={item.year}
-                    type={item.type === 'project' ? '프로젝트' : item.type === 'award' ? '수상' : '활동'}
-                    title={item.title}
-                    description={item.description}
-                  />
-                ))}
+                {(() => {
+                  const periods = timeline.map((t) => parsePeriod(t.year))
+                  const maxMonths = Math.max(1, ...periods.map((p) => p.months))
+                  return timeline.map((item, i) => {
+                    const p = periods[i]
+                    const bar = p.isRange
+                      ? { pct: Math.round((p.months / maxMonths) * 100), months: p.months }
+                      : undefined
+                    return (
+                      <TimelineItem
+                        key={item.id}
+                        year={item.year}
+                        type={item.type === 'project' ? '프로젝트' : item.type === 'award' ? '수상' : '활동'}
+                        title={item.title}
+                        description={item.description}
+                        bar={bar}
+                      />
+                    )
+                  })
+                })()}
               </div>
             </div>
           </aside>

@@ -74,11 +74,11 @@ export default async function AboutPage() {
 
         {/* 오른쪽: 활동 & 수상 */}
         {hasEvents && (
-          <aside className="w-full lg:w-52 shrink-0 border-t border-border pt-8 lg:border-t-0 lg:pt-0">
+          <aside className="w-full lg:w-60 shrink-0 border-t border-border pt-8 lg:border-t-0 lg:pt-0">
             <div className="lg:sticky lg:top-20">
-              <h2 className="text-sm font-semibold text-text-primary mb-5">활동 & 수상</h2>
-              <div className="relative pl-5">
-                <div className="absolute left-[4px] top-1 bottom-1 w-px bg-border" />
+              <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-5">Awards &amp; Activity</h2>
+              <div className="relative pl-6">
+                <div className="absolute left-[5px] top-1.5 bottom-1.5 w-px bg-border" />
                 {timeline.map((item) => (
                   <TimelineItem
                     key={item.id}

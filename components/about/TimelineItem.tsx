@@ -49,33 +49,38 @@ function Popup({ year, type, title, description, onClose }: TimelineItemProps & 
 export default function TimelineItem({ year, type, title, description }: TimelineItemProps) {
   const [open, setOpen] = useState(false)
   const hasDesc = !!description
+  const isAward = type === '수상'
 
   return (
     <div className="relative mb-5 last:mb-0">
-      {/* 클릭 가능 여부에 따라 dot 색상 구분 */}
-      <div className={`absolute -left-5 top-[5px] w-[9px] h-[9px] rounded-full border-2 ${
-        hasDesc ? 'bg-accent border-accent' : 'bg-bg border-border'
-      }`} />
+      {/* 세로선 위의 점 — 수상은 채운 accent + 링 글로우, 그 외는 빈 원 */}
+      <div
+        className={`absolute -left-[25px] top-[3px] w-3 h-3 rounded-full border-2 ${
+          isAward
+            ? 'bg-accent border-accent shadow-[0_0_0_3px_var(--color-accent-soft)]'
+            : 'bg-bg border-accent'
+        }`}
+      />
 
       <button
         className={`w-full text-left ${hasDesc ? 'cursor-pointer group' : 'cursor-default'}`}
         onClick={() => hasDesc && setOpen(true)}
         disabled={!hasDesc}
       >
-        <div className="flex items-center gap-1.5 mb-0.5">
-          <span className="text-[10px] text-text-muted tabular-nums">{year}</span>
-          <span className="text-[9px] text-text-muted border border-border rounded px-1 py-px leading-none">
-            {type}
-          </span>
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[11px] text-accent">{year}</span>
+          {isAward && <span className="text-[10px] font-bold text-accent">★ 수상</span>}
           {hasDesc && (
-            <span className="text-[9px] text-text-muted ml-auto opacity-50 group-hover:opacity-100 transition-opacity">
+            <span className="ml-auto text-[10px] text-text-muted opacity-50 group-hover:opacity-100 transition-opacity">
               +
             </span>
           )}
         </div>
-        <p className={`text-xs leading-snug text-text-primary ${
-          hasDesc ? 'group-hover:underline underline-offset-2' : ''
-        }`}>
+        <p
+          className={`mt-0.5 text-[13px] leading-snug text-text-primary ${
+            hasDesc ? 'group-hover:text-accent-hover transition-colors' : ''
+          }`}
+        >
           {title}
         </p>
       </button>

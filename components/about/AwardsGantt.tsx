@@ -123,7 +123,7 @@ export default function AwardsGantt({ items }: Props) {
                     {it.title.trim()}
                   </div>
                   <div className="mt-0.5 font-mono text-[10px] text-accent">{it.year.trim()}</div>
-                  <div className="mx-auto mt-1 h-2 w-px bg-border" />
+                  <div className="mx-auto mt-1 h-3 w-px bg-accent/50" />
                 </div>
               )
             })}
@@ -142,7 +142,7 @@ export default function AwardsGantt({ items }: Props) {
                   className={`absolute top-1/2 h-3.5 -translate-y-1/2 rounded-full ${
                     isAward ? 'bg-accent shadow-[0_0_10px_-1px_var(--color-accent)]' : 'bg-accent/75'
                   }`}
-                  style={{ left: `${l}%`, width: `${w}%` }}
+                  style={{ left: `calc(${l}% + 2px)`, width: `calc(${w}% - 4px)` }}
                 />
               )
             })}
@@ -171,7 +171,7 @@ export default function AwardsGantt({ items }: Props) {
                   style={{ left: `${dot(span)}%` }}
                   title={it.title.trim()}
                 >
-                  <div className="mx-auto h-2 w-px bg-border" />
+                  <div className="mx-auto h-3 w-px bg-accent/50" />
                   <div className="mt-1 line-clamp-2 text-[11.5px] font-medium leading-tight text-text-primary">
                     {isAward && <span className="text-accent">★ </span>}
                     {it.title.trim()}

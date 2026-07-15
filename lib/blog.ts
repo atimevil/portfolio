@@ -14,6 +14,21 @@ function calcReadingTime(content: string): number {
   return Math.max(1, Math.round(words / 200))
 }
 
+// 요약(미리보기)용: 마크다운 문법 기호를 벗겨 순수 텍스트로.
+function stripMarkdown(md: string): string {
+  return md
+    .replace(/```[\s\S]*?```/g, ' ') // 코드 펜스
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // 이미지
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // 링크 → 텍스트
+    .replace(/^#{1,6}\s+/gm, '') // 헤딩
+    .replace(/^>\s?/gm, '') // 인용
+    .replace(/^[-*+]\s+/gm, '') // 불릿
+    .replace(/^\d+\.\s+/gm, '') // 번호 목록
+    .replace(/[*_~`]/g, '') // 남은 강조/코드 기호
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 export function getAllPosts(): BlogPost[] {
   ensurePostsDir()
   const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith('.mdx'))
@@ -29,7 +44,7 @@ export function getAllPosts(): BlogPost[] {
         date: data.date ? String(data.date) : '',
         tags: data.tags ?? [],
         category: data.category ?? undefined,
-        excerpt: data.excerpt ?? content.slice(0, 120).replace(/\n/g, ' '),
+        excerpt: stripMarkdown(String(data.excerpt ?? content)).slice(0, 120),
         content,
         status: data.status ?? 'published',
         readingTime: calcReadingTime(content),
@@ -108,7 +123,7 @@ export function getAllPostsAdmin(): BlogPost[] {
         date: data.date ? String(data.date) : '',
         tags: data.tags ?? [],
         category: data.category ?? undefined,
-        excerpt: data.excerpt ?? content.slice(0, 120).replace(/\n/g, ' '),
+        excerpt: stripMarkdown(String(data.excerpt ?? content)).slice(0, 120),
         content,
         status: data.status ?? 'published',
         readingTime: calcReadingTime(content),

@@ -23,7 +23,7 @@ export default function TagBadges({ tags, category, className = '' }: TagBadgesP
         <Link
           key={t}
           href={`/?tag=${encodeURIComponent(t)}`}
-          className="rounded-full border border-border px-2 py-0.5 text-xs text-text-muted hover:text-text-primary hover:border-text-secondary transition-colors"
+          className="rounded-full border border-transparent bg-accent-soft px-2 py-0.5 text-xs text-accent hover:border-accent transition-colors"
         >
           #{t}
         </Link>

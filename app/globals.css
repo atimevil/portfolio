@@ -1,25 +1,35 @@
+@import url('https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/split/WantedSansVariable.min.css');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* 라이트: C-2 짝 테마 (화이트 베이스 + 어둡게 조정한 퍼플 포인트) */
 :root {
   --color-bg:             #ffffff;
   --color-bg-secondary:   #fafafa;
-  --color-surface:        #f5f5f5;
-  --color-border:         #e5e5e5;
-  --color-text-primary:   #171717;
-  --color-text-secondary: #737373;
-  --color-text-muted:     #a3a3a3;
+  --color-surface:        #f4f2f8;
+  --color-border:         #ececf0;
+  --color-text-primary:   #1c1b22;
+  --color-text-secondary: #55535e;
+  --color-text-muted:     #a09eab;
+  --color-accent:         #7c5fc9;
+  --color-accent-hover:   #6a4dbd;
+  --color-accent-soft:    rgba(124, 95, 201, 0.10);
 }
 
+/* 다크(기본): C-2 편안한 다크 퍼플 */
 .dark {
-  --color-bg:             #0a0a0a;
-  --color-bg-secondary:   #141414;
-  --color-surface:        #1f1f1f;
-  --color-border:         #262626;
-  --color-text-primary:   #ededed;
-  --color-text-secondary: #a3a3a3;
-  --color-text-muted:     #525252;
+  --color-bg:             #131317;
+  --color-bg-secondary:   #1a1a20;
+  --color-surface:        #211f2a;
+  --color-border:         #26262e;
+  --color-text-primary:   #d6d4de;
+  --color-text-secondary: #93919f;
+  --color-text-muted:     #5d5b68;
+  --color-accent:         #9d8cd8;
+  --color-accent-hover:   #b7a8ea;
+  --color-accent-soft:    rgba(157, 140, 216, 0.10);
 }
 
 * {
@@ -29,7 +39,8 @@
 body {
   background-color: var(--color-bg);
   color: var(--color-text-primary);
-  font-family: 'Pretendard', 'Inter', system-ui, sans-serif;
+  font-family: 'Wanted Sans Variable', 'Wanted Sans', 'Pretendard', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s, color 0.2s;
 }
 
@@ -56,13 +67,20 @@ code {
 }
 
 .prose a {
-  color: var(--color-text-secondary);
+  color: var(--color-accent);
   text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+  transition: text-decoration-color 0.15s;
+}
+
+.prose a:hover {
+  text-decoration-color: var(--color-accent);
 }
 
 .prose code {
-  color: #60a5fa;
-  background: var(--color-surface);
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
   padding: 0.1rem 0.3rem;
   border-radius: 0.25rem;
 }

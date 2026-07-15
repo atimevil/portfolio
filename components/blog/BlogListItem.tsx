@@ -8,17 +8,24 @@ interface BlogListItemProps {
 
 export default function BlogListItem({ post }: BlogListItemProps) {
   return (
-    <article className="py-5 border-b border-border last:border-b-0">
-      <Link href={`/blog/${post.slug}`}>
-        <h2 className="text-base font-semibold text-text-primary hover:underline mb-1.5">
+    <article className="group py-6 border-b border-border last:border-b-0">
+      <Link href={`/blog/${post.slug}`} className="block">
+        {post.category && (
+          <span className="text-xs font-medium text-accent">{post.category}</span>
+        )}
+        <h2 className="mt-1 text-lg font-bold tracking-tight text-text-primary transition-colors group-hover:text-accent-hover">
           {post.title}
         </h2>
+        <p className="mt-2 text-sm leading-relaxed text-text-secondary line-clamp-2">
+          {post.excerpt}
+        </p>
+        <div className="mt-3 flex items-center gap-2 text-xs text-text-muted">
+          <span>{post.date}</span>
+          <span aria-hidden>·</span>
+          <span>{post.readingTime}분</span>
+        </div>
       </Link>
-      <p className="text-xs text-text-muted mb-2">
-        {post.date} · {post.readingTime}분 읽기
-      </p>
-      <p className="text-sm text-text-secondary line-clamp-2">{post.excerpt}</p>
-      <TagBadges tags={post.tags} category={post.category} className="mt-2.5" />
+      <TagBadges tags={post.tags} className="mt-3" />
     </article>
   )
 }

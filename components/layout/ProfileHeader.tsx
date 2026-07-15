@@ -17,8 +17,8 @@ export default function ProfileHeader({ profile, showAboutLink = false }: Props)
   const description = profile.aboutText?.trim() || profile.bio
 
   return (
-    <section className="mb-10 pb-8 border-b border-border flex gap-5 items-start">
-      <div className="w-16 h-16 rounded-full bg-surface border border-border overflow-hidden shrink-0">
+    <section className="mb-10 pb-8 border-b border-border flex gap-5 items-center">
+      <div className="w-[72px] h-[72px] rounded-full bg-surface border border-border overflow-hidden shrink-0">
         {avatarSrc ? (
           <img src={avatarSrc} alt={profile.name} className="w-full h-full object-cover" />
         ) : (
@@ -26,28 +26,28 @@ export default function ProfileHeader({ profile, showAboutLink = false }: Props)
         )}
       </div>
       <div className="min-w-0">
-        <h1 className="text-lg font-bold text-text-primary">{profile.name}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">{profile.name}</h1>
         {description && (
-          <p className="text-sm text-text-secondary mt-1 whitespace-pre-line">{description}</p>
+          <p className="text-sm text-text-secondary mt-1.5 whitespace-pre-line leading-relaxed">{description}</p>
         )}
         {profile.skills.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2.5">
             {profile.skills.map((s) => (
-              <span key={s} className="text-xs px-2 py-0.5 rounded bg-surface text-text-muted">{s}</span>
+              <span key={s} className="text-xs px-2 py-0.5 rounded bg-accent-soft text-accent">{s}</span>
             ))}
           </div>
         )}
-        <div className="flex flex-wrap gap-4 mt-2.5 text-xs text-text-muted">
+        <div className="flex flex-wrap gap-4 mt-3 text-xs text-text-muted">
           {profile.github && (
             <a href={profile.github} target="_blank" rel="noopener noreferrer"
-              className="hover:text-text-primary transition-colors">GitHub</a>
+              className="hover:text-accent transition-colors">GitHub</a>
           )}
           {profile.linkedin && (
             <a href={profile.linkedin} target="_blank" rel="noopener noreferrer"
-              className="hover:text-text-primary transition-colors">LinkedIn</a>
+              className="hover:text-accent transition-colors">LinkedIn</a>
           )}
           {showAboutLink && (
-            <Link href="/about" className="hover:text-text-primary transition-colors">소개 →</Link>
+            <Link href="/about" className="hover:text-accent transition-colors">소개 →</Link>
           )}
         </div>
       </div>

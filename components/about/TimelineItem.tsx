@@ -54,7 +54,7 @@ export default function TimelineItem({ year, type, title, description }: Timelin
     <div className="relative mb-5 last:mb-0">
       {/* 클릭 가능 여부에 따라 dot 색상 구분 */}
       <div className={`absolute -left-5 top-[5px] w-[9px] h-[9px] rounded-full border-2 ${
-        hasDesc ? 'bg-text-primary border-text-primary' : 'bg-bg border-border'
+        hasDesc ? 'bg-accent border-accent' : 'bg-bg border-border'
       }`} />
 
       <button

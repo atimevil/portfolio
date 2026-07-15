@@ -21,9 +21,14 @@ const config: Config = {
         'text-primary':   'var(--color-text-primary)',
         'text-secondary': 'var(--color-text-secondary)',
         'text-muted':     'var(--color-text-muted)',
+        accent: {
+          DEFAULT: 'var(--color-accent)',
+          hover:   'var(--color-accent-hover)',
+          soft:    'var(--color-accent-soft)',
+        },
       },
       fontFamily: {
-        sans: ['Pretendard', 'Inter', 'system-ui', 'sans-serif'],
+        sans: ['Wanted Sans Variable', 'Wanted Sans', 'Pretendard', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
       },
       maxWidth: {

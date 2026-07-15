@@ -20,10 +20,11 @@ function stripMarkdown(md: string): string {
     .replace(/```[\s\S]*?```/g, ' ') // 코드 펜스
     .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // 이미지
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // 링크 → 텍스트
-    .replace(/^#{1,6}\s+/gm, '') // 헤딩
-    .replace(/^>\s?/gm, '') // 인용
-    .replace(/^[-*+]\s+/gm, '') // 불릿
-    .replace(/^\d+\.\s+/gm, '') // 번호 목록
+    .replace(/^[ \t]*#{1,6}[ \t]*/gm, '') // 헤딩 (앞 공백 허용, 후행 공백 옵션)
+    .replace(/^[ \t]*>\s?/gm, '') // 인용
+    .replace(/^[ \t]*[-*+]\s+/gm, '') // 불릿
+    .replace(/^[ \t]*\d+\.\s+/gm, '') // 번호 목록
+    .replace(/#{2,}/g, ' ') // 남은 ## ### 덩어리
     .replace(/[*_~`]/g, '') // 남은 강조/코드 기호
     .replace(/\s+/g, ' ')
     .trim()

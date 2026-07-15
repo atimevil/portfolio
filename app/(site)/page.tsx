@@ -1,7 +1,7 @@
 export const dynamic = 'force-dynamic'
 
 import Link from 'next/link'
-import BlogListItem from '@/components/blog/BlogListItem'
+import BlogViews from '@/components/blog/BlogViews'
 import Pagination from '@/components/blog/Pagination'
 import ProfileHeader from '@/components/layout/ProfileHeader'
 import { getAllPosts } from '@/lib/blog'
@@ -63,11 +63,7 @@ export default async function HomePage({ searchParams }: Props) {
             {filtering ? '해당 분류의 글이 없습니다.' : '글이 없습니다.'}
           </p>
         ) : (
-          <div>
-            {pagePosts.map((post) => (
-              <BlogListItem key={post.slug} post={post} />
-            ))}
-          </div>
+          <BlogViews posts={pagePosts} />
         )}
         {!filtering && <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/" />}
       </section>

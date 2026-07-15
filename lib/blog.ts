@@ -22,6 +22,7 @@ export function getAllPosts(): BlogPost[] {
       const raw = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8')
       const { data, content } = matter(raw)
       const slug = file.replace(/\.mdx$/, '')
+      const coverMatch = content.match(/!\[[^\]]*\]\(([^)\s]+)/)
       return {
         slug,
         title: data.title ?? slug,
@@ -32,6 +33,7 @@ export function getAllPosts(): BlogPost[] {
         content,
         status: data.status ?? 'published',
         readingTime: calcReadingTime(content),
+        cover: data.thumbnail ?? (coverMatch ? coverMatch[1] : undefined),
       } as BlogPost
     })
     .filter((p) => p.status === 'published')
@@ -99,6 +101,7 @@ export function getAllPostsAdmin(): BlogPost[] {
       const raw = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8')
       const { data, content } = matter(raw)
       const slug = file.replace(/\.mdx$/, '')
+      const coverMatch = content.match(/!\[[^\]]*\]\(([^)\s]+)/)
       return {
         slug,
         title: data.title ?? slug,
@@ -109,6 +112,7 @@ export function getAllPostsAdmin(): BlogPost[] {
         content,
         status: data.status ?? 'published',
         readingTime: calcReadingTime(content),
+        cover: data.thumbnail ?? (coverMatch ? coverMatch[1] : undefined),
       } as BlogPost
     })
     .sort((a, b) => (a.date < b.date ? 1 : -1))

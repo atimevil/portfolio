@@ -8,6 +8,8 @@ export interface BlogPost {
   content: string
   status: 'published' | 'draft'
   readingTime: number
+  /** 본문에서 추출한 첫 이미지 URL (이미지 뷰 커버용) */
+  cover?: string
 }
 
 export interface GalleryImage {

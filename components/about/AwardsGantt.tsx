@@ -91,8 +91,10 @@ export default function AwardsGantt({ items }: Props) {
               return (
                 <div
                   key={it.id}
-                  className={`absolute top-1/2 h-2.5 -translate-y-1/2 rounded-full ${
-                    isAward ? 'bg-accent' : 'bg-accent/55'
+                  className={`absolute top-1/2 h-3.5 -translate-y-1/2 rounded-full ${
+                    isAward
+                      ? 'bg-accent shadow-[0_0_10px_-1px_var(--color-accent)]'
+                      : 'bg-accent/75'
                   }`}
                   style={{ left: `${pos(span.start)}%`, width: `${pos(span.end + 1) - pos(span.start)}%` }}
                 />
@@ -153,7 +155,7 @@ export default function AwardsGantt({ items }: Props) {
           {/* 범례 */}
           <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-[11px] text-text-muted">
             <span className="flex items-center gap-1.5">
-              <span className="inline-block h-2 w-5 rounded-full bg-accent/55" />기간 활동
+              <span className="inline-block h-2 w-5 rounded-full bg-accent/75" />기간 활동
             </span>
             <span className="flex items-center gap-1.5">
               <span className="inline-block h-2 w-5 rounded-full bg-accent" />수상 기간

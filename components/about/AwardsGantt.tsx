@@ -48,7 +48,7 @@ export default function AwardsGantt({ items }: Props) {
     evts.forEach((e) => {
       for (let y = Math.floor(e.span.start / 12); y <= Math.floor(e.span.end / 12); y++) set.add(y)
     })
-    return [...set].sort((a, b) => a - b)
+    return Array.from(set).sort((a, b) => a - b)
   }, [evts])
 
   const [year, setYear] = useState<number | null>(null)

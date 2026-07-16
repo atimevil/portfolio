@@ -54,7 +54,7 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
             onClick={() => setActiveCategory(cat)}
             className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
               activeCategory === cat
-                ? 'bg-text-primary text-bg border-text-primary'
+                ? 'bg-accent-soft text-accent border-accent'
                 : 'border-border text-text-secondary hover:border-text-muted hover:text-text-primary'
             }`}
           >
@@ -109,7 +109,7 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
                   <p className="text-sm text-text-primary">{selected.description}</p>
                 )}
                 {selected.category && (
-                  <p className="mt-1 text-xs text-text-muted">{selected.category}</p>
+                  <p className="mt-1 text-xs font-medium text-accent">{selected.category}</p>
                 )}
               </div>
             )}

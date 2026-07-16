@@ -94,7 +94,7 @@ export default function BlogViews({ posts }: { posts: BlogPost[] }) {
       )}
 
       {view === 'grid' && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {posts.map((post) => (
             <GridCard key={post.slug} post={post} />
           ))}
@@ -102,7 +102,7 @@ export default function BlogViews({ posts }: { posts: BlogPost[] }) {
       )}
 
       {view === 'image' && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {posts.map((post) => (
             <ImageCard key={post.slug} post={post} />
           ))}

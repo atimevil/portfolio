@@ -28,7 +28,7 @@ export default function NavBar() {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-bg/80 backdrop-blur-md">
-      <nav className="max-w-5xl mx-auto flex items-center justify-between h-14 px-4 md:px-8">
+      <nav className="max-w-3xl mx-auto flex items-center justify-between h-14 px-4 md:px-8">
         <Link
           href="/"
           className="font-semibold text-[15px] tracking-tight text-text-primary hover:text-text-primary transition-colors"

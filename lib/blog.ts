@@ -30,6 +30,17 @@ function stripMarkdown(md: string): string {
     .trim()
 }
 
+// 요약을 목표 길이로 자르되 단어 경계에서 끊고, 실제로 잘렸을 때만 말줄임표를 붙인다.
+// (그냥 slice만 하면 문장이 어중간하게 끝나 보이는 문제가 있었음)
+const EXCERPT_LEN = 130
+function truncateExcerpt(text: string): string {
+  if (text.length <= EXCERPT_LEN) return text
+  const cut = text.slice(0, EXCERPT_LEN)
+  const lastSpace = cut.lastIndexOf(' ')
+  const trimmed = lastSpace > EXCERPT_LEN * 0.6 ? cut.slice(0, lastSpace) : cut
+  return `${trimmed.trimEnd()}…`
+}
+
 export function getAllPosts(): BlogPost[] {
   ensurePostsDir()
   const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith('.mdx'))
@@ -45,7 +56,7 @@ export function getAllPosts(): BlogPost[] {
         date: data.date ? String(data.date) : '',
         tags: data.tags ?? [],
         category: data.category ?? undefined,
-        excerpt: stripMarkdown(String(data.excerpt ?? content)).slice(0, 120),
+        excerpt: truncateExcerpt(stripMarkdown(String(data.excerpt ?? content))),
         content,
         status: data.status ?? 'published',
         readingTime: calcReadingTime(content),
@@ -102,7 +113,7 @@ export function getPostBySlug(slug: string): BlogPost | null {
     date: data.date ? String(data.date) : '',
     tags: data.tags ?? [],
     category: data.category ?? undefined,
-    excerpt: data.excerpt ?? content.slice(0, 120).replace(/\n/g, ' '),
+    excerpt: truncateExcerpt(stripMarkdown(String(data.excerpt ?? content))),
     content,
     status: data.status ?? 'published',
     readingTime: calcReadingTime(content),
@@ -124,7 +135,7 @@ export function getAllPostsAdmin(): BlogPost[] {
         date: data.date ? String(data.date) : '',
         tags: data.tags ?? [],
         category: data.category ?? undefined,
-        excerpt: stripMarkdown(String(data.excerpt ?? content)).slice(0, 120),
+        excerpt: truncateExcerpt(stripMarkdown(String(data.excerpt ?? content))),
         content,
         status: data.status ?? 'published',
         readingTime: calcReadingTime(content),

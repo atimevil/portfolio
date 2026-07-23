@@ -1,13 +1,7 @@
-import fs from 'fs'
-import path from 'path'
-import matter from 'gray-matter'
+import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
+import type { Post, Tag, PostTag, Category } from '@prisma/client'
 import type { BlogPost } from '@/types'
-
-const POSTS_DIR = path.join(process.cwd(), 'content/posts')
-
-function ensurePostsDir() {
-  if (!fs.existsSync(POSTS_DIR)) fs.mkdirSync(POSTS_DIR, { recursive: true })
-}
 
 function calcReadingTime(content: string): number {
   const words = content.trim().split(/\s+/).length
@@ -31,7 +25,6 @@ export function stripMarkdown(md: string): string {
 }
 
 // 요약을 목표 길이로 자르되 단어 경계에서 끊고, 실제로 잘렸을 때만 말줄임표를 붙인다.
-// (그냥 slice만 하면 문장이 어중간하게 끝나 보이는 문제가 있었음)
 const EXCERPT_LEN = 130
 export function truncateExcerpt(text: string): string {
   if (text.length <= EXCERPT_LEN) return text
@@ -41,145 +34,131 @@ export function truncateExcerpt(text: string): string {
   return `${trimmed.trimEnd()}…`
 }
 
-export function getAllPosts(): BlogPost[] {
-  ensurePostsDir()
-  const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith('.mdx'))
-  return files
-    .map((file) => {
-      const raw = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8')
-      const { data, content } = matter(raw)
-      const slug = file.replace(/\.mdx$/, '')
-      const coverMatch = content.match(/!\[[^\]]*\]\(([^)\s]+)/)
-      return {
-        slug,
-        title: data.title ?? slug,
-        date: data.date ? String(data.date) : '',
-        tags: data.tags ?? [],
-        category: data.category ?? undefined,
-        excerpt: truncateExcerpt(stripMarkdown(String(data.excerpt ?? content))),
-        content,
-        status: data.status ?? 'published',
-        readingTime: calcReadingTime(content),
-        cover: data.thumbnail ?? (coverMatch ? coverMatch[1] : undefined),
-      } as BlogPost
-    })
-    .filter((p) => p.status === 'published')
-    .sort((a, b) => (a.date < b.date ? 1 : -1))
+type PostWithRelations = Post & {
+  tags: (PostTag & { tag: Tag })[]
+  category: Category | null
 }
 
-// URL route params for Korean slugs can arrive percent-encoded or in a
-// different Unicode normalization (NFD) than the NFC filenames on disk, so an
-// exact `${slug}.mdx` lookup misses. Resolve the real filename robustly.
-function resolvePostFile(slug: string): string | null {
-  // Candidate raw strings: as-given and percent-decoded (decode may throw on
-  // a stray '%', so guard it).
-  const raws = [slug]
-  try {
-    const decoded = decodeURIComponent(slug)
-    if (decoded !== slug) raws.push(decoded)
-  } catch {
-    /* not encoded — ignore */
-  }
-
-  // Direct existence check across both normalizations (fast path).
-  for (let i = 0; i < raws.length; i++) {
-    const forms = [raws[i], raws[i].normalize('NFC'), raws[i].normalize('NFD')]
-    for (let j = 0; j < forms.length; j++) {
-      if (fs.existsSync(path.join(POSTS_DIR, `${forms[j]}.mdx`))) {
-        return `${forms[j]}.mdx`
-      }
-    }
-  }
-
-  // Fallback: scan the directory and match on NFC-normalized stems.
-  const wanted = raws.map((r) => r.normalize('NFC'))
-  const match = fs
-    .readdirSync(POSTS_DIR)
-    .filter((f) => f.endsWith('.mdx'))
-    .find((f) => wanted.indexOf(f.replace(/\.mdx$/, '').normalize('NFC')) !== -1)
-  return match ?? null
-}
-
-export function getPostBySlug(slug: string): BlogPost | null {
-  ensurePostsDir()
-  const fileName = resolvePostFile(slug)
-  if (!fileName) return null
-  const raw = fs.readFileSync(path.join(POSTS_DIR, fileName), 'utf-8')
-  const { data, content } = matter(raw)
-  const resolvedSlug = fileName.replace(/\.mdx$/, '')
-  return {
-    slug: resolvedSlug,
-    title: data.title ?? resolvedSlug,
-    date: data.date ? String(data.date) : '',
-    tags: data.tags ?? [],
-    category: data.category ?? undefined,
-    excerpt: truncateExcerpt(stripMarkdown(String(data.excerpt ?? content))),
-    content,
-    status: data.status ?? 'published',
-    readingTime: calcReadingTime(content),
-  }
-}
-
-export function getAllPostsAdmin(): BlogPost[] {
-  ensurePostsDir()
-  const files = fs.readdirSync(POSTS_DIR).filter((f) => f.endsWith('.mdx'))
-  return files
-    .map((file) => {
-      const raw = fs.readFileSync(path.join(POSTS_DIR, file), 'utf-8')
-      const { data, content } = matter(raw)
-      const slug = file.replace(/\.mdx$/, '')
-      const coverMatch = content.match(/!\[[^\]]*\]\(([^)\s]+)/)
-      return {
-        slug,
-        title: data.title ?? slug,
-        date: data.date ? String(data.date) : '',
-        tags: data.tags ?? [],
-        category: data.category ?? undefined,
-        excerpt: truncateExcerpt(stripMarkdown(String(data.excerpt ?? content))),
-        content,
-        status: data.status ?? 'published',
-        readingTime: calcReadingTime(content),
-        cover: data.thumbnail ?? (coverMatch ? coverMatch[1] : undefined),
-      } as BlogPost
-    })
-    .sort((a, b) => (a.date < b.date ? 1 : -1))
-}
-
-export function createPost(post: Omit<BlogPost, 'readingTime'>): void {
-  ensurePostsDir()
-  const frontmatter = matter.stringify(post.content, {
+function toBlogPost(post: PostWithRelations, opts: { includeCover?: boolean } = {}): BlogPost {
+  const result: BlogPost = {
+    slug: post.slug,
     title: post.title,
-    date: post.date,
-    tags: post.tags,
-    ...(post.category ? { category: post.category } : {}),
-    excerpt: post.excerpt,
-    status: post.status,
-  })
-  fs.writeFileSync(path.join(POSTS_DIR, `${post.slug}.mdx`), frontmatter, 'utf-8')
-}
-
-export function updatePost(slug: string, post: Partial<Omit<BlogPost, 'readingTime'>>): void {
-  ensurePostsDir()
-  const existing = getPostBySlug(slug)
-  if (!existing) throw new Error(`Post not found: ${slug}`)
-  const merged = { ...existing, ...post }
-  const frontmatter = matter.stringify(merged.content, {
-    title: merged.title,
-    date: merged.date,
-    tags: merged.tags,
-    ...(merged.category ? { category: merged.category } : {}),
-    excerpt: merged.excerpt,
-    status: merged.status,
-  })
-  const targetSlug = post.slug ?? slug
-  if (post.slug && post.slug !== slug) {
-    fs.unlinkSync(path.join(POSTS_DIR, `${slug}.mdx`))
+    date: post.date.toISOString().slice(0, 10),
+    tags: post.tags.map((pt) => pt.tag.name),
+    category: post.category?.name,
+    excerpt: truncateExcerpt(stripMarkdown(post.excerpt || post.content)),
+    content: post.content,
+    status: post.status as 'published' | 'draft',
+    readingTime: calcReadingTime(post.content),
   }
-  fs.writeFileSync(path.join(POSTS_DIR, `${targetSlug}.mdx`), frontmatter, 'utf-8')
+  if (opts.includeCover) {
+    const coverMatch = post.content.match(/!\[[^\]]*\]\(([^)\s]+)/)
+    result.cover = coverMatch ? coverMatch[1] : undefined
+  }
+  return result
 }
 
-export function deletePost(slug: string): void {
-  ensurePostsDir()
-  const filePath = path.join(POSTS_DIR, `${slug}.mdx`)
-  if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
+const include = {
+  tags: { include: { tag: true } },
+  category: true,
+} satisfies Prisma.PostInclude
+
+export async function getAllPosts(): Promise<BlogPost[]> {
+  const posts = await prisma.post.findMany({
+    where: { status: 'published' },
+    include,
+    orderBy: { date: 'desc' },
+  })
+  return posts.map((p) => toBlogPost(p, { includeCover: true }))
+}
+
+export async function getAllPostsAdmin(): Promise<BlogPost[]> {
+  const posts = await prisma.post.findMany({
+    include,
+    orderBy: { date: 'desc' },
+  })
+  return posts.map((p) => toBlogPost(p, { includeCover: true }))
+}
+
+export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
+  const post = await prisma.post.findUnique({ where: { slug }, include })
+  if (!post) return null
+  return toBlogPost(post)
+}
+
+async function upsertCategoryId(
+  tx: Prisma.TransactionClient,
+  name: string | undefined
+): Promise<number | null | undefined> {
+  if (name === undefined) return undefined
+  if (!name) return null
+  const category = await tx.category.upsert({
+    where: { name },
+    create: { name },
+    update: {},
+  })
+  return category.id
+}
+
+async function replaceTags(tx: Prisma.TransactionClient, postId: number, tagNames: string[]): Promise<void> {
+  await tx.postTag.deleteMany({ where: { postId } })
+  for (const tagName of tagNames) {
+    const tag = await tx.tag.upsert({ where: { name: tagName }, create: { name: tagName }, update: {} })
+    await tx.postTag.create({ data: { postId, tagId: tag.id } })
+  }
+}
+
+export async function createPost(post: Omit<BlogPost, 'readingTime'>): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    const categoryId = (await upsertCategoryId(tx, post.category)) ?? null
+
+    const created = await tx.post.create({
+      data: {
+        slug: post.slug,
+        title: post.title,
+        content: post.content,
+        excerpt: post.excerpt,
+        date: new Date(post.date),
+        status: post.status,
+        categoryId,
+      },
+    })
+
+    await replaceTags(tx, created.id, post.tags)
+  })
+}
+
+export async function updatePost(slug: string, post: Partial<Omit<BlogPost, 'readingTime'>>): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    const existing = await tx.post.findUnique({ where: { slug } })
+    if (!existing) throw new Error(`Post not found: ${slug}`)
+
+    const categoryId = await upsertCategoryId(tx, post.category)
+
+    await tx.post.update({
+      where: { id: existing.id },
+      data: {
+        slug: post.slug ?? undefined,
+        title: post.title ?? undefined,
+        content: post.content ?? undefined,
+        excerpt: post.excerpt ?? undefined,
+        date: post.date ? new Date(post.date) : undefined,
+        status: post.status ?? undefined,
+        categoryId,
+      },
+    })
+
+    if (post.tags) {
+      await replaceTags(tx, existing.id, post.tags)
+    }
+  })
+}
+
+export async function deletePost(slug: string): Promise<void> {
+  try {
+    await prisma.post.delete({ where: { slug } })
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') return
+    throw err
+  }
 }

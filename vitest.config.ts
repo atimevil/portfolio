@@ -1,5 +1,8 @@
 import { defineConfig } from 'vitest/config'
 import path from 'path'
+import { config as loadEnv } from 'dotenv'
+
+loadEnv({ path: '.env.test' })
 
 export default defineConfig({
   resolve: {

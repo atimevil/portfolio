@@ -2,6 +2,9 @@ import { MetadataRoute } from 'next'
 import { getAllPosts } from '@/lib/blog'
 import { SITE_URL as BASE_URL } from '@/lib/site'
 
+// DB(Prisma) 데이터가 필요해 빌드 시점엔 정적 생성이 불가능하다 (Docker 빌드 컨테이너엔 DB 연결이 없음) — 요청마다 렌더한다
+export const dynamic = 'force-dynamic'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getAllPosts()
   const postEntries = posts.map((post) => ({

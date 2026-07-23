@@ -18,11 +18,6 @@ interface Props {
 // 로그인 여부에 따라 수정 버튼이 달라지므로 요청마다 렌더한다
 export const dynamic = 'force-dynamic'
 
-export async function generateStaticParams() {
-  const posts = await getAllPosts()
-  return posts.map((post) => ({ slug: post.slug }))
-}
-
 export async function generateMetadata({ params }: Props) {
   const post = await getPostBySlug(params.slug)
   if (!post) return {}

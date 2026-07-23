@@ -1,0 +1,9 @@
+node_modules
+.git
+.next
+.env
+.env.test
+.env*.local
+npm-debug.log*
+content
+public/uploads

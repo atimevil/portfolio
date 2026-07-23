@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "migrate:posts": "tsx scripts/migrate-posts-to-db.ts"
+    "migrate:posts": "tsx scripts/migrate-posts-to-db.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.19.3",

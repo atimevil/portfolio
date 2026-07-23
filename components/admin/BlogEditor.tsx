@@ -5,15 +5,6 @@ import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import type { BlogPost } from '@/types'
 
-function toSlug(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9가-힣\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim()
-}
-
 interface BlogEditorProps {
   initialPost?: Partial<BlogPost>
   categories: string[]
@@ -25,27 +16,19 @@ const inputClass =
 export default function BlogEditor({ initialPost, categories }: BlogEditorProps) {
   const router = useRouter()
   const [title, setTitle] = useState(initialPost?.title ?? '')
-  const [slug, setSlug] = useState(initialPost?.slug ?? '')
   const [date, setDate] = useState(initialPost?.date ?? new Date().toISOString().slice(0, 10))
   const [tags, setTags] = useState(initialPost?.tags?.join(', ') ?? '')
   const [content, setContent] = useState(initialPost?.content ?? '')
   const [category, setCategory] = useState(initialPost?.category ?? '')
   const [loading, setLoading] = useState(false)
 
-  function handleTitleChange(value: string) {
-    setTitle(value)
-    if (!initialPost) setSlug(toSlug(value))
-  }
-
   async function submit(status: 'published' | 'draft') {
     if (!title.trim()) { alert('제목을 입력하세요.'); return }
-    if (!slug.trim()) { alert('슬러그를 입력하세요.'); return }
 
     setLoading(true)
     // 본문은 마크다운 그대로 저장한다 (변환/가공 없음 → 코드블록·이미지·수식 보존)
     const excerpt = content.trim().replace(/\s+/g, ' ').slice(0, 150)
     const body = {
-      slug: slug.trim(),
       title: title.trim(),
       date: date.trim() || new Date().toISOString().slice(0, 10),
       tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
@@ -83,15 +66,11 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
         <input
           type="text"
           value={title}
-          onChange={(e) => handleTitleChange(e.target.value)}
+          onChange={(e) => setTitle(e.target.value)}
           placeholder="제목"
           className="w-full px-4 py-3 text-xl font-semibold bg-transparent border-b border-border text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-colors"
         />
         <div className="flex gap-3 flex-wrap">
-          <div className="flex-1 min-w-[180px]">
-            <label className="block text-xs text-text-muted mb-1">슬러그</label>
-            <input type="text" value={slug} onChange={(e) => setSlug(e.target.value)} className={inputClass} />
-          </div>
           <div className="w-40">
             <label className="block text-xs text-text-muted mb-1">날짜</label>
             <input

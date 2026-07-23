@@ -81,7 +81,13 @@ export async function getAllPostsAdmin(): Promise<BlogPost[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const post = await prisma.post.findUnique({ where: { slug }, include })
+  let post = await prisma.post.findUnique({ where: { slug }, include })
+  if (!post) {
+    const normalized = slug.normalize('NFC')
+    if (normalized !== slug) {
+      post = await prisma.post.findUnique({ where: { slug: normalized }, include })
+    }
+  }
   if (!post) return null
   return toBlogPost(post)
 }

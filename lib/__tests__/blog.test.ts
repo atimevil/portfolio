@@ -72,6 +72,25 @@ describe('createPost + getPostBySlug', () => {
       })
     ).rejects.toThrow()
   })
+
+  it('NFD로 정규화된 slug로 조회해도 NFC로 저장된 글을 찾는다', async () => {
+    const nfcSlug = '테스트'.normalize('NFC')
+    await createPost({
+      slug: nfcSlug,
+      title: 'NFC 저장 글',
+      date: '2024-02-01',
+      tags: [],
+      excerpt: '요약',
+      content: '내용',
+      status: 'published',
+    })
+
+    const nfdSlug = '테스트'.normalize('NFD')
+    const post = await getPostBySlug(nfdSlug)
+
+    expect(post).not.toBeNull()
+    expect(post?.title).toBe('NFC 저장 글')
+  })
 })
 
 describe('getAllPosts / getAllPostsAdmin', () => {

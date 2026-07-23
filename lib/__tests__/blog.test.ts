@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createPost, getPostBySlug, getAllPosts, getAllPostsAdmin, updatePost } from '@/lib/blog'
+import { createPost, getPostBySlug, getAllPosts, getAllPostsAdmin, updatePost, deletePost } from '@/lib/blog'
 import { resetDb } from './helpers/resetDb'
 
 beforeEach(resetDb)
@@ -140,5 +140,20 @@ describe('updatePost', () => {
 
   it('존재하지 않는 slug를 수정하려 하면 에러가 난다', async () => {
     await expect(updatePost('nope', { title: 'x' })).rejects.toThrow('Post not found')
+  })
+})
+
+describe('deletePost', () => {
+  it('글을 삭제한다', async () => {
+    await createPost({
+      slug: 'to-delete', title: 'T', date: '2024-01-01',
+      tags: [], excerpt: 'e', content: 'c', status: 'draft',
+    })
+    await deletePost('to-delete')
+    expect(await getPostBySlug('to-delete')).toBeNull()
+  })
+
+  it('존재하지 않는 slug를 삭제해도 에러 없이 넘어간다', async () => {
+    await expect(deletePost('nope')).resolves.toBeUndefined()
   })
 })

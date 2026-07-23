@@ -153,7 +153,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                   value={profile[key as keyof typeof profile] as string}
                   onChange={(e) => setProfile((p) => ({ ...p, [key]: e.target.value }))}
                   placeholder={placeholder}
-                  className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors"
+                  className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
                 />
               </div>
             ))}
@@ -166,7 +166,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
               value={profile.aboutText}
               onChange={(e) => setProfile((p) => ({ ...p, aboutText: e.target.value }))}
               rows={4}
-              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors resize-none"
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors resize-none"
             />
           </div>
 
@@ -188,7 +188,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                 onChange={(e) => setSkillInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
                 placeholder="기술 스택 추가 후 Enter"
-                className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors"
+                className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
               />
               <Button variant="secondary" size="sm" onClick={addSkill}>추가</Button>
             </div>
@@ -203,17 +203,17 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
             <input
               type="password" value={pw.current} placeholder="현재 비밀번호" autoComplete="current-password"
               onChange={(e) => setPw((p) => ({ ...p, current: e.target.value }))}
-              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors"
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
             />
             <input
               type="password" value={pw.next} placeholder="새 비밀번호 (8자 이상)" autoComplete="new-password"
               onChange={(e) => setPw((p) => ({ ...p, next: e.target.value }))}
-              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors"
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
             />
             <input
               type="password" value={pw.confirm} placeholder="새 비밀번호 확인" autoComplete="new-password"
               onChange={(e) => setPw((p) => ({ ...p, confirm: e.target.value }))}
-              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors"
+              className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
             />
           </div>
           <div className="flex items-center justify-between mt-3">

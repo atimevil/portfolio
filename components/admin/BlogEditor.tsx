@@ -20,7 +20,7 @@ interface BlogEditorProps {
 }
 
 const inputClass =
-  'w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors'
+  'w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors'
 
 export default function BlogEditor({ initialPost, categories }: BlogEditorProps) {
   const router = useRouter()
@@ -85,7 +85,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
           value={title}
           onChange={(e) => handleTitleChange(e.target.value)}
           placeholder="제목"
-          className="w-full px-4 py-3 text-xl font-semibold bg-transparent border-b border-border text-text-primary placeholder-text-muted focus:outline-none focus:border-text-muted transition-colors"
+          className="w-full px-4 py-3 text-xl font-semibold bg-transparent border-b border-border text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-colors"
         />
         <div className="flex gap-3 flex-wrap">
           <div className="flex-1 min-w-[180px]">
@@ -130,7 +130,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
         onChange={(e) => setContent(e.target.value)}
         spellCheck={false}
         placeholder="# 제목&#10;&#10;마크다운으로 작성하세요. 코드는 ``` 펜스, 수식은 $...$"
-        className="w-full min-h-[60vh] px-4 py-3 font-mono text-sm leading-relaxed border border-border rounded-md bg-bg text-text-primary placeholder-text-muted focus:outline-none focus:border-text-muted transition-colors resize-y"
+        className="w-full min-h-[60vh] px-4 py-3 font-mono text-sm leading-relaxed border border-border rounded-md bg-bg text-text-primary placeholder-text-muted focus:outline-none focus:border-accent transition-colors resize-y"
       />
 
       <div className="flex justify-between mt-5">

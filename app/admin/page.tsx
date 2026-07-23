@@ -35,7 +35,7 @@ export default async function AdminDashboardPage() {
           <Link
             key={stat.label}
             href={stat.href}
-            className="group px-5 py-4 bg-bg-secondary border border-border rounded-lg hover:border-text-muted transition-colors"
+            className="group px-5 py-4 bg-bg-secondary border border-border rounded-lg hover:border-accent transition-colors"
           >
             <p className="text-2xl font-bold text-text-primary group-hover:text-text-primary transition-colors">
               {stat.value}
@@ -50,7 +50,7 @@ export default async function AdminDashboardPage() {
           <h2 className="text-sm font-medium text-text-primary">최근 글</h2>
           <Link
             href="/admin/blog/new"
-            className="text-xs text-text-primary hover:underline"
+            className="text-xs font-medium text-accent hover:underline"
           >
             + 새 글 작성
           </Link>

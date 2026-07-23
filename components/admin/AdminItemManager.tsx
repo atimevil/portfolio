@@ -144,7 +144,7 @@ export default function AdminItemManager({ initialItems }: Props) {
               <select
                 value={form.type}
                 onChange={(e) => setForm((f) => ({ ...f, type: e.target.value as PortfolioItem['type'] }))}
-                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
+                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
               >
                 <option value="project">프로젝트</option>
                 <option value="activity">활동</option>
@@ -156,7 +156,7 @@ export default function AdminItemManager({ initialItems }: Props) {
               <input
                 type="text" value={form.year} placeholder="2025 또는 2025.03"
                 onChange={(e) => setForm((f) => ({ ...f, year: e.target.value }))}
-                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
+                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
               />
             </div>
             <div className="col-span-2">
@@ -164,7 +164,7 @@ export default function AdminItemManager({ initialItems }: Props) {
               <input
                 type="text" value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
+                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
               />
             </div>
             <div className="col-span-2">
@@ -172,7 +172,7 @@ export default function AdminItemManager({ initialItems }: Props) {
               <textarea
                 value={form.description} rows={3}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors resize-none"
+                className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors resize-none"
               />
             </div>
 
@@ -183,7 +183,7 @@ export default function AdminItemManager({ initialItems }: Props) {
                   <input
                     type="text" value={form.skills} placeholder="React, TypeScript"
                     onChange={(e) => setForm((f) => ({ ...f, skills: e.target.value }))}
-                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>
                 <div>
@@ -191,7 +191,7 @@ export default function AdminItemManager({ initialItems }: Props) {
                   <input
                     type="number" value={form.order}
                     onChange={(e) => setForm((f) => ({ ...f, order: Number(e.target.value) }))}
-                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>
                 <div>
@@ -199,7 +199,7 @@ export default function AdminItemManager({ initialItems }: Props) {
                   <input
                     type="text" value={form.github} placeholder="https://github.com/..."
                     onChange={(e) => setForm((f) => ({ ...f, github: e.target.value }))}
-                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>
                 <div>
@@ -207,7 +207,7 @@ export default function AdminItemManager({ initialItems }: Props) {
                   <input
                     type="text" value={form.link} placeholder="https://..."
                     onChange={(e) => setForm((f) => ({ ...f, link: e.target.value }))}
-                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>
               </>

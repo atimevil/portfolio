@@ -70,7 +70,7 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
         {!selectedFile ? (
           /* 파일 선택 */
           <div
-            className="border-2 border-dashed border-border rounded-lg p-10 text-center cursor-pointer hover:border-text-muted transition-colors"
+            className="border-2 border-dashed border-border rounded-lg p-10 text-center cursor-pointer hover:border-accent transition-colors"
             onClick={() => fileRef.current?.click()}
           >
             <p className="text-text-secondary text-sm">클릭하여 이미지 선택</p>
@@ -93,7 +93,7 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
                     placeholder="카테고리 입력"
-                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>
                 <div>
@@ -103,7 +103,7 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="이미지 설명"
-                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-text-muted transition-colors"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>
               </div>

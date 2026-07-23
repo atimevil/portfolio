@@ -52,7 +52,7 @@ export default function AdminCategoryManager({ initialCategories }: AdminCategor
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleAdd())}
           placeholder="카테고리 이름"
-          className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-text-muted transition-colors"
+          className="flex-1 px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
         />
         <Button onClick={handleAdd} disabled={saving || !input.trim()}>
           추가

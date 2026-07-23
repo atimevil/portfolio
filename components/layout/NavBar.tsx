@@ -33,7 +33,7 @@ export default function NavBar() {
           href="/"
           className="font-semibold text-[15px] tracking-tight text-text-primary hover:text-text-primary transition-colors"
         >
-          <span className="text-accent">~/</span>foxibu
+          fo<span className="text-accent">xi</span>bu
         </Link>
 
         <div className="hidden md:flex items-center gap-6">

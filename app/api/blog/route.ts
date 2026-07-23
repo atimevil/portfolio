@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { z } from 'zod'
+import { Prisma } from '@prisma/client'
 import { getAllPostsAdmin, createPost, updatePost, deletePost } from '@/lib/blog'
 
 const PostSchema = z.object({
@@ -27,7 +28,14 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const result = PostSchema.safeParse(body)
   if (!result.success) return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
-  await createPost(result.data)
+  try {
+    await createPost(result.data)
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+      return NextResponse.json({ error: 'slug already exists' }, { status: 409 })
+    }
+    throw err
+  }
   return NextResponse.json({ ok: true }, { status: 201 })
 }
 

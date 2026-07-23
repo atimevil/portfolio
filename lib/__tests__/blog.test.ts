@@ -197,11 +197,11 @@ describe('updatePost', () => {
     expect(post?.tags.sort()).toEqual(['a', 'b'])
   })
 
-  it('slug를 바꾸면 새 slug로 조회된다', async () => {
-    await updatePost('original', { slug: 'renamed' })
-    expect(await getPostBySlug('original')).toBeNull()
-    const renamed = await getPostBySlug('renamed')
-    expect(renamed?.title).toBe('Original')
+  it('제목을 수정해도 slug는 그대로다', async () => {
+    await updatePost('original', { title: '완전히 새로운 제목' })
+    const post = await getPostBySlug('original')
+    expect(post?.slug).toBe('original')
+    expect(post?.title).toBe('완전히 새로운 제목')
   })
 
   it('tags를 통째로 교체한다', async () => {

@@ -155,7 +155,10 @@ export async function createPost(
   })
 }
 
-export async function updatePost(slug: string, post: Partial<Omit<BlogPost, 'readingTime'>>): Promise<void> {
+export async function updatePost(
+  slug: string,
+  post: Partial<Omit<BlogPost, 'readingTime' | 'slug'>>
+): Promise<void> {
   await prisma.$transaction(async (tx) => {
     const existing = await tx.post.findUnique({ where: { slug } })
     if (!existing) throw new Error(`Post not found: ${slug}`)
@@ -165,7 +168,6 @@ export async function updatePost(slug: string, post: Partial<Omit<BlogPost, 'rea
     await tx.post.update({
       where: { id: existing.id },
       data: {
-        slug: post.slug ?? undefined,
         title: post.title ?? undefined,
         content: post.content ?? undefined,
         excerpt: post.excerpt ?? undefined,

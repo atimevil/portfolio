@@ -91,6 +91,65 @@ describe('createPost + getPostBySlug', () => {
     expect(post).not.toBeNull()
     expect(post?.title).toBe('NFC 저장 글')
   })
+
+  it('slug를 안 주면 제목에서 자동 생성한다', async () => {
+    const slug = await createPost({
+      title: 'Auto Generated Title',
+      date: '2024-02-01',
+      tags: [],
+      excerpt: '요약',
+      content: '내용',
+      status: 'draft',
+    })
+
+    expect(slug).toBe('auto-generated-title')
+    const post = await getPostBySlug('auto-generated-title')
+    expect(post?.title).toBe('Auto Generated Title')
+  })
+
+  it('같은 제목으로 여러 번 저장하면 -2, -3 접미사가 붙는다', async () => {
+    const base = {
+      title: '중복 제목',
+      date: '2024-02-01',
+      tags: [],
+      excerpt: '요약',
+      content: '내용',
+      status: 'draft' as const,
+    }
+
+    expect(await createPost(base)).toBe('중복-제목')
+    expect(await createPost(base)).toBe('중복-제목-2')
+    expect(await createPost(base)).toBe('중복-제목-3')
+  })
+
+  it('제목이 기호뿐이면 post로 폴백하고 그 뒤로도 충돌을 피한다', async () => {
+    const base = {
+      title: '!!!',
+      date: '2024-02-01',
+      tags: [],
+      excerpt: '요약',
+      content: '내용',
+      status: 'draft' as const,
+    }
+
+    expect(await createPost(base)).toBe('post')
+    expect(await createPost(base)).toBe('post-2')
+  })
+
+  it('slug를 명시하면 그 값을 그대로 쓴다 (마이그레이션 스크립트 경로)', async () => {
+    const slug = await createPost({
+      slug: 'explicit-slug',
+      title: '완전히 다른 제목',
+      date: '2024-02-01',
+      tags: [],
+      excerpt: '요약',
+      content: '내용',
+      status: 'draft',
+    })
+
+    expect(slug).toBe('explicit-slug')
+    expect(await getPostBySlug('explicit-slug')).not.toBeNull()
+  })
 })
 
 describe('getAllPosts / getAllPostsAdmin', () => {

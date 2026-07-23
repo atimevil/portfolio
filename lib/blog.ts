@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
 import type { Post, Tag, PostTag, Category } from '@prisma/client'
 import type { BlogPost } from '@/types'
+import { slugify } from '@/lib/slug'
 
 function calcReadingTime(content: string): number {
   const words = content.trim().split(/\s+/).length
@@ -114,13 +115,32 @@ async function replaceTags(tx: Prisma.TransactionClient, postId: number, tagName
   }
 }
 
-export async function createPost(post: Omit<BlogPost, 'readingTime'>): Promise<void> {
-  await prisma.$transaction(async (tx) => {
+// base로 시작하는 기존 slug를 한 번에 읽어와서 base, base-2, base-3... 중 빈 자리를 고른다.
+// startsWith라 무관한 slug(예: base="hello"일 때 "hello-world")도 섞여 들어오지만,
+// `base-<숫자>` 형태와만 비교하므로 결과에는 영향이 없다.
+async function resolveUniqueSlug(tx: Prisma.TransactionClient, base: string): Promise<string> {
+  const existing = await tx.post.findMany({
+    where: { slug: { startsWith: base } },
+    select: { slug: true },
+  })
+  const taken = new Set(existing.map((p) => p.slug))
+  if (!taken.has(base)) return base
+  let n = 2
+  while (taken.has(`${base}-${n}`)) n++
+  return `${base}-${n}`
+}
+
+export async function createPost(
+  post: Omit<BlogPost, 'readingTime' | 'slug'> & { slug?: string }
+): Promise<string> {
+  return prisma.$transaction(async (tx) => {
     const categoryId = (await upsertCategoryId(tx, post.category)) ?? null
+    // slug를 명시적으로 준 경우(마이그레이션 스크립트)는 그대로 쓴다 — 충돌하면 DB unique 제약이 P2002로 막는다.
+    const slug = post.slug ?? (await resolveUniqueSlug(tx, slugify(post.title)))
 
     const created = await tx.post.create({
       data: {
-        slug: post.slug,
+        slug,
         title: post.title,
         content: post.content,
         excerpt: post.excerpt,
@@ -131,6 +151,7 @@ export async function createPost(post: Omit<BlogPost, 'readingTime'>): Promise<v
     })
 
     await replaceTags(tx, created.id, post.tags)
+    return slug
   })
 }
 

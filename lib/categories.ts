@@ -1,37 +1,19 @@
-import fs from 'fs'
-import path from 'path'
+import { prisma } from '@/lib/prisma'
 
-const FILE = path.join(process.cwd(), 'content/categories.json')
-
-function readCategories(): string[] {
-  if (!fs.existsSync(FILE)) return []
-  try {
-    return JSON.parse(fs.readFileSync(FILE, 'utf-8'))
-  } catch {
-    return []
-  }
+export async function getCategories(): Promise<string[]> {
+  const categories = await prisma.category.findMany({ orderBy: { id: 'asc' } })
+  return categories.map((c) => c.name)
 }
 
-function writeCategories(categories: string[]): void {
-  fs.writeFileSync(FILE, JSON.stringify(categories, null, 2), 'utf-8')
-}
-
-export function getCategories(): string[] {
-  return readCategories()
-}
-
-export function addCategory(name: string): string[] {
-  const categories = readCategories()
+export async function addCategory(name: string): Promise<string[]> {
   const trimmed = name.trim()
-  if (trimmed && !categories.includes(trimmed)) {
-    categories.push(trimmed)
-    writeCategories(categories)
+  if (trimmed) {
+    await prisma.category.upsert({ where: { name: trimmed }, create: { name: trimmed }, update: {} })
   }
-  return categories
+  return getCategories()
 }
 
-export function deleteCategory(name: string): string[] {
-  const categories = readCategories().filter((c) => c !== name)
-  writeCategories(categories)
-  return categories
+export async function deleteCategory(name: string): Promise<string[]> {
+  await prisma.category.deleteMany({ where: { name } })
+  return getCategories()
 }

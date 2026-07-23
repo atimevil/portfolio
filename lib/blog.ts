@@ -15,7 +15,7 @@ function calcReadingTime(content: string): number {
 }
 
 // 요약(미리보기)용: 마크다운 문법 기호를 벗겨 순수 텍스트로.
-function stripMarkdown(md: string): string {
+export function stripMarkdown(md: string): string {
   return md
     .replace(/```[\s\S]*?```/g, ' ') // 코드 펜스
     .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // 이미지
@@ -33,7 +33,7 @@ function stripMarkdown(md: string): string {
 // 요약을 목표 길이로 자르되 단어 경계에서 끊고, 실제로 잘렸을 때만 말줄임표를 붙인다.
 // (그냥 slice만 하면 문장이 어중간하게 끝나 보이는 문제가 있었음)
 const EXCERPT_LEN = 130
-function truncateExcerpt(text: string): string {
+export function truncateExcerpt(text: string): string {
   if (text.length <= EXCERPT_LEN) return text
   const cut = text.slice(0, EXCERPT_LEN)
   const lastSpace = cut.lastIndexOf(' ')

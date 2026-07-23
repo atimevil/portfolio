@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createPost, getPostBySlug } from '@/lib/blog'
+import { createPost, getPostBySlug, getAllPosts, getAllPostsAdmin } from '@/lib/blog'
 import { resetDb } from './helpers/resetDb'
 
 beforeEach(resetDb)
@@ -71,5 +71,34 @@ describe('createPost + getPostBySlug', () => {
         status: 'draft',
       })
     ).rejects.toThrow()
+  })
+})
+
+describe('getAllPosts / getAllPostsAdmin', () => {
+  beforeEach(async () => {
+    await createPost({
+      slug: 'published-1', title: 'P1', date: '2024-01-10',
+      tags: [], excerpt: 'e', content: '내용', status: 'published',
+    })
+    await createPost({
+      slug: 'draft-1', title: 'D1', date: '2024-01-20',
+      tags: [], excerpt: 'e', content: '![img](/a.png)\n본문', status: 'draft',
+    })
+  })
+
+  it('getAllPosts는 published만 반환한다', async () => {
+    const posts = await getAllPosts()
+    expect(posts.map((p) => p.slug)).toEqual(['published-1'])
+  })
+
+  it('getAllPostsAdmin은 draft/published 전부, 날짜 내림차순으로 반환한다', async () => {
+    const posts = await getAllPostsAdmin()
+    expect(posts.map((p) => p.slug)).toEqual(['draft-1', 'published-1'])
+  })
+
+  it('getAllPostsAdmin은 본문 첫 이미지를 cover로 추출한다', async () => {
+    const posts = await getAllPostsAdmin()
+    const draft = posts.find((p) => p.slug === 'draft-1')
+    expect(draft?.cover).toBe('/a.png')
   })
 })

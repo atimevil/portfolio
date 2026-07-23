@@ -5,7 +5,6 @@ import { Prisma } from '@prisma/client'
 import { getAllPostsAdmin, createPost, updatePost, deletePost } from '@/lib/blog'
 
 const PostSchema = z.object({
-  slug: z.string().min(1),
   title: z.string().min(1),
   date: z.string(),
   tags: z.array(z.string()),
@@ -28,15 +27,17 @@ export async function POST(req: NextRequest) {
   const body = await req.json()
   const result = PostSchema.safeParse(body)
   if (!result.success) return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
+  let slug: string
   try {
-    await createPost(result.data)
+    slug = await createPost(result.data)
   } catch (err) {
+    // slug는 서버가 빈 자리를 골라 정하므로 여기 오는 건 동시 요청 레이스뿐이다.
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
       return NextResponse.json({ error: 'slug already exists' }, { status: 409 })
     }
     throw err
   }
-  return NextResponse.json({ ok: true }, { status: 201 })
+  return NextResponse.json({ ok: true, slug }, { status: 201 })
 }
 
 export async function PUT(req: NextRequest) {

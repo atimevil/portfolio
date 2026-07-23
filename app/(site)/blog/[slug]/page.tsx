@@ -19,12 +19,12 @@ interface Props {
 export const dynamic = 'force-dynamic'
 
 export async function generateStaticParams() {
-  const posts = getAllPosts()
+  const posts = await getAllPosts()
   return posts.map((post) => ({ slug: post.slug }))
 }
 
 export async function generateMetadata({ params }: Props) {
-  const post = getPostBySlug(params.slug)
+  const post = await getPostBySlug(params.slug)
   if (!post) return {}
   const meta = buildPageMetadata({
     path: `/blog/${params.slug}`,
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function BlogPostPage({ params: { slug } }: Props) {
-  const post = getPostBySlug(slug)
+  const post = await getPostBySlug(slug)
   if (!post) notFound()
 
   const session = await getServerSession(authOptions)
@@ -43,7 +43,7 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
   const isDraft = post.status !== 'published'
   if (isDraft && !session) notFound()
 
-  const allPosts = getAllPosts()
+  const allPosts = await getAllPosts()
   const idx = allPosts.findIndex((p) => p.slug === slug)
   // 이전/다음은 발행 글 목록 기준 (임시 글은 목록에 없으므로 네비 생략)
   const prevPost = idx !== -1 && idx < allPosts.length - 1 ? allPosts[idx + 1] : null

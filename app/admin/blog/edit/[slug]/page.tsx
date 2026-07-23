@@ -13,9 +13,9 @@ interface Props {
 export default async function EditBlogPage({ params: { slug } }: Props) {
   const session = await getServerSession(authOptions)
   if (!session) redirect('/admin/login')
-  const post = getPostBySlug(slug)
+  const post = await getPostBySlug(slug)
   if (!post) notFound()
-  const categories = getCategories()
+  const categories = await getCategories()
   return (
     <AdminLayout>
       <BlogEditor initialPost={post} categories={categories} />

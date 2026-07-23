@@ -8,7 +8,7 @@ import { getAllPostsAdmin } from '@/lib/blog'
 export default async function AdminBlogPage() {
   const session = await getServerSession()
   if (!session) redirect('/admin/login')
-  const posts = getAllPostsAdmin()
+  const posts = await getAllPostsAdmin()
 
   return (
     <AdminLayout>

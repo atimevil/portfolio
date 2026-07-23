@@ -27,7 +27,7 @@ export default async function HomePage({ searchParams }: Props) {
   const category = searchParams.category?.trim()
   const filtering = Boolean(tag || category)
 
-  let posts = getAllPosts()
+  let posts = await getAllPosts()
   if (tag) posts = posts.filter((p) => p.tags?.includes(tag))
   if (category) posts = posts.filter((p) => p.category === category)
 

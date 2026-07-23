@@ -7,7 +7,7 @@ import { getCategories } from '@/lib/categories'
 export default async function NewBlogPage() {
   const session = await getServerSession()
   if (!session) redirect('/admin/login')
-  const categories = getCategories()
+  const categories = await getCategories()
   return (
     <AdminLayout>
       <BlogEditor categories={categories} />

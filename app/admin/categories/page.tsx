@@ -8,7 +8,7 @@ export default async function AdminCategoriesPage() {
   const session = await getServerSession()
   if (!session) redirect('/admin/login')
 
-  const categories = getCategories()
+  const categories = await getCategories()
   return (
     <AdminLayout>
       <AdminCategoryManager initialCategories={categories} />

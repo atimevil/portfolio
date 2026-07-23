@@ -11,7 +11,7 @@ export default async function AdminDashboardPage() {
   const session = await getServerSession()
   if (!session) redirect('/admin/login')
 
-  const posts = getAllPostsAdmin()
+  const posts = await getAllPostsAdmin()
   const items = getItems()
   const images = getGalleryImages()
   const allViews = getAllViews()

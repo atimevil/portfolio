@@ -7,6 +7,7 @@ import { buildPageMetadata } from '@/lib/site'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
+import rehypePrettyCode from 'rehype-pretty-code'
 import ViewIncrementer from '@/components/blog/ViewIncrementer'
 import TagBadges from '@/components/blog/TagBadges'
 
@@ -59,7 +60,7 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
             </div>
           )}
           <div className="flex items-start justify-between gap-4">
-            <h1 className="text-2xl font-bold text-text-primary mb-3">{post.title}</h1>
+            <h1 className="text-2xl font-extrabold tracking-tight text-text-primary mb-3">{post.title}</h1>
             {session && (
               <Link
                 href={`/admin/blog/edit/${slug}`}
@@ -81,7 +82,7 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
             options={{
               mdxOptions: {
                 remarkPlugins: [remarkMath],
-                rehypePlugins: [rehypeKatex],
+                rehypePlugins: [rehypeKatex, [rehypePrettyCode, { theme: 'github-dark', keepBackground: false }]],
               },
             }}
           />

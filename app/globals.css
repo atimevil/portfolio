@@ -64,6 +64,8 @@ code {
 
 .prose h1, .prose h2, .prose h3, .prose h4 {
   color: var(--color-text-primary);
+  font-weight: 800;
+  letter-spacing: -0.01em;
 }
 
 .prose a {
@@ -78,22 +80,44 @@ code {
   text-decoration-color: var(--color-accent);
 }
 
-.prose code {
+/* 인라인 코드만 (코드블록 안 code는 아래 .prose pre code에서 별도 처리) */
+.prose :not(pre) > code {
   color: var(--color-accent);
   background: var(--color-accent-soft);
   padding: 0.1rem 0.3rem;
   border-radius: 0.25rem;
+  font-weight: 400;
+}
+.prose :not(pre) > code::before,
+.prose :not(pre) > code::after {
+  content: none;
+}
+
+/* 코드블록 컨테이너: 카드 톤에 맞춤, shiki가 토큰 색만 칠하도록 keepBackground:false로 받음 */
+.prose pre {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
 }
 
 .prose pre code {
-  color: #e2e8f0;
   background: transparent;
   padding: 0;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  display: grid;
 }
 
 .prose blockquote {
-  border-left: 4px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
   color: var(--color-text-secondary);
+  font-style: normal;
+}
+.prose blockquote p::before,
+.prose blockquote p::after {
+  content: none;
 }
 
 /* 스크롤바 */

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { createPost, getPostBySlug, getAllPosts, getAllPostsAdmin } from '@/lib/blog'
+import { createPost, getPostBySlug, getAllPosts, getAllPostsAdmin, updatePost } from '@/lib/blog'
 import { resetDb } from './helpers/resetDb'
 
 beforeEach(resetDb)
@@ -100,5 +100,45 @@ describe('getAllPosts / getAllPostsAdmin', () => {
     const posts = await getAllPostsAdmin()
     const draft = posts.find((p) => p.slug === 'draft-1')
     expect(draft?.cover).toBe('/a.png')
+  })
+})
+
+describe('updatePost', () => {
+  beforeEach(async () => {
+    await createPost({
+      slug: 'original', title: 'Original', date: '2024-01-01',
+      tags: ['a', 'b'], category: 'cat1', excerpt: 'e', content: 'c', status: 'draft',
+    })
+  })
+
+  it('필드를 부분 수정할 수 있다', async () => {
+    await updatePost('original', { title: 'Updated', status: 'published' })
+    const post = await getPostBySlug('original')
+    expect(post?.title).toBe('Updated')
+    expect(post?.status).toBe('published')
+    expect(post?.tags.sort()).toEqual(['a', 'b'])
+  })
+
+  it('slug를 바꾸면 새 slug로 조회된다', async () => {
+    await updatePost('original', { slug: 'renamed' })
+    expect(await getPostBySlug('original')).toBeNull()
+    const renamed = await getPostBySlug('renamed')
+    expect(renamed?.title).toBe('Original')
+  })
+
+  it('tags를 통째로 교체한다', async () => {
+    await updatePost('original', { tags: ['c'] })
+    const post = await getPostBySlug('original')
+    expect(post?.tags).toEqual(['c'])
+  })
+
+  it('category를 빈 문자열로 주면 카테고리가 사라진다', async () => {
+    await updatePost('original', { category: '' })
+    const post = await getPostBySlug('original')
+    expect(post?.category).toBeUndefined()
+  })
+
+  it('존재하지 않는 slug를 수정하려 하면 에러가 난다', async () => {
+    await expect(updatePost('nope', { title: 'x' })).rejects.toThrow('Post not found')
   })
 })

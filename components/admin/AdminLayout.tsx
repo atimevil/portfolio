@@ -6,8 +6,6 @@ import { signOut } from 'next-auth/react'
 
 interface AdminLayoutProps {
   children: React.ReactNode
-  /** 에디터처럼 넓게 쓰는 화면은 true — 컨텐츠 폭을 넓힌다 */
-  wide?: boolean
 }
 
 const navItems = [
@@ -19,7 +17,7 @@ const navItems = [
   { href: '/admin/settings', label: '설정' },
 ]
 
-export default function AdminLayout({ children, wide = false }: AdminLayoutProps) {
+export default function AdminLayout({ children }: AdminLayoutProps) {
   const pathname = usePathname()
 
   function isActive(href: string, exact = false) {
@@ -71,7 +69,7 @@ export default function AdminLayout({ children, wide = false }: AdminLayoutProps
       </nav>
 
       <main className="flex-1 overflow-auto">
-        <div className={`${wide ? 'max-w-5xl' : 'max-w-3xl'} mx-auto px-8 py-8`}>
+        <div className="max-w-3xl mx-auto px-8 py-8">
           {children}
         </div>
       </main>

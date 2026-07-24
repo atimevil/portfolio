@@ -17,7 +17,7 @@ export default async function EditBlogPage({ params: { slug } }: Props) {
   if (!post) notFound()
   const categories = await getCategories()
   return (
-    <AdminLayout wide>
+    <AdminLayout>
       <BlogEditor initialPost={post} categories={categories} />
     </AdminLayout>
   )

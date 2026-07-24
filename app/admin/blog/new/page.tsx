@@ -9,7 +9,7 @@ export default async function NewBlogPage() {
   if (!session) redirect('/admin/login')
   const categories = await getCategories()
   return (
-    <AdminLayout wide>
+    <AdminLayout>
       <BlogEditor categories={categories} />
     </AdminLayout>
   )

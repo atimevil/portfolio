@@ -108,6 +108,10 @@ code {
   font-size: 0.85rem;
   line-height: 1.7;
   display: grid;
+  /* 긴 코드 줄이 좁은 칼럼에서 줄바꿈돼 뭉개지지 않도록 그리드를 내용 폭으로 키우고,
+     넘치면 .prose pre 의 overflow-x:auto 로 가로 스크롤되게 한다 */
+  width: max-content;
+  min-width: 100%;
 }
 
 .prose blockquote {

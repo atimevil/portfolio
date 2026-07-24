@@ -21,6 +21,8 @@ import { useEffect, useRef } from 'react'
 import { uploadBlogImage } from '@/lib/uploadBlogImage'
 import { Callout } from './extensions/Callout'
 import { Toggle } from './extensions/Toggle'
+import { SlashCommand } from './extensions/SlashCommand'
+import { renderSlashMenu } from './SlashMenu'
 
 const lowlight = createLowlight(common)
 
@@ -46,6 +48,7 @@ export const richEditorExtensions = [
   TaskItem.configure({ nested: true }), // <li data-type="taskItem" data-checked="true">…(체크박스는 sanitize 후 CSS로만 표시)
   Callout, // <div data-callout><div data-callout-emoji>💡</div><div data-callout-body>…</div></div>
   Toggle, // <details><summary>…</summary><div data-toggle-body>…</div></details> — 공개 페이지는 JS 없이 네이티브로 접힘
+  SlashCommand.configure({ suggestion: { render: renderSlashMenu } }), // '/' 입력 시 블록 삽입 드롭다운(제목·목록·표·콜아웃·토글 등)
 ]
 
 // 툴바/버블 메뉴에 노출할 텍스트 색상 프리셋(6색) — sanitizeHtml의 color 허용 정규식과 무관하게 항상 hex.

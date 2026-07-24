@@ -88,7 +88,7 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
               options={{
                 mdxOptions: {
                   remarkPlugins: [remarkGfm, remarkMath],
-                  rehypePlugins: [rehypeKatex, [rehypePrettyCode, { theme: 'github-dark', keepBackground: false }]],
+                  rehypePlugins: [rehypeKatex, [rehypePrettyCode, { theme: 'material-theme-palenight', keepBackground: false }]],
                 },
               }}
             />

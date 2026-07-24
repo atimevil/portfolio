@@ -12,7 +12,7 @@ import { sanitizeBlogHtml } from '@/lib/sanitizeHtml'
 export async function renderBlogHtml(html: string): Promise<string> {
   const file = await unified()
     .use(rehypeParse, { fragment: true })
-    .use(rehypePrettyCode, { theme: 'github-dark', keepBackground: false })
+    .use(rehypePrettyCode, { theme: 'material-theme-palenight', keepBackground: false })
     .use(rehypeStringify)
     .process(sanitizeBlogHtml(html))
   return String(file)

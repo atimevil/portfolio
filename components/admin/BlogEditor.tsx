@@ -51,10 +51,11 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
   // 편집 중: 디바운스로 자동저장.
   useEffect(() => {
     if (typeof window === 'undefined') return
+    if (recoverable) return // 복구 배너가 떠 있는 동안은 저장된 초안을 덮어쓰지 않는다
     const draft: DraftData = { title, date, tags, category, content }
     const t = setTimeout(() => saveDraft(window.localStorage, key, draft), 800)
     return () => clearTimeout(t)
-  }, [title, date, tags, category, content, key])
+  }, [title, date, tags, category, content, key, recoverable])
 
   function recover() {
     if (!recoverable) return

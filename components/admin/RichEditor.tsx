@@ -134,7 +134,8 @@ export default function RichEditor({ content, onChange }: RichEditorProps) {
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-neutral dark:prose-invert max-w-none min-h-[50vh] p-4 focus:outline-none',
+        // 왼쪽 패딩을 넓게(pl-10) — 드래그 핸들이 이 여백(gutter)에 앉아 테두리와 안 겹치게.
+        class: 'prose prose-neutral dark:prose-invert max-w-none min-h-[50vh] py-4 pr-4 pl-10 focus:outline-none',
       },
       handlePaste(_view, event) {
         const image = Array.from(event.clipboardData?.files ?? []).find((f) => f.type.startsWith('image/'))

@@ -33,4 +33,35 @@ describe('sanitizeBlogHtml', () => {
     const out = sanitizeBlogHtml('<a href="javascript:alert(1)">x</a>')
     expect(out).not.toContain('javascript:')
   })
+
+  it('텍스트 색(span style)·형광펜(mark) 보존', () => {
+    const out = sanitizeBlogHtml('<p><span style="color:#e11d48">x</span> <mark>y</mark></p>')
+    expect(out).toContain('<span style="color:#e11d48">x</span>')
+    expect(out).toContain('<mark>y</mark>')
+  })
+
+  it('위험한 style 값(url) 제거 — color는 남고 background/url은 제거', () => {
+    const out = sanitizeBlogHtml('<span style="color:red;background:url(javascript:alert(1))">x</span>')
+    expect(out).not.toContain('url(')
+    expect(out).not.toContain('javascript:')
+    expect(out).not.toContain('background')
+    expect(out).toContain('color:red')
+  })
+
+  it('allowedStyles에 없는 속성(width)은 제거', () => {
+    const out = sanitizeBlogHtml('<span style="width:100px">x</span>')
+    expect(out).not.toContain('width')
+  })
+
+  it('mark의 onclick 같은 이벤트 핸들러 속성 제거', () => {
+    const out = sanitizeBlogHtml('<mark onclick="x()">y</mark>')
+    expect(out).not.toContain('onclick')
+    expect(out).toContain('<mark>y</mark>')
+  })
+
+  it('형광펜 배경색(mark style background-color)·data-color 보존', () => {
+    const out = sanitizeBlogHtml('<mark data-color="#ffa8a8" style="background-color: #ffa8a8">y</mark>')
+    expect(out).toContain('background-color:#ffa8a8')
+    expect(out).toContain('data-color="#ffa8a8"')
+  })
 })

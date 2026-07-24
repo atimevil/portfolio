@@ -120,6 +120,14 @@ code {
   content: none;
 }
 
+/* 형광펜(mark) — 라이트/다크 모두 텍스트가 읽히도록 어두운 글자색을 강제.
+   배경색 자체는 에디터가 style="background-color:…"로 인라인 지정(마크별로 다름). */
+.prose mark {
+  color: #1a1a1a;
+  border-radius: 0.2rem;
+  padding: 0.05rem 0.15rem;
+}
+
 /* RichEditor 플레이스홀더 (@tiptap/extension-placeholder).
    에디터에서만 뜨는 데코레이션이라 발행된 글(.prose 정적 렌더)에는 절대 나타나지 않는다. */
 .ProseMirror p.is-editor-empty:first-child::before {

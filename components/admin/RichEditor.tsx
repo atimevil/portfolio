@@ -11,6 +11,9 @@ import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import Placeholder from '@tiptap/extension-placeholder'
+import TextStyle from '@tiptap/extension-text-style'
+import Color from '@tiptap/extension-color'
+import Highlight from '@tiptap/extension-highlight'
 import { createLowlight, common } from 'lowlight'
 import { useEffect, useRef } from 'react'
 import { uploadBlogImage } from '@/lib/uploadBlogImage'
@@ -32,6 +35,27 @@ export const richEditorExtensions = [
   Placeholder.configure({
     placeholder: "'/' 를 입력해 블록 추가, 또는 그냥 작성…",
   }),
+  TextStyle, // Color가 span[style]을 쓰려면 필요(마크 합성)
+  Color, // editor.chain().focus().setColor('#e11d48').run() → <span style="color:...">
+  Highlight.configure({ multicolor: true }), // toggleHighlight({ color }) → <mark data-color style="background-color:...">
+]
+
+// 툴바/버블 메뉴에 노출할 텍스트 색상 프리셋(6색) — sanitizeHtml의 color 허용 정규식과 무관하게 항상 hex.
+export const TEXT_COLOR_PRESETS = [
+  { label: '빨강', value: '#e11d48' },
+  { label: '주황', value: '#f97316' },
+  { label: '초록', value: '#16a34a' },
+  { label: '파랑', value: '#2563eb' },
+  { label: '보라', value: '#9333ea' },
+  { label: '회색', value: '#6b7280' },
+]
+
+// 형광펜 프리셋 — Highlight.multicolor는 color를 background-color로 렌더.
+export const HIGHLIGHT_COLOR_PRESETS = [
+  { label: '노랑', value: '#fef08a' },
+  { label: '초록', value: '#bbf7d0' },
+  { label: '파랑', value: '#bfdbfe' },
+  { label: '분홍', value: '#fbcfe8' },
 ]
 
 interface RichEditorProps {
@@ -53,6 +77,23 @@ function ToolbarButton({
     >
       {children}
     </button>
+  )
+}
+
+// 색상 프리셋 하나를 나타내는 작은 원형 스와치 버튼(글자색/형광펜 공용).
+function ColorSwatchButton({
+  color, active, title, onClick,
+}: { color: string; active: boolean; title: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      title={title}
+      className={`w-5 h-5 rounded-full border transition-transform ${
+        active ? 'border-text-primary scale-110' : 'border-border hover:scale-110'
+      }`}
+      style={{ backgroundColor: color }}
+    />
   )
 }
 
@@ -151,6 +192,28 @@ export default function RichEditor({ content, onChange }: RichEditorProps) {
           <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive('strike')} title="취소선"><s>S</s></ToolbarButton>
           <ToolbarButton onClick={() => editor.chain().focus().toggleCode().run()} active={editor.isActive('code')} title="인라인 코드">{'</>'}</ToolbarButton>
           <ToolbarButton onClick={addLink} active={editor.isActive('link')} title="링크">🔗</ToolbarButton>
+          <div className="w-px h-5 bg-border mx-1" />
+          {TEXT_COLOR_PRESETS.map((c) => (
+            <ColorSwatchButton
+              key={c.value}
+              color={c.value}
+              active={editor.isActive('textStyle', { color: c.value })}
+              title={`글자색: ${c.label}`}
+              onClick={() => editor.chain().focus().setColor(c.value).run()}
+            />
+          ))}
+          <ToolbarButton onClick={() => editor.chain().focus().unsetColor().run()} title="글자색 지우기">A</ToolbarButton>
+          <div className="w-px h-5 bg-border mx-1" />
+          {HIGHLIGHT_COLOR_PRESETS.map((c) => (
+            <ColorSwatchButton
+              key={c.value}
+              color={c.value}
+              active={editor.isActive('highlight', { color: c.value })}
+              title={`형광펜: ${c.label}`}
+              onClick={() => editor.chain().focus().toggleHighlight({ color: c.value }).run()}
+            />
+          ))}
+          <ToolbarButton onClick={() => editor.chain().focus().unsetHighlight().run()} active={editor.isActive('highlight')} title="형광펜 지우기">✎</ToolbarButton>
         </div>
       </BubbleMenu>
       <div className="bg-bg">

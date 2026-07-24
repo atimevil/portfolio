@@ -16,6 +16,8 @@ import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
 import TaskList from '@tiptap/extension-task-list'
 import TaskItem from '@tiptap/extension-task-item'
+import GlobalDragHandle from 'tiptap-extension-global-drag-handle'
+import AutoJoiner from 'tiptap-extension-auto-joiner'
 import { createLowlight, common } from 'lowlight'
 import { useEffect, useRef } from 'react'
 import { uploadBlogImage } from '@/lib/uploadBlogImage'
@@ -49,6 +51,8 @@ export const richEditorExtensions = [
   Callout, // <div data-callout><div data-callout-emoji>💡</div><div data-callout-body>…</div></div>
   Toggle, // <details><summary>…</summary><div data-toggle-body>…</div></details> — 공개 페이지는 JS 없이 네이티브로 접힘
   SlashCommand.configure({ suggestion: { render: renderSlashMenu } }), // '/' 입력 시 블록 삽입 드롭다운(제목·목록·표·콜아웃·토글 등)
+  GlobalDragHandle.configure({ dragHandleWidth: 24 }), // 블록 hover 시 좌측 드래그 핸들(ProseMirror 플러그인 — getHTML() 출력에 영향 없음)
+  AutoJoiner, // 드래그로 붙인 같은 종류 목록을 자동 병합(GlobalDragHandle과 짝 확장)
 ]
 
 // 툴바/버블 메뉴에 노출할 텍스트 색상 프리셋(6색) — sanitizeHtml의 color 허용 정규식과 무관하게 항상 hex.

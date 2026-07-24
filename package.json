@@ -38,6 +38,7 @@
     "react-dom": "^18",
     "rehype-katex": "^7.0.1",
     "rehype-pretty-code": "^0.13.2",
+    "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
     "sharp": "^0.33.5",
     "shiki": "^1.12.1",

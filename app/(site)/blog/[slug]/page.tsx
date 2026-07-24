@@ -5,6 +5,7 @@ import { authOptions } from '@/lib/auth'
 import { getPostBySlug, getAllPosts } from '@/lib/blog'
 import { buildPageMetadata } from '@/lib/site'
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import rehypePrettyCode from 'rehype-pretty-code'
@@ -76,7 +77,7 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
             source={post.content}
             options={{
               mdxOptions: {
-                remarkPlugins: [remarkMath],
+                remarkPlugins: [remarkGfm, remarkMath],
                 rehypePlugins: [rehypeKatex, [rehypePrettyCode, { theme: 'github-dark', keepBackground: false }]],
               },
             }}

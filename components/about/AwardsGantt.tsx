@@ -4,6 +4,25 @@ interface Props {
   items: PortfolioItem[]
 }
 
+// 설명 안의 http(s) URL을 클릭 가능한 링크로 렌더(나머지는 텍스트 그대로).
+function renderWithLinks(text: string) {
+  return text.split(/(https?:\/\/[^\s]+)/g).map((part, i) =>
+    /^https?:\/\//.test(part) ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-accent underline underline-offset-2 break-all hover:opacity-80"
+      >
+        {part}
+      </a>
+    ) : (
+      part
+    ),
+  )
+}
+
 // 활동 & 수상 — 간결한 목록. 연도 + 제목, 수상은 ★.
 export default function AwardsGantt({ items }: Props) {
   if (items.length === 0) return null
@@ -30,7 +49,7 @@ export default function AwardsGantt({ items }: Props) {
                       </span>
                     </summary>
                     <p className="mt-1.5 whitespace-pre-line text-xs leading-relaxed text-text-secondary">
-                      {it.description.trim()}
+                      {renderWithLinks(it.description.trim())}
                     </p>
                   </details>
                 ) : (

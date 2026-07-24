@@ -33,6 +33,10 @@ export function sanitizeBlogHtml(html: string): string {
       // 텍스트 색(span[style])·형광펜(mark[style], mark[data-color])
       span: ['style'],
       mark: ['style', 'data-color'],
+      // 체크박스 할 일 목록(taskList/taskItem) — <input>은 허용하지 않고(공개 페이지는 인터랙티브 폼 요소
+      // 없이 정적이어야 함) data-checked만 보존해 CSS(::before)로 체크박스를 시각적으로만 그린다.
+      ul: ['data-type'],
+      li: ['data-type', 'data-checked'],
       // 코드 하이라이트(hljs/language-*)·prose용 class는 모든 태그에 허용
       '*': ['class'],
     },

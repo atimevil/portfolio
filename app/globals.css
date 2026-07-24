@@ -138,6 +138,58 @@ code {
   pointer-events: none;
 }
 
+/* 체크박스 할 일 목록(taskList/taskItem).
+   에디터(.ProseMirror)는 실제 <input type="checkbox">를 노드뷰로 그리므로 목록 마커·정렬만 손본다.
+   공개 렌더(.prose)는 sanitize가 <input>/<label>을 걷어내므로 li[data-checked]::before로
+   체크박스를 시각적으로만 그린다(인터랙션 없는 정적 표시 — 클릭해도 상태가 바뀌지 않음). */
+.ProseMirror ul[data-type='taskList'],
+.prose ul[data-type='taskList'] {
+  list-style: none;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.ProseMirror ul[data-type='taskList'] li,
+.prose ul[data-type='taskList'] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.ProseMirror ul[data-type='taskList'] li > label {
+  margin-top: 0.2rem;
+  user-select: none;
+}
+
+.ProseMirror ul[data-type='taskList'] li > div,
+.ProseMirror ul[data-type='taskList'] li > p {
+  flex: 1 1 auto;
+}
+
+.ProseMirror ul[data-type='taskList'] li[data-checked='true'] > div > p {
+  color: var(--color-text-muted);
+}
+
+/* 공개 렌더 전용: sanitize가 남긴 li[data-checked]에 체크박스 모양을 CSS로만 그린다(정적, 비대화형). */
+.prose ul[data-type='taskList'] > li[data-checked]::before {
+  content: '☐';
+  flex: none;
+  margin-top: 0.1rem;
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.prose ul[data-type='taskList'] > li[data-checked='true']::before {
+  content: '☑';
+  color: var(--color-accent);
+}
+
+.prose ul[data-type='taskList'] > li[data-checked='true'] {
+  text-decoration: line-through;
+  text-decoration-color: var(--color-text-muted);
+  color: var(--color-text-muted);
+}
+
 /* 스크롤바 */
 ::-webkit-scrollbar {
   width: 6px;

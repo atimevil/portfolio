@@ -64,4 +64,30 @@ describe('sanitizeBlogHtml', () => {
     expect(out).toContain('background-color:#ffa8a8')
     expect(out).toContain('data-color="#ffa8a8"')
   })
+
+  it('체크박스 할 일 목록(taskList/taskItem) 구조 보존 — data-type/data-checked 유지', () => {
+    const html =
+      '<ul data-type="taskList">' +
+      '<li data-type="taskItem" data-checked="true"><label><input type="checkbox" checked><span></span></label><div><p>done</p></div></li>' +
+      '<li data-type="taskItem" data-checked="false"><label><input type="checkbox"><span></span></label><div><p>todo</p></div></li>' +
+      '</ul>'
+    const out = sanitizeBlogHtml(html)
+    expect(out).toContain('<ul data-type="taskList">')
+    expect(out).toContain('data-checked="true"')
+    expect(out).toContain('data-checked="false"')
+    expect(out).toContain('done')
+    expect(out).toContain('todo')
+  })
+
+  it('할 일 목록의 <input>은 공개 렌더에서 완전히 제거(체크박스는 CSS로만 표시) — data-checked는 남음', () => {
+    const out = sanitizeBlogHtml(
+      '<ul data-type="taskList"><li data-type="taskItem" data-checked="true">' +
+        '<label><input type="image" src="x" onerror="alert(1)"><span></span></label><div><p>x</p></div>' +
+        '</li></ul>'
+    )
+    expect(out).not.toContain('<input')
+    expect(out).not.toContain('onerror')
+    expect(out).not.toContain('<label')
+    expect(out).toContain('<li data-type="taskItem" data-checked="true"')
+  })
 })

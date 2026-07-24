@@ -14,6 +14,8 @@ import Placeholder from '@tiptap/extension-placeholder'
 import TextStyle from '@tiptap/extension-text-style'
 import Color from '@tiptap/extension-color'
 import Highlight from '@tiptap/extension-highlight'
+import TaskList from '@tiptap/extension-task-list'
+import TaskItem from '@tiptap/extension-task-item'
 import { createLowlight, common } from 'lowlight'
 import { useEffect, useRef } from 'react'
 import { uploadBlogImage } from '@/lib/uploadBlogImage'
@@ -38,6 +40,8 @@ export const richEditorExtensions = [
   TextStyle, // Color가 span[style]을 쓰려면 필요(마크 합성)
   Color, // editor.chain().focus().setColor('#e11d48').run() → <span style="color:...">
   Highlight.configure({ multicolor: true }), // toggleHighlight({ color }) → <mark data-color style="background-color:...">
+  TaskList, // <ul data-type="taskList">
+  TaskItem.configure({ nested: true }), // <li data-type="taskItem" data-checked="true">…(체크박스는 sanitize 후 CSS로만 표시)
 ]
 
 // 툴바/버블 메뉴에 노출할 텍스트 색상 프리셋(6색) — sanitizeHtml의 color 허용 정규식과 무관하게 항상 hex.
@@ -176,6 +180,7 @@ export default function RichEditor({ content, onChange }: RichEditorProps) {
         <div className="w-px h-5 bg-border mx-1" />
         <ToolbarButton onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={editor.isActive('codeBlock')} title="코드 블록">{'</>'}</ToolbarButton>
         <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive('blockquote')} title="인용">&ldquo;</ToolbarButton>
+        <ToolbarButton onClick={() => editor.chain().focus().toggleTaskList().run()} active={editor.isActive('taskList')} title="체크박스 목록">☑</ToolbarButton>
         <ToolbarButton onClick={() => fileInputRef.current?.click()} title="이미지 업로드">🖼</ToolbarButton>
         <ToolbarButton onClick={addLink} active={editor.isActive('link')} title="링크">🔗</ToolbarButton>
         <ToolbarButton onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} title="표">⊞</ToolbarButton>

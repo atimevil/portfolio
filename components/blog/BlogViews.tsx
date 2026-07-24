@@ -19,18 +19,27 @@ function usableCover(cover?: string) {
 }
 
 function GridCard({ post }: { post: BlogPost }) {
+  const cover = usableCover(post.cover)
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col rounded-xl border border-border bg-bg-secondary p-5 transition-all hover:-translate-y-0.5 hover:border-accent"
+      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-bg-secondary transition-all hover:-translate-y-0.5 hover:border-accent"
     >
-      {post.category && <span className="text-xs font-medium text-accent">{post.category}</span>}
-      <h3 className="mt-1 line-clamp-2 font-bold leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
-        {post.title}
-      </h3>
-      <p className="mt-2 line-clamp-2 flex-1 text-xs leading-relaxed text-text-secondary">{post.excerpt}</p>
-      <div className="mt-4 text-xs text-text-muted">
-        {post.date} · {post.readingTime}분
+      {/* 커버 이미지가 있으면 상단 썸네일 + 글, 없으면 텍스트만(카드 높이는 자연스럽게 달라짐) */}
+      {cover && (
+        <div className="h-40 shrink-0 overflow-hidden">
+          <img src={cover} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+        </div>
+      )}
+      <div className="flex flex-1 flex-col p-5">
+        {post.category && <span className="text-xs font-medium text-accent">{post.category}</span>}
+        <h3 className="mt-1 line-clamp-2 font-bold leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
+          {post.title}
+        </h3>
+        <p className="mt-2 line-clamp-2 flex-1 text-xs leading-relaxed text-text-secondary">{post.excerpt}</p>
+        <div className="mt-4 text-xs text-text-muted">
+          {post.date} · {post.readingTime}분
+        </div>
       </div>
     </Link>
   )

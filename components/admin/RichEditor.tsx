@@ -1,6 +1,6 @@
 'use client'
 
-import { useEditor, EditorContent, type Editor } from '@tiptap/react'
+import { useEditor, EditorContent, BubbleMenu, type Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
@@ -10,11 +10,29 @@ import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import Placeholder from '@tiptap/extension-placeholder'
 import { createLowlight, common } from 'lowlight'
 import { useEffect, useRef } from 'react'
 import { uploadBlogImage } from '@/lib/uploadBlogImage'
 
 const lowlight = createLowlight(common)
+
+// RichEditor와 왕복(round-trip) 테스트가 공유하는 확장 목록.
+// 저장 포맷은 HTML이므로 Placeholder/BubbleMenu 추가는 getHTML() 출력에 영향을 주지 않는다.
+export const richEditorExtensions = [
+  StarterKit.configure({ codeBlock: false }), // 아래 lowlight 코드블록으로 대체
+  CodeBlockLowlight.configure({ lowlight }),
+  Underline,
+  Link.configure({ openOnClick: false }),
+  Image,
+  Table.configure({ resizable: true }),
+  TableRow,
+  TableCell,
+  TableHeader,
+  Placeholder.configure({
+    placeholder: "'/' 를 입력해 블록 추가, 또는 그냥 작성…",
+  }),
+]
 
 interface RichEditorProps {
   content: string
@@ -53,17 +71,7 @@ export default function RichEditor({ content, onChange }: RichEditorProps) {
 
   const editor = useEditor({
     immediatelyRender: false, // Next.js SSR 하이드레이션 경고 회피
-    extensions: [
-      StarterKit.configure({ codeBlock: false }), // 아래 lowlight 코드블록으로 대체
-      CodeBlockLowlight.configure({ lowlight }),
-      Underline,
-      Link.configure({ openOnClick: false }),
-      Image,
-      Table.configure({ resizable: true }),
-      TableRow,
-      TableCell,
-      TableHeader,
-    ],
+    extensions: richEditorExtensions,
     content, // HTML 문자열 (BlogEditor가 필요 시 markdownToEditorHtml로 변환해 전달)
     onUpdate({ editor }) {
       onChange(editor.getHTML())
@@ -135,6 +143,16 @@ export default function RichEditor({ content, onChange }: RichEditorProps) {
         <ToolbarButton onClick={() => editor.chain().focus().redo().run()} title="다시실행">↪</ToolbarButton>
         <input ref={fileInputRef} type="file" accept="image/*" onChange={onPickImage} className="hidden" />
       </div>
+      <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+        <div className="flex items-center gap-0.5 p-1 rounded-lg border border-border bg-bg-secondary shadow-lg">
+          <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')} title="Bold"><strong>B</strong></ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive('italic')} title="Italic"><em>I</em></ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleUnderline().run()} active={editor.isActive('underline')} title="Underline"><u>U</u></ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleStrike().run()} active={editor.isActive('strike')} title="취소선"><s>S</s></ToolbarButton>
+          <ToolbarButton onClick={() => editor.chain().focus().toggleCode().run()} active={editor.isActive('code')} title="인라인 코드">{'</>'}</ToolbarButton>
+          <ToolbarButton onClick={addLink} active={editor.isActive('link')} title="링크">🔗</ToolbarButton>
+        </div>
+      </BubbleMenu>
       <div className="bg-bg">
         <EditorContent editor={editor} />
       </div>

@@ -120,6 +120,16 @@ code {
   content: none;
 }
 
+/* RichEditor 플레이스홀더 (@tiptap/extension-placeholder).
+   에디터에서만 뜨는 데코레이션이라 발행된 글(.prose 정적 렌더)에는 절대 나타나지 않는다. */
+.ProseMirror p.is-editor-empty:first-child::before {
+  color: var(--color-text-muted);
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
 /* 스크롤바 */
 ::-webkit-scrollbar {
   width: 6px;

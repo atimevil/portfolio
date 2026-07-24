@@ -1,34 +1,14 @@
 // @vitest-environment jsdom
 // RichEditor와 동일한 확장 구성으로 html→에디터→html 왕복이 안정(무손실)인지 검증한다.
 // (핵심: 마크다운 재직렬화가 없으므로 한 번 정규화된 뒤엔 재배열이 없다)
+// 확장 목록은 RichEditor.tsx의 richEditorExtensions를 그대로 import해 공유한다
+// (Placeholder/BubbleMenu는 getHTML() 출력에 영향을 주지 않으므로 왕복 결과는 그대로 안정적이다).
 import { describe, it, expect } from 'vitest'
 import { Editor } from '@tiptap/core'
-import StarterKit from '@tiptap/starter-kit'
-import Underline from '@tiptap/extension-underline'
-import Link from '@tiptap/extension-link'
-import Image from '@tiptap/extension-image'
-import Table from '@tiptap/extension-table'
-import TableRow from '@tiptap/extension-table-row'
-import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import { createLowlight, common } from 'lowlight'
-
-const lowlight = createLowlight(common)
-const extensions = [
-  StarterKit.configure({ codeBlock: false }),
-  CodeBlockLowlight.configure({ lowlight }),
-  Underline,
-  Link.configure({ openOnClick: false }),
-  Image,
-  Table.configure({ resizable: true }),
-  TableRow,
-  TableCell,
-  TableHeader,
-]
+import { richEditorExtensions } from '../RichEditor'
 
 function roundtrip(html: string): string {
-  const e = new Editor({ extensions, content: html })
+  const e = new Editor({ extensions: richEditorExtensions, content: html })
   const out = e.getHTML()
   e.destroy()
   return out

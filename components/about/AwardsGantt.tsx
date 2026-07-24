@@ -17,10 +17,17 @@ export default function AwardsGantt({ items }: Props) {
           return (
             <li key={it.id} className="flex items-baseline gap-4 py-3">
               <span className="w-24 shrink-0 font-mono text-xs text-text-muted">{it.year.trim()}</span>
-              <span className="text-sm leading-snug text-text-primary">
-                {isAward && <span className="text-accent">★ </span>}
-                {it.title.trim()}
-              </span>
+              <div className="min-w-0">
+                <span className="text-sm leading-snug text-text-primary">
+                  {isAward && <span className="text-accent">★ </span>}
+                  {it.title.trim()}
+                </span>
+                {it.description?.trim() && (
+                  <p className="mt-1 whitespace-pre-line text-xs leading-relaxed text-text-secondary">
+                    {it.description.trim()}
+                  </p>
+                )}
+              </div>
             </li>
           )
         })}

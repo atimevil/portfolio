@@ -19,6 +19,8 @@ import TaskItem from '@tiptap/extension-task-item'
 import { createLowlight, common } from 'lowlight'
 import { useEffect, useRef } from 'react'
 import { uploadBlogImage } from '@/lib/uploadBlogImage'
+import { Callout } from './extensions/Callout'
+import { Toggle } from './extensions/Toggle'
 
 const lowlight = createLowlight(common)
 
@@ -42,6 +44,8 @@ export const richEditorExtensions = [
   Highlight.configure({ multicolor: true }), // toggleHighlight({ color }) → <mark data-color style="background-color:...">
   TaskList, // <ul data-type="taskList">
   TaskItem.configure({ nested: true }), // <li data-type="taskItem" data-checked="true">…(체크박스는 sanitize 후 CSS로만 표시)
+  Callout, // <div data-callout><div data-callout-emoji>💡</div><div data-callout-body>…</div></div>
+  Toggle, // <details><summary>…</summary><div data-toggle-body>…</div></details> — 공개 페이지는 JS 없이 네이티브로 접힘
 ]
 
 // 툴바/버블 메뉴에 노출할 텍스트 색상 프리셋(6색) — sanitizeHtml의 color 허용 정규식과 무관하게 항상 hex.
@@ -181,6 +185,8 @@ export default function RichEditor({ content, onChange }: RichEditorProps) {
         <ToolbarButton onClick={() => editor.chain().focus().toggleCodeBlock().run()} active={editor.isActive('codeBlock')} title="코드 블록">{'</>'}</ToolbarButton>
         <ToolbarButton onClick={() => editor.chain().focus().toggleBlockquote().run()} active={editor.isActive('blockquote')} title="인용">&ldquo;</ToolbarButton>
         <ToolbarButton onClick={() => editor.chain().focus().toggleTaskList().run()} active={editor.isActive('taskList')} title="체크박스 목록">☑</ToolbarButton>
+        <ToolbarButton onClick={() => editor.chain().focus().setCallout().run()} active={editor.isActive('callout')} title="콜아웃">💡</ToolbarButton>
+        <ToolbarButton onClick={() => editor.chain().focus().setToggle().run()} active={editor.isActive('toggle')} title="토글">▸</ToolbarButton>
         <ToolbarButton onClick={() => fileInputRef.current?.click()} title="이미지 업로드">🖼</ToolbarButton>
         <ToolbarButton onClick={addLink} active={editor.isActive('link')} title="링크">🔗</ToolbarButton>
         <ToolbarButton onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()} title="표">⊞</ToolbarButton>

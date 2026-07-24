@@ -90,4 +90,33 @@ describe('sanitizeBlogHtml', () => {
     expect(out).not.toContain('<label')
     expect(out).toContain('<li data-type="taskItem" data-checked="true"')
   })
+
+  it('콜아웃(div[data-callout]) 구조 보존 — 이모지·본문 유지', () => {
+    const html =
+      '<div data-callout><div data-callout-emoji>💡</div><div data-callout-body><p>안내 문구</p></div></div>'
+    const out = sanitizeBlogHtml(html)
+    expect(out).toContain('data-callout')
+    expect(out).toContain('data-callout-emoji')
+    expect(out).toContain('💡')
+    expect(out).toContain('data-callout-body')
+    expect(out).toContain('안내 문구')
+  })
+
+  it('토글(<details>/<summary>) 구조 보존', () => {
+    const html =
+      '<details><summary>더 보기</summary><div data-toggle-body><p>숨겨진 본문</p></div></details>'
+    const out = sanitizeBlogHtml(html)
+    expect(out).toContain('<details>')
+    expect(out).toContain('<summary>더 보기</summary>')
+    expect(out).toContain('data-toggle-body')
+    expect(out).toContain('숨겨진 본문')
+  })
+
+  it('적대적 div(onclick·style=position:fixed)는 이벤트 핸들러·style 모두 제거 — div에는 style이 화이트리스트에 없어 통째로 제거', () => {
+    const out = sanitizeBlogHtml('<div onclick="alert(1)" style="position:fixed;top:0;left:0">y</div>')
+    expect(out).not.toContain('onclick')
+    expect(out).not.toContain('style=')
+    expect(out).not.toContain('position:fixed')
+    expect(out).toContain('y')
+  })
 })

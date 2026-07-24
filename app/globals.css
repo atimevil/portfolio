@@ -190,6 +190,101 @@ code {
   color: var(--color-text-muted);
 }
 
+/* 콜아웃(Callout) — components/admin/extensions/Callout.ts가 만드는
+   <div data-callout><div data-callout-emoji>💡</div><div data-callout-body>…</div></div>.
+   에디터(.ProseMirror)·공개 렌더(.prose) 모두 같은 마크업이므로 동일 스타일을 공유한다. */
+.ProseMirror [data-callout],
+.prose [data-callout] {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0.5rem;
+}
+
+.ProseMirror [data-callout-emoji],
+.prose [data-callout-emoji] {
+  flex: none;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.ProseMirror [data-callout-body],
+.prose [data-callout-body] {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ProseMirror [data-callout-body] > :first-child,
+.prose [data-callout-body] > :first-child {
+  margin-top: 0;
+}
+
+.ProseMirror [data-callout-body] > :last-child,
+.prose [data-callout-body] > :last-child {
+  margin-bottom: 0;
+}
+
+/* 토글(Toggle) — components/admin/extensions/Toggle.ts가 만드는 네이티브 <details>/<summary>.
+   공개 페이지(.prose)는 JS 없이 브라우저 기본 접힘/펼침 동작만으로 동작한다. */
+.ProseMirror details,
+.prose details {
+  margin: 1rem 0;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+}
+
+.ProseMirror details > summary,
+.prose details > summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  list-style: none;
+}
+
+.ProseMirror details > summary::-webkit-details-marker,
+.prose details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ProseMirror details > summary::marker,
+.prose details > summary::marker {
+  content: '';
+}
+
+.ProseMirror details > summary::before,
+.prose details > summary::before {
+  content: '▸';
+  display: inline-block;
+  margin-right: 0.4rem;
+  color: var(--color-accent);
+  transition: transform 0.15s;
+}
+
+.ProseMirror details[open] > summary::before,
+.prose details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.ProseMirror details [data-toggle-body],
+.prose details [data-toggle-body] {
+  margin-top: 0.5rem;
+}
+
+.ProseMirror details [data-toggle-body] > :first-child,
+.prose details [data-toggle-body] > :first-child {
+  margin-top: 0;
+}
+
+.ProseMirror details [data-toggle-body] > :last-child,
+.prose details [data-toggle-body] > :last-child {
+  margin-bottom: 0;
+}
+
 /* 스크롤바 */
 ::-webkit-scrollbar {
   width: 6px;

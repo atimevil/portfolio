@@ -24,6 +24,8 @@ export function sanitizeBlogHtml(html: string): string {
       'ul', 'ol', 'li',
       'blockquote', 'pre', 'code', 'span',
       'table', 'thead', 'tbody', 'tr', 'td', 'th',
+      // 콜아웃(div[data-callout])·토글(details/summary) — 커스텀 블록 노드
+      'div', 'details', 'summary',
     ],
     allowedAttributes: {
       a: ['href', 'title', 'target', 'rel'],
@@ -37,6 +39,8 @@ export function sanitizeBlogHtml(html: string): string {
       // 없이 정적이어야 함) data-checked만 보존해 CSS(::before)로 체크박스를 시각적으로만 그린다.
       ul: ['data-type'],
       li: ['data-type', 'data-checked'],
+      // 콜아웃/토글이 쓰는 div는 data-* 마커만 허용(style 등은 금지 — 화이트리스트를 좁게 유지).
+      div: ['data-callout', 'data-callout-emoji', 'data-callout-body', 'data-toggle-body'],
       // 코드 하이라이트(hljs/language-*)·prose용 class는 모든 태그에 허용
       '*': ['class'],
     },

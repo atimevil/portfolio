@@ -10,7 +10,6 @@ import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
 import TableHeader from '@tiptap/extension-table-header'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import { Markdown } from 'tiptap-markdown'
 import { createLowlight, common } from 'lowlight'
 import { useEffect, useRef } from 'react'
 import { uploadBlogImage } from '@/lib/uploadBlogImage'
@@ -64,11 +63,10 @@ export default function RichEditor({ content, onChange }: RichEditorProps) {
       TableRow,
       TableCell,
       TableHeader,
-      Markdown.configure({ html: true, transformPastedText: true }),
     ],
-    content, // Markdown 확장이 있으면 setContent/초기 content를 마크다운으로 파싱한다
+    content, // HTML 문자열 (BlogEditor가 필요 시 markdownToEditorHtml로 변환해 전달)
     onUpdate({ editor }) {
-      onChange(editor.storage.markdown.getMarkdown())
+      onChange(editor.getHTML())
     },
     editorProps: {
       attributes: {
@@ -93,7 +91,7 @@ export default function RichEditor({ content, onChange }: RichEditorProps) {
 
   // 부모의 content가 밖에서 바뀌면(예: 초안 복구) 에디터에 반영한다.
   useEffect(() => {
-    if (editor && content !== editor.storage.markdown.getMarkdown()) {
+    if (editor && content !== editor.getHTML()) {
       editor.commands.setContent(content, false)
     }
   }, [content, editor])

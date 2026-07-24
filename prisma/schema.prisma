@@ -15,6 +15,7 @@ model Post {
   excerpt    String
   date       DateTime
   status     String
+  contentFormat String  @default("markdown") // "markdown"(기존) | "html"(무손실 에디터)
   category   Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   categoryId Int?
   tags       PostTag[]

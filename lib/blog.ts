@@ -12,6 +12,7 @@ function calcReadingTime(content: string): number {
 // 요약(미리보기)용: 마크다운 문법 기호를 벗겨 순수 텍스트로.
 export function stripMarkdown(md: string): string {
   return md
+    .replace(/<[^>]+>/g, ' ') // HTML 태그 (무손실 html 글 본문/excerpt 대응)
     .replace(/```[\s\S]*?```/g, ' ') // 코드 펜스
     .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // 이미지
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // 링크 → 텍스트
@@ -49,11 +50,14 @@ function toBlogPost(post: PostWithRelations, opts: { includeCover?: boolean } = 
     category: post.category?.name,
     excerpt: truncateExcerpt(stripMarkdown(post.excerpt || post.content)),
     content: post.content,
+    contentFormat: post.contentFormat === 'html' ? 'html' : 'markdown',
     status: post.status as 'published' | 'draft',
     readingTime: calcReadingTime(post.content),
   }
   if (opts.includeCover) {
-    const coverMatch = post.content.match(/!\[[^\]]*\]\(([^)\s]+)/)
+    const coverMatch =
+      post.content.match(/!\[[^\]]*\]\(([^)\s]+)/) ?? // markdown 이미지
+      post.content.match(/<img[^>]+src=["']([^"']+)/) // html 이미지
     result.cover = coverMatch ? coverMatch[1] : undefined
   }
   return result
@@ -131,7 +135,10 @@ async function resolveUniqueSlug(tx: Prisma.TransactionClient, base: string): Pr
 }
 
 export async function createPost(
-  post: Omit<BlogPost, 'readingTime' | 'slug'> & { slug?: string }
+  post: Omit<BlogPost, 'readingTime' | 'slug' | 'contentFormat'> & {
+    slug?: string
+    contentFormat?: 'markdown' | 'html'
+  }
 ): Promise<string> {
   return prisma.$transaction(async (tx) => {
     const categoryId = (await upsertCategoryId(tx, post.category)) ?? null
@@ -146,6 +153,7 @@ export async function createPost(
         excerpt: post.excerpt,
         date: new Date(post.date),
         status: post.status,
+        contentFormat: post.contentFormat ?? 'markdown',
         categoryId,
       },
     })
@@ -173,6 +181,7 @@ export async function updatePost(
         excerpt: post.excerpt ?? undefined,
         date: post.date ? new Date(post.date) : undefined,
         status: post.status ?? undefined,
+        contentFormat: post.contentFormat ?? undefined,
         categoryId,
       },
     })

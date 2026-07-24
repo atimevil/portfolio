@@ -4,6 +4,32 @@ import { resetDb } from './helpers/resetDb'
 
 beforeEach(resetDb)
 
+describe('contentFormat (무손실 html 저장)', () => {
+  it('contentFormat 미지정 시 기본 markdown', async () => {
+    await createPost({ slug: 'cf-default', title: 'D', date: '2024-02-01', tags: [], excerpt: 'd', content: '# md', status: 'draft' })
+    expect((await getPostBySlug('cf-default'))?.contentFormat).toBe('markdown')
+  })
+
+  it('html 글은 contentFormat=html로 저장/조회되고 cover를 <img>에서 추출한다', async () => {
+    await createPost({
+      slug: 'cf-html', title: 'H', date: '2024-02-02', tags: [], excerpt: '요약',
+      content: '<p>hi</p><img src="/uploads/blog/x.png" alt="">', status: 'published',
+      contentFormat: 'html',
+    })
+    expect((await getPostBySlug('cf-html'))?.contentFormat).toBe('html')
+    const all = await getAllPosts()
+    expect(all.find((p) => p.slug === 'cf-html')?.cover).toBe('/uploads/blog/x.png')
+  })
+
+  it('updatePost로 markdown→html 전환된다', async () => {
+    await createPost({ slug: 'cf-conv', title: 'C', date: '2024-02-03', tags: [], excerpt: 'c', content: '# md', status: 'draft' })
+    await updatePost('cf-conv', { content: '<p>now html</p>', contentFormat: 'html' })
+    const post = await getPostBySlug('cf-conv')
+    expect(post?.contentFormat).toBe('html')
+    expect(post?.content).toBe('<p>now html</p>')
+  })
+})
+
 describe('createPost + getPostBySlug', () => {
   it('태그·카테고리 포함 글을 저장하고 그대로 읽어온다', async () => {
     await createPost({

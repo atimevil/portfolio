@@ -6,6 +6,8 @@ export interface BlogPost {
   category?: string
   excerpt: string
   content: string
+  /** 본문 저장 형식: 'markdown'(기존 글) | 'html'(무손실 에디터 저장) */
+  contentFormat: 'markdown' | 'html'
   status: 'published' | 'draft'
   readingTime: number
   /** 본문에서 추출한 첫 이미지 URL (이미지 뷰 커버용) */

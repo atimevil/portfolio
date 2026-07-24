@@ -36,6 +36,7 @@ export function parseFrontmatter(file: string, raw: string): ParsedPost {
       excerpt: String(data.excerpt ?? content),
       content,
       status: data.status === 'draft' ? 'draft' : 'published',
+      contentFormat: 'markdown',
     },
   }
 }

@@ -86,15 +86,28 @@ export async function getAllPostsAdmin(): Promise<BlogPost[]> {
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  let post = await prisma.post.findUnique({ where: { slug }, include })
-  if (!post) {
-    const normalized = slug.normalize('NFC')
-    if (normalized !== slug) {
-      post = await prisma.post.findUnique({ where: { slug: normalized }, include })
-    }
+  // slug 후보를 순서대로 조회한다:
+  //  1) 원본
+  //  2) percent-decode — /admin/* 은 미들웨어 뒤라 Next이 params.slug를 URL 디코딩하지 않은 채
+  //     페이지로 넘긴다(공개 페이지는 미들웨어 밖이라 디코딩됨). 그래서 한글 slug 편집이 404났음.
+  //  3) 각 후보의 NFC 정규화형(한글 조합/분해 방어)
+  const candidates: string[] = [slug]
+  try {
+    const decoded = decodeURIComponent(slug)
+    if (decoded !== slug) candidates.push(decoded)
+  } catch {
+    // 잘못된 % 시퀀스는 무시(원본으로만 시도)
   }
-  if (!post) return null
-  return toBlogPost(post)
+  for (const c of [...candidates]) {
+    const nfc = c.normalize('NFC')
+    if (!candidates.includes(nfc)) candidates.push(nfc)
+  }
+
+  for (const c of candidates) {
+    const post = await prisma.post.findUnique({ where: { slug: c }, include })
+    if (post) return toBlogPost(post)
+  }
+  return null
 }
 
 async function upsertCategoryId(

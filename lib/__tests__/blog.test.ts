@@ -76,6 +76,16 @@ describe('createPost + getPostBySlug', () => {
     expect(post).toBeNull()
   })
 
+  it('percent-encoded slug로도 조회된다 (미들웨어 뒤 admin 편집 라우트 404 방지)', async () => {
+    await createPost({
+      slug: '질문-조회-api', title: 'Q', date: '2024-03-01', tags: [],
+      excerpt: 'q', content: 'x', status: 'draft',
+    })
+    const encoded = encodeURIComponent('질문-조회-api')
+    expect(encoded).not.toBe('질문-조회-api') // 실제로 percent-encoding 됨
+    expect((await getPostBySlug(encoded))?.slug).toBe('질문-조회-api')
+  })
+
   it('같은 slug로 두 번 저장하면 에러가 난다', async () => {
     await createPost({
       slug: 'dup',

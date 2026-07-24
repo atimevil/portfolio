@@ -21,12 +21,30 @@ describe('sanitizeBlogHtml', () => {
     const out = sanitizeBlogHtml(html)
     expect(out).toContain('<h2>')
     expect(out).toContain('class="language-js hljs"')
-    expect(out).toContain('hljs-keyword')
+    expect(out).toContain('const') // span의 hljs-keyword class는 제거되지만 텍스트는 보존
+    expect(out).not.toContain('hljs-keyword') // 전역 class 제거 → span class 안 남음
     expect(out).toContain('<table>')
     expect(out).toContain('colspan="2"')
     expect(out).toContain('href="https://e.com"')
     expect(out).toContain('<img')
     expect(out).toContain('alt="a"')
+  })
+
+  it('전역 class 제거 — 레이아웃 유틸 class로 오버레이 클릭재킹 차단', () => {
+    const out = sanitizeBlogHtml('<div data-callout class="fixed inset-0 z-50 opacity-0">x</div>')
+    expect(out).not.toContain('fixed')
+    expect(out).not.toContain('class=')
+    expect(out).toContain('data-callout')
+  })
+
+  it('code의 language-* class는 하이라이트용으로 유지', () => {
+    const out = sanitizeBlogHtml('<pre><code class="language-python">x</code></pre>')
+    expect(out).toContain('class="language-python"')
+  })
+
+  it('target=_blank 링크에 rel=noopener 강제(탭내빙 방지)', () => {
+    const out = sanitizeBlogHtml('<a href="https://e.com" target="_blank">l</a>')
+    expect(out).toMatch(/rel="noopener/)
   })
 
   it('javascript: 링크 스킴 차단', () => {

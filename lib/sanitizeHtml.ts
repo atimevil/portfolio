@@ -41,8 +41,22 @@ export function sanitizeBlogHtml(html: string): string {
       li: ['data-type', 'data-checked'],
       // 콜아웃/토글이 쓰는 div는 data-* 마커만 허용(style 등은 금지 — 화이트리스트를 좁게 유지).
       div: ['data-callout', 'data-callout-emoji', 'data-callout-body', 'data-toggle-body'],
-      // 코드 하이라이트(hljs/language-*)·prose용 class는 모든 태그에 허용
-      '*': ['class'],
+      // class는 코드블록 언어 표시(rehype-pretty-code 입력)에만 필요 → code/pre에만, 값은 아래 allowedClasses로 제한.
+      // 전역 class 허용은 Tailwind 유틸 class(fixed/inset-0/z-50 등)로 전체화면 오버레이 클릭재킹이 가능해 제거함(보안 리뷰).
+      code: ['class'],
+      pre: ['class'],
+    },
+    // class 값은 language-*/hljs만(코드 하이라이트). 그 외 class는 전부 제거.
+    allowedClasses: {
+      code: ['language-*', 'hljs'],
+      pre: ['language-*', 'hljs'],
+    },
+    // target=_blank 링크엔 rel="noopener noreferrer" 강제 — 역-탭내빙(window.opener) 방지.
+    transformTags: {
+      a: (tagName, attribs) => {
+        if (attribs.target) attribs.rel = 'noopener noreferrer'
+        return { tagName, attribs }
+      },
     },
     // style 속성 안에서도 color/background-color 두 속성만 허용(그 외 속성명은 통째로 제거).
     allowedStyles: {

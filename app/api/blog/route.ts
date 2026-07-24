@@ -11,6 +11,7 @@ const PostSchema = z.object({
   category: z.string().optional(),
   excerpt: z.string(),
   content: z.string(),
+  contentFormat: z.enum(['markdown', 'html']).optional(),
   status: z.enum(['published', 'draft']),
 })
 

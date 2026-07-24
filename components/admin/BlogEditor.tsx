@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import RichEditor from '@/components/admin/RichEditor'
+import { markdownToEditorHtml } from '@/lib/markdownToEditorHtml'
 import {
   draftKey, saveDraft, loadDraft, clearDraft, draftDiffersFrom, type DraftData,
 } from '@/lib/draftStorage'
@@ -19,10 +20,19 @@ const inputClass =
 
 export default function BlogEditor({ initialPost, categories }: BlogEditorProps) {
   const router = useRouter()
+  // 기존 마크다운 글은 열 때 1회 html로 변환(클라이언트에서만 — Editor가 DOM 필요).
+  // html 글/새 글은 그대로. 서버(SSR)에선 RichEditor가 null 렌더라 이 값이 안 쓰인다.
+  const initialHtml = useMemo(() => {
+    if (initialPost?.contentFormat === 'markdown' && typeof window !== 'undefined') {
+      return markdownToEditorHtml(initialPost.content ?? '')
+    }
+    return initialPost?.content ?? ''
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   const [title, setTitle] = useState(initialPost?.title ?? '')
   const [date, setDate] = useState(initialPost?.date ?? new Date().toISOString().slice(0, 10))
   const [tags, setTags] = useState(initialPost?.tags?.join(', ') ?? '')
-  const [content, setContent] = useState(initialPost?.content ?? '')
+  const [content, setContent] = useState(initialHtml)
   const [category, setCategory] = useState(initialPost?.category ?? '')
   const [loading, setLoading] = useState(false)
   const [recoverable, setRecoverable] = useState<DraftData | null>(null)
@@ -33,7 +43,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
     date: initialPost?.date ?? '',
     tags: initialPost?.tags?.join(', ') ?? '',
     category: initialPost?.category ?? '',
-    content: initialPost?.content ?? '',
+    content: initialHtml, // 변환 후 html 기준 — 복구 배너 오탐 방지
   }
   const serverRef = useRef(serverSnapshot)
 
@@ -76,8 +86,8 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
     if (!title.trim()) { alert('제목을 입력하세요.'); return }
 
     setLoading(true)
-    // 본문은 마크다운 그대로 저장한다 (변환/가공 없음 → 코드블록·이미지 보존)
-    const excerpt = content.trim().replace(/\s+/g, ' ').slice(0, 150)
+    // 본문은 에디터 네이티브 HTML로 저장한다 (마크다운 재직렬화 없음 → 무손실)
+    const excerpt = content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 150)
     const body = {
       title: title.trim(),
       date: date.trim() || new Date().toISOString().slice(0, 10),
@@ -85,6 +95,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
       category: category.trim(),
       excerpt,
       content,
+      contentFormat: 'html' as const,
       status,
     }
 

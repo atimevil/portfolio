@@ -19,8 +19,10 @@ function write(data: PortfolioItem[]): void {
   fs.writeFileSync(FILE, JSON.stringify(data, null, 2), 'utf-8')
 }
 
+// 관리자 화면 전용(대시보드·이력관리·items API). 최신 시점(year)이 위로 오도록 desc 정렬.
+// 공개 about은 getTimeline()/getProjects()를 따로 쓰므로 영향 없음.
 export function getItems(): PortfolioItem[] {
-  return read()
+  return read().sort((a, b) => timeKey(b.year) - timeKey(a.year))
 }
 
 /** "2025" 또는 "2025.03"/"2025-3" 형태의 시점을 정렬용 숫자(연*100+월)로 변환. 월 없으면 0 */

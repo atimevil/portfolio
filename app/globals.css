@@ -107,9 +107,10 @@ code {
   padding: 0;
   font-size: 0.85rem;
   line-height: 1.7;
-  display: grid;
-  /* 긴 코드 줄이 좁은 칼럼에서 줄바꿈돼 뭉개지지 않도록 그리드를 내용 폭으로 키우고,
-     넘치면 .prose pre 의 overflow-x:auto 로 가로 스크롤되게 한다 */
+  /* display은 지정하지 않는다:
+     - 공개 렌더(shiki)는 <code>에 자체 인라인 display:grid 를 붙여 각 줄을 그리드 행으로 그린다
+     - 에디터(Tiptap 코드블록)는 grid가 아니라 기본 흐름 — 여기에 grid를 강제하면 에디터 코드가 깨진다
+     긴 줄은 max-content 로 내용 폭까지 키우고 .prose pre 의 overflow-x:auto 로 가로 스크롤. */
   width: max-content;
   min-width: 100%;
 }

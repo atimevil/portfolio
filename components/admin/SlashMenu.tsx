@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import { ReactRenderer } from '@tiptap/react'
 import tippy, { type Instance as TippyInstance } from 'tippy.js'
 import type { SuggestionKeyDownProps, SuggestionProps } from '@tiptap/suggestion'
@@ -18,8 +18,16 @@ export interface SlashMenuListRef {
 // 슬래시 드롭다운 목록 — ↑/↓로 이동, Enter로 선택(Esc는 renderSlashMenu의 onKeyDown에서 팝업을 닫음).
 const SlashMenuList = forwardRef<SlashMenuListRef, SlashMenuListProps>(({ items, command }, ref) => {
   const [selectedIndex, setSelectedIndex] = useState(0)
+  const listRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => setSelectedIndex(0), [items])
+
+  // 선택 항목이 스크롤 영역(max-h) 밖으로 나가면 보이도록 스크롤 — 항목이 많을 때 하이라이트가 사라지는 문제 방지
+  useEffect(() => {
+    listRef.current
+      ?.querySelector<HTMLElement>(`[data-index="${selectedIndex}"]`)
+      ?.scrollIntoView({ block: 'nearest' })
+  }, [selectedIndex])
 
   const selectItem = (index: number) => {
     const item = items[index]
@@ -53,11 +61,12 @@ const SlashMenuList = forwardRef<SlashMenuListRef, SlashMenuListProps>(({ items,
   }
 
   return (
-    <div className="p-1 min-w-[220px] max-h-72 overflow-y-auto bg-bg-secondary border border-border rounded-lg shadow-lg">
+    <div ref={listRef} className="p-1 min-w-[220px] max-h-72 overflow-y-auto bg-bg-secondary border border-border rounded-lg shadow-lg">
       {items.map((item, index) => (
         <button
           key={item.title}
           type="button"
+          data-index={index}
           onClick={() => selectItem(index)}
           className={`w-full flex flex-col items-start gap-0.5 px-2 py-1.5 rounded text-left text-sm transition-colors ${
             index === selectedIndex ? 'bg-text-primary text-bg' : 'text-text-primary hover:bg-surface'

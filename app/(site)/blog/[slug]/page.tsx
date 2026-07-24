@@ -9,6 +9,7 @@ import remarkGfm from 'remark-gfm'
 import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import rehypePrettyCode from 'rehype-pretty-code'
+import { renderBlogHtml } from '@/lib/renderBlogHtml'
 import ViewIncrementer from '@/components/blog/ViewIncrementer'
 import TagBadges from '@/components/blog/TagBadges'
 
@@ -45,6 +46,9 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
   const prevPost = idx !== -1 && idx < allPosts.length - 1 ? allPosts[idx + 1] : null
   const nextPost = idx > 0 ? allPosts[idx - 1] : null
 
+  // html 글은 정제+하이라이트한 HTML을, markdown 글은 기존 MDX 파이프라인을 쓴다.
+  const htmlRendered = post.contentFormat === 'html' ? await renderBlogHtml(post.content) : null
+
   return (
     <main className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
       <article className="min-w-0">
@@ -72,17 +76,24 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
           <TagBadges tags={post.tags} category={post.category} className="mt-3" />
         </header>
 
-        <div className="prose prose-neutral dark:prose-invert max-w-none">
-          <MDXRemote
-            source={post.content}
-            options={{
-              mdxOptions: {
-                remarkPlugins: [remarkGfm, remarkMath],
-                rehypePlugins: [rehypeKatex, [rehypePrettyCode, { theme: 'github-dark', keepBackground: false }]],
-              },
-            }}
+        {htmlRendered !== null ? (
+          <div
+            className="prose prose-neutral dark:prose-invert max-w-none"
+            dangerouslySetInnerHTML={{ __html: htmlRendered }}
           />
-        </div>
+        ) : (
+          <div className="prose prose-neutral dark:prose-invert max-w-none">
+            <MDXRemote
+              source={post.content}
+              options={{
+                mdxOptions: {
+                  remarkPlugins: [remarkGfm, remarkMath],
+                  rehypePlugins: [rehypeKatex, [rehypePrettyCode, { theme: 'github-dark', keepBackground: false }]],
+                },
+              }}
+            />
+          </div>
+        )}
 
         <div className="mt-12 pt-8 border-t border-border flex justify-between gap-4">
           {prevPost ? (

@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  // sanitize-html(CommonJS)가 htmlparser2(ESM)를 require → 서버 전용으로 번들에서 제외
+  experimental: {
+    serverComponentsExternalPackages: ['sanitize-html'],
+  },
   images: {
     remotePatterns: [
       {

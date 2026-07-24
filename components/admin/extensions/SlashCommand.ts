@@ -1,5 +1,6 @@
 import { Extension, type Editor, type Range } from '@tiptap/core'
 import Suggestion, { type SuggestionOptions } from '@tiptap/suggestion'
+import { uploadBlogImage } from '@/lib/uploadBlogImage'
 
 export interface SlashCommandItem {
   title: string
@@ -7,10 +8,35 @@ export interface SlashCommandItem {
   command: (props: { editor: Editor; range: Range }) => void
 }
 
+// range(입력된 "/query" 구간)를 지우고, RichEditor의 fileInputRef에 의존하지 않는
+// 임시 파일 input을 만들어 이미지를 업로드·삽입한다(자기 완결적 — 툴바 🖼 버튼과 별개 경로).
+function insertImageViaSlash({ editor, range }: { editor: Editor; range: Range }) {
+  editor.chain().focus().deleteRange(range).run()
+
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
+  input.style.display = 'none'
+
+  input.addEventListener('change', () => {
+    const file = input.files?.[0]
+    input.remove()
+    if (!file) return
+    uploadBlogImage(file)
+      .then((url) => {
+        editor.chain().focus().setImage({ src: url }).run()
+      })
+      .catch(() => {
+        alert('이미지 업로드에 실패했습니다.')
+      })
+  })
+
+  document.body.appendChild(input)
+  input.click()
+}
+
 // 슬래시(`/`) 입력 시 뜨는 명령 목록. 각 command는 range(입력된 "/query" 구간)를
 // 지운 뒤 해당 블록 커맨드를 실행한다(Tiptap suggestion 표준 패턴).
-// 이미지 업로드는 제외했다 — 파일 선택 상호작용이 RichEditor의 fileInputRef(DOM ref)에
-// 결합돼 있어 range/command 콜백만으로 깔끔하게 트리거할 수 없다. 툴바 🖼 버튼으로 계속 사용.
 const items: SlashCommandItem[] = [
   {
     title: '제목 1',
@@ -46,6 +72,11 @@ const items: SlashCommandItem[] = [
     title: '인용',
     description: '인용구 블록',
     command: ({ editor, range }) => editor.chain().focus().deleteRange(range).toggleBlockquote().run(),
+  },
+  {
+    title: '이미지',
+    description: '이미지 업로드',
+    command: insertImageViaSlash,
   },
   {
     title: '코드블록',

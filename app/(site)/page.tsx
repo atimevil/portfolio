@@ -3,15 +3,17 @@ export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import BlogViews from '@/components/blog/BlogViews'
 import Pagination from '@/components/blog/Pagination'
+import { CategoryFilter, PageSizeSelect } from '@/components/blog/BlogFilters'
 import ProfileHeader from '@/components/layout/ProfileHeader'
 import { getAllPosts } from '@/lib/blog'
 import { getSettings } from '@/lib/settings'
 import { buildPageMetadata } from '@/lib/site'
 
-const POSTS_PER_PAGE = 10
+const DEFAULT_PER_PAGE = 10
+const ALLOWED_PER_PAGE = [10, 20, 30, 50]
 
 interface Props {
-  searchParams: { page?: string; tag?: string; category?: string }
+  searchParams: { page?: string; tag?: string; category?: string; perPage?: string }
 }
 
 export function generateMetadata() {
@@ -27,16 +29,29 @@ export default async function HomePage({ searchParams }: Props) {
   const category = searchParams.category?.trim()
   const filtering = Boolean(tag || category)
 
-  let posts = await getAllPosts()
+  const perPageParsed = Number(searchParams.perPage)
+  const perPage = ALLOWED_PER_PAGE.includes(perPageParsed) ? perPageParsed : DEFAULT_PER_PAGE
+
+  const allPosts = await getAllPosts()
+
+  // 카테고리 목록은 현재 필터와 무관하게 전체 글 기준으로 집계 (필터바가 항상 안정적으로 보이도록)
+  const categoryCounts = new Map<string, number>()
+  for (const p of allPosts) {
+    if (p.category) categoryCounts.set(p.category, (categoryCounts.get(p.category) ?? 0) + 1)
+  }
+  const categories = Array.from(categoryCounts.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count)
+
+  let posts = allPosts
   if (tag) posts = posts.filter((p) => p.tags?.includes(tag))
   if (category) posts = posts.filter((p) => p.category === category)
 
-  // 필터 중에는 매칭 글 전부를, 평소에는 페이지네이션해서 보여준다.
-  const currentPage = Number(searchParams.page ?? 1)
-  const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE)
-  const pagePosts = filtering
-    ? posts
-    : posts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE)
+  const currentPage = Math.max(1, Number(searchParams.page) || 1)
+  const totalPages = Math.max(1, Math.ceil(posts.length / perPage))
+  const pagePosts = posts.slice((currentPage - 1) * perPage, currentPage * perPage)
+
+  const extraParams = { category, tag, perPage: perPage !== DEFAULT_PER_PAGE ? String(perPage) : undefined }
 
   return (
     <main className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
@@ -56,8 +71,14 @@ export default async function HomePage({ searchParams }: Props) {
 
       <section>
         {!filtering && (
-          <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-2">최근 글</h2>
+          <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted mb-3">최근 글</h2>
         )}
+
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <CategoryFilter categories={categories} activeCategory={category} extraParams={{ tag }} />
+          <PageSizeSelect perPage={perPage} extraParams={{ category, tag }} />
+        </div>
+
         {pagePosts.length === 0 ? (
           <p className="text-text-muted py-16 text-center text-sm">
             {filtering ? '해당 분류의 글이 없습니다.' : '글이 없습니다.'}
@@ -65,7 +86,7 @@ export default async function HomePage({ searchParams }: Props) {
         ) : (
           <BlogViews posts={pagePosts} />
         )}
-        {!filtering && <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/" />}
+        <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/" extraParams={extraParams} />
       </section>
     </main>
   )

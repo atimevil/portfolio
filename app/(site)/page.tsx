@@ -75,7 +75,12 @@ export default async function HomePage({ searchParams }: Props) {
         )}
 
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <CategoryFilter categories={categories} activeCategory={category} extraParams={{ tag }} />
+          <CategoryFilter
+            categories={categories}
+            activeCategory={category}
+            extraParams={extraParams}
+            totalCount={allPosts.length}
+          />
           <PageSizeSelect perPage={perPage} extraParams={{ category, tag }} />
         </div>
 

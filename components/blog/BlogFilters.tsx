@@ -6,6 +6,8 @@ interface CategoryFilterProps {
   categories: { name: string; count: number }[]
   activeCategory?: string
   extraParams?: Record<string, string | undefined>
+  /** "전체" 칩에 표시할 총 글 수. 카테고리 미지정 글도 포함해야 하므로 호출부에서 전체 posts.length로 넘긴다. */
+  totalCount: number
 }
 
 function buildHref(overrides: Record<string, string | undefined>, extraParams?: Record<string, string | undefined>) {
@@ -19,9 +21,8 @@ function buildHref(overrides: Record<string, string | undefined>, extraParams?: 
 }
 
 // 카테고리 필터 칩 — 전체/카테고리별 글 수, 현재 활성 카테고리는 accent로 강조.
-export function CategoryFilter({ categories, activeCategory, extraParams }: CategoryFilterProps) {
+export function CategoryFilter({ categories, activeCategory, extraParams, totalCount }: CategoryFilterProps) {
   if (categories.length === 0) return null
-  const totalCount = categories.reduce((sum, c) => sum + c.count, 0)
 
   return (
     <div className="flex flex-wrap gap-1.5">

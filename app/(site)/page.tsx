@@ -10,7 +10,7 @@ import { getSettings } from '@/lib/settings'
 import { buildPageMetadata } from '@/lib/site'
 
 const DEFAULT_PER_PAGE = 10
-const ALLOWED_PER_PAGE = [10, 20, 30, 50]
+const ALLOWED_PER_PAGE = [5, 10, 20]
 
 interface Props {
   searchParams: { page?: string; tag?: string; category?: string; perPage?: string }

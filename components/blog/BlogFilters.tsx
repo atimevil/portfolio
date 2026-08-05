@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-const PAGE_SIZE_OPTIONS = [10, 20, 30, 50]
+const PAGE_SIZE_OPTIONS = [5, 10, 20]
 
 interface CategoryFilterProps {
   categories: { name: string; count: number }[]

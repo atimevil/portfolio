@@ -11,15 +11,21 @@ const navLinks = [
   { href: '/gallery', label: '갤러리' },
 ]
 
+// 맛집지도는 비공개 개인 도구라 로그인했을 때만 메뉴에 노출한다.
+// (비로그인 방문자에겐 존재 자체가 안 보여서 로그인 벽에 부딪히는 경험이 없다)
+const adminOnlyLinks = [{ href: '/food', label: '맛집' }]
+
 // 현재 경로가 해당 링크에 속하는지 (홈은 정확히 '/', 나머지는 접두사 매칭)
 function isActive(pathname: string, href: string) {
   if (href === '/') return pathname === '/'
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
-export default function NavBar() {
+export default function NavBar({ isAdmin = false }: { isAdmin?: boolean }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname() ?? '/'
+
+  const links = isAdmin ? [...navLinks, ...adminOnlyLinks] : navLinks
 
   const linkClass = (href: string) =>
     isActive(pathname, href)
@@ -37,7 +43,7 @@ export default function NavBar() {
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => (
+          {links.map((link) => (
             <Link key={link.href} href={link.href} className={linkClass(link.href)}>
               {link.label}
             </Link>
@@ -56,7 +62,7 @@ export default function NavBar() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-border bg-bg px-4 py-4 flex flex-col gap-4">
-          {navLinks.map((link) => (
+          {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}

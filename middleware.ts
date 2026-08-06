@@ -23,5 +23,6 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  // /food는 비공개 개인 도구(맛집지도)라 admin과 동일하게 로그인을 요구한다.
+  matcher: ['/admin/:path*', '/food'],
 }

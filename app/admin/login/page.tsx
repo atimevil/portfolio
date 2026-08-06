@@ -11,6 +11,15 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
+  // 로그인 후 원래 가려던 곳으로 되돌아간다.
+  // useSearchParams()는 이 페이지의 정적 생성을 깨뜨리므로(Suspense 요구), 값이 실제로
+  // 필요한 제출 시점에 브라우저에서 직접 읽는다.
+  // 외부 URL로 튕기지 않도록 내부 경로("/"로 시작, "//" 제외)만 허용한다.
+  function resolveCallbackUrl() {
+    const raw = new URLSearchParams(window.location.search).get('callbackUrl') ?? ''
+    return raw.startsWith('/') && !raw.startsWith('//') ? raw : '/admin'
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -18,7 +27,7 @@ export default function LoginPage() {
     const res = await signIn('credentials', { password, redirect: false })
     setLoading(false)
     if (res?.ok) {
-      router.push('/admin')
+      router.push(resolveCallbackUrl())
     } else {
       setError('비밀번호가 틀렸습니다.')
     }

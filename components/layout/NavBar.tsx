@@ -13,7 +13,7 @@ const navLinks = [
 
 // 맛집지도는 비공개 개인 도구라 로그인했을 때만 메뉴에 노출한다.
 // (비로그인 방문자에겐 존재 자체가 안 보여서 로그인 벽에 부딪히는 경험이 없다)
-const adminOnlyLinks = [{ href: '/food', label: '맛집' }]
+const adminOnlyLinks = [{ href: '/maps', label: '가고 싶은 곳' }]
 
 // 현재 경로가 해당 링크에 속하는지 (홈은 정확히 '/', 나머지는 접두사 매칭)
 function isActive(pathname: string, href: string) {

@@ -7,7 +7,7 @@ interface Props {
   onChange: (url: string) => void
 }
 
-// 사진 한 장 업로드 — 기존 /api/upload를 재사용하고 type=food로 폴더만 나눈다.
+// 사진 한 장 업로드 — 기존 /api/upload를 재사용하고 type=maps로 폴더만 나눈다.
 export default function PhotoUpload({ value, onChange }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
@@ -19,7 +19,7 @@ export default function PhotoUpload({ value, onChange }: Props) {
     try {
       const body = new FormData()
       body.append('file', file)
-      body.append('type', 'food')
+      body.append('type', 'maps')
       const res = await fetch('/api/upload', { method: 'POST', body })
       if (!res.ok) {
         setError('업로드에 실패했습니다.')

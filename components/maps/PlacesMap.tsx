@@ -38,7 +38,7 @@ function PanTo({ target }: { target: { lat: number; lng: number } | null }) {
 
 const SEOUL = { lat: 37.5665, lng: 126.978 }
 
-export default function FoodMap({ places, selected, onSelect, draft, mapId }: Props) {
+export default function PlacesMap({ places, selected, onSelect, draft, mapId }: Props) {
   // 필터로 핀이 사라진 곳의 정보창이 공중에 남지 않도록,
   // 현재 표시 중인 목록에 있는 경우에만 정보창을 띄운다.
   const activeSelected = selected && places.some((p) => p.id === selected.id) ? selected : null

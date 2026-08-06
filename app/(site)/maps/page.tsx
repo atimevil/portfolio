@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
 import { getPlaces } from '@/lib/places'
-import FoodManager from '@/components/food/FoodManager'
+import MapsManager from '@/components/maps/MapsManager'
 
 export const metadata = {
   title: '가고 싶은 곳',
@@ -12,9 +12,9 @@ export const metadata = {
 
 // 비공개 개인 도구 — 로그인한 관리자만 접근 가능.
 // middleware에서도 막지만, 라우트 자체에서 한 번 더 확인한다(방어적).
-export default async function FoodPage() {
+export default async function MapsPage() {
   const session = await getServerSession()
-  if (!session) redirect('/admin/login?callbackUrl=/food')
+  if (!session) redirect('/admin/login?callbackUrl=/maps')
 
   const places = await getPlaces()
 
@@ -27,7 +27,7 @@ export default async function FoodPage() {
         </p>
       </header>
 
-      <FoodManager
+      <MapsManager
         initial={places}
         apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''}
         mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? ''}

@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
 
   // type별로 저장 폴더를 나눈다. 정해진 값만 허용해서 경로 조작(../ 등)을 막는다.
   const type = formData.get('type')
-  const subdir = type === 'blog' ? 'blog' : type === 'food' ? 'food' : ''
+  const subdir = type === 'blog' ? 'blog' : type === 'maps' ? 'maps' : ''
   const prefix = subdir || 'avatar'
 
   const bytes = await file.arrayBuffer()

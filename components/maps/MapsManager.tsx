@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation'
 import { APIProvider } from '@vis.gl/react-google-maps'
 import type { Place } from '@prisma/client'
 import type { PlaceType } from '@/lib/places'
-import FoodMap from './FoodMap'
+import PlacesMap from './PlacesMap'
 import PlaceSearch, { type PickedPlace } from './PlaceSearch'
 import PhotoUpload from './PhotoUpload'
+import PhotoCleanup from './PhotoCleanup'
 
 // 종류별로 쓰는 말과 자주 쓰는 카테고리가 다르다.
 const TYPE_CONFIG = {
@@ -52,7 +53,7 @@ type Editing = {
   photo: string
 }
 
-export default function FoodManager({ initial, apiKey, mapId }: Props) {
+export default function MapsManager({ initial, apiKey, mapId }: Props) {
   const router = useRouter()
   const [tab, setTab] = useState<Tab>('all')
   const [selected, setSelected] = useState<Place | null>(null)
@@ -227,7 +228,7 @@ export default function FoodManager({ initial, apiKey, mapId }: Props) {
           ))}
         </div>
 
-        <FoodMap
+        <PlacesMap
           places={visible}
           selected={selected}
           onSelect={setSelected}
@@ -494,6 +495,8 @@ export default function FoodManager({ initial, apiKey, mapId }: Props) {
             </ul>
           )}
         </section>
+
+        <PhotoCleanup />
       </div>
     </APIProvider>
   )

@@ -2,11 +2,11 @@ export const dynamic = 'force-dynamic'
 
 import { getServerSession } from 'next-auth'
 import { redirect } from 'next/navigation'
-import { getRestaurants } from '@/lib/restaurants'
+import { getPlaces } from '@/lib/places'
 import FoodManager from '@/components/food/FoodManager'
 
 export const metadata = {
-  title: '맛집지도',
+  title: '가고 싶은 곳',
   robots: { index: false, follow: false },
 }
 
@@ -16,19 +16,19 @@ export default async function FoodPage() {
   const session = await getServerSession()
   if (!session) redirect('/admin/login?callbackUrl=/food')
 
-  const restaurants = await getRestaurants()
+  const places = await getPlaces()
 
   return (
     <main className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
       <header className="mb-6">
-        <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">맛집지도</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">가고 싶은 곳</h1>
         <p className="mt-1 text-sm text-text-secondary">
-          가보고 싶은 곳 {restaurants.length}곳 · 나만 볼 수 있어요
+          맛집 · 쇼핑 {places.length}곳 · 나만 볼 수 있어요
         </p>
       </header>
 
       <FoodManager
-        initial={restaurants}
+        initial={places}
         apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''}
         mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? ''}
       />

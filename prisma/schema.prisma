@@ -44,18 +44,21 @@ model Category {
   posts Post[]
 }
 
-// 맛집지도 — 가보고 싶은 곳을 미리 모아두는 개인 위시리스트(비공개, 관리자 전용).
+// 가보고 싶은 곳을 미리 모아두는 개인 위시리스트(비공개, 관리자 전용).
+// 맛집과 쇼핑을 같은 지도에서 보므로 type으로만 구분하고 테이블은 하나로 둔다.
 // 카테고리는 값 종류가 적어 별도 테이블 없이 문자열로 둔다.
-model Restaurant {
+model Place {
   id        Int      @id @default(autoincrement())
+  type      String   @default("food") // "food"(맛집) | "shopping"(쇼핑)
   name      String
   lat       Float
   lng       Float
   address   String?
   category  String?
-  menus     String? // 추천 메뉴, 자유 텍스트 (예: "우니동, 사케동")
+  items     String? // 맛집이면 추천 메뉴, 쇼핑이면 살 것/브랜드
   memo      String?
-  placeId   String?  @unique // 구글 place_id — 같은 가게 중복 등록 방지
+  photo     String? // 업로드한 사진 경로 (예: /uploads/food/food-123.jpg)
+  placeId   String?  @unique // 구글 place_id — 같은 곳 중복 등록 방지
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

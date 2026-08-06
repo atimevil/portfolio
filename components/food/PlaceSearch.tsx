@@ -13,6 +13,7 @@ export type PickedPlace = {
 
 interface Props {
   onPick: (place: PickedPlace) => void
+  placeholder?: string
 }
 
 type Suggestion = {
@@ -34,7 +35,7 @@ type Suggestion = {
 // 비용: 세션 토큰을 쓰면 "입력 중 자동완성 호출"은 과금되지 않고, 사용자가 하나를
 // 선택해 fetchFields()를 호출하는 시점에 세션 하나로 정산된다. 그래서 토큰은
 // 검색 시작 시 만들고 선택 직후 버린다.
-export default function PlaceSearch({ onPick }: Props) {
+export default function PlaceSearch({ onPick, placeholder }: Props) {
   const placesLib = useMapsLibrary('places')
   const [input, setInput] = useState('')
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
@@ -138,7 +139,7 @@ export default function PlaceSearch({ onPick }: Props) {
       <input
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        placeholder={placesLib ? '가게명 검색 (예: 스시로 시부야점)' : '지도 로딩 중…'}
+        placeholder={placesLib ? (placeholder ?? '가게명 검색') : '지도 로딩 중…'}
         disabled={!placesLib}
         className="w-full rounded-md border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted transition-colors focus:border-accent focus:outline-none disabled:opacity-50"
       />

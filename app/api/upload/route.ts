@@ -11,16 +11,21 @@ export async function POST(req: NextRequest) {
   const file = formData.get('file') as File | null
   if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 })
 
-  const isBlog = formData.get('type') === 'blog'
+  // type별로 저장 폴더를 나눈다. 정해진 값만 허용해서 경로 조작(../ 등)을 막는다.
+  const type = formData.get('type')
+  const subdir = type === 'blog' ? 'blog' : type === 'food' ? 'food' : ''
+  const prefix = subdir || 'avatar'
+
   const bytes = await file.arrayBuffer()
   const buffer = Buffer.from(bytes)
-  const ext = (file.name.split('.').pop() ?? 'jpg').toLowerCase()
-  const filename = `${isBlog ? 'blog' : 'avatar'}-${Date.now()}.${ext}`
+  // 확장자도 허용 목록으로 제한 (파일명에서 온 값을 그대로 쓰지 않는다)
+  const rawExt = (file.name.split('.').pop() ?? '').toLowerCase()
+  const ext = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'].includes(rawExt) ? rawExt : 'jpg'
+  const filename = `${prefix}-${Date.now()}.${ext}`
 
-  // 블로그 이미지는 기존 관습대로 /uploads/blog/ 아래에, 아바타는 /uploads/ 바로 아래에.
-  const uploadDir = path.join(process.cwd(), 'public/uploads', isBlog ? 'blog' : '')
+  const uploadDir = path.join(process.cwd(), 'public/uploads', subdir)
   await mkdir(uploadDir, { recursive: true })
   await writeFile(path.join(uploadDir, filename), buffer)
 
-  return NextResponse.json({ url: isBlog ? `/uploads/blog/${filename}` : `/uploads/${filename}` })
+  return NextResponse.json({ url: `/uploads/${subdir ? `${subdir}/` : ''}${filename}` })
 }

@@ -43,13 +43,13 @@ type Draft = PickedPlace & {
   photo: string
 }
 
+// 수정 대상은 사람이 쓴 값만. 종류(type)는 목록의 원본 레코드에서 읽으므로 여기 담지 않는다.
 type Editing = {
   id: number
   category: string
   items: string
   memo: string
   photo: string
-  type: PlaceType
 }
 
 export default function FoodManager({ initial, apiKey, mapId }: Props) {
@@ -113,6 +113,12 @@ export default function FoodManager({ initial, apiKey, mapId }: Props) {
         const body = await res.json().catch(() => ({}))
         setError(typeof body.error === 'string' ? body.error : '저장에 실패했습니다.')
         return
+      }
+      // 보고 있는 탭과 다른 종류를 저장하면 목록에서 안 보여 저장이 실패한 것처럼 느껴진다.
+      // 방금 저장한 종류가 보이는 탭으로 옮겨준다.
+      if (tab !== 'all' && tab !== draft.type) {
+        setTab(draft.type)
+        setFilter(null)
       }
       setDraft(null)
       router.refresh()
@@ -466,7 +472,6 @@ export default function FoodManager({ initial, apiKey, mapId }: Props) {
                             items: p.items ?? '',
                             memo: p.memo ?? '',
                             photo: p.photo ?? '',
-                            type: p.type === 'shopping' ? 'shopping' : 'food',
                           })
                           setError(null)
                         }}

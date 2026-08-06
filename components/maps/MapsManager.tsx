@@ -2,11 +2,13 @@
 
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { APIProvider } from '@vis.gl/react-google-maps'
+import dynamic from 'next/dynamic'
 import type { Place } from '@prisma/client'
 import type { PlaceType } from '@/lib/places'
-import PlacesMap from './PlacesMap'
 import PlaceSearch, { type PickedPlace } from './PlaceSearch'
+
+// Leaflet은 브라우저 window를 필요로 해 서버에서 렌더링할 수 없다.
+const PlacesMap = dynamic(() => import('./PlacesMap'), { ssr: false })
 import PhotoUpload from './PhotoUpload'
 import PhotoCleanup from './PhotoCleanup'
 
@@ -32,8 +34,6 @@ type Tab = 'all' | PlaceType
 
 interface Props {
   initial: Place[]
-  apiKey: string
-  mapId: string
 }
 
 type Draft = PickedPlace & {
@@ -53,7 +53,7 @@ type Editing = {
   photo: string
 }
 
-export default function MapsManager({ initial, apiKey, mapId }: Props) {
+export default function MapsManager({ initial }: Props) {
   const router = useRouter()
   const [tab, setTab] = useState<Tab>('all')
   const [selected, setSelected] = useState<Place | null>(null)
@@ -178,35 +178,10 @@ export default function MapsManager({ initial, apiKey, mapId }: Props) {
     }
   }
 
-  // 키나 Map ID가 없으면 지도가 깨진 채로 뜨는 대신 무엇이 빠졌는지 알려준다.
-  const missing = [
-    !apiKey && 'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY',
-    !mapId && 'NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID',
-  ].filter(Boolean) as string[]
-
-  if (missing.length > 0) {
-    return (
-      <div className="rounded-xl border border-amber-300 bg-amber-50 p-5 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200">
-        <p className="font-semibold">구글 지도 설정이 아직 없습니다.</p>
-        <p className="mt-2 text-xs leading-relaxed">
-          <code>.env</code>에 다음 항목을 추가한 뒤 앱을 다시 빌드하면 지도가 표시됩니다:
-        </p>
-        <ul className="mt-1.5 list-inside list-disc text-xs">
-          {missing.map((k) => (
-            <li key={k}>
-              <code>{k}</code>
-            </li>
-          ))}
-        </ul>
-      </div>
-    )
-  }
-
   const addCfg = TYPE_CONFIG[addType]
 
   return (
-    <APIProvider apiKey={apiKey}>
-      <div className="flex flex-col gap-5">
+    <div className="flex flex-col gap-5">
         {/* 종류 탭 */}
         <div className="flex gap-1 border-b border-border">
           {([
@@ -233,7 +208,6 @@ export default function MapsManager({ initial, apiKey, mapId }: Props) {
           selected={selected}
           onSelect={setSelected}
           draft={draft ? { lat: draft.lat, lng: draft.lng } : null}
-          mapId={mapId}
         />
 
         {/* 추가 폼 */}
@@ -498,6 +472,5 @@ export default function MapsManager({ initial, apiKey, mapId }: Props) {
 
         <PhotoCleanup />
       </div>
-    </APIProvider>
   )
 }

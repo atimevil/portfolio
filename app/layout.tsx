@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import 'katex/dist/katex.min.css'
+import 'leaflet/dist/leaflet.css'
 import { getSettings } from '@/lib/settings'
 import { OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/site'
 

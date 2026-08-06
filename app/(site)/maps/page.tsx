@@ -27,11 +27,7 @@ export default async function MapsPage() {
         </p>
       </header>
 
-      <MapsManager
-        initial={places}
-        apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''}
-        mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? ''}
-      />
+      <MapsManager initial={places} />
     </main>
   )
 }

@@ -10,14 +10,10 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# NEXT_PUBLIC_* vars are baked in at build time (used by app/sitemap.ts,
-# and by the food map page for Google Maps). Missing here == empty in the browser.
+# NEXT_PUBLIC_* vars are baked in at build time (used by app/sitemap.ts).
+# Missing here == empty in the browser.
 ARG NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
-ARG NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-ENV NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=${NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
-ARG NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID
-ENV NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID=${NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID}
 RUN npm run build
 
 # Stage 3: runner

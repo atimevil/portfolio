@@ -30,6 +30,7 @@ export default async function FoodPage() {
       <FoodManager
         initial={restaurants}
         apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? ''}
+        mapId={process.env.NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID ?? ''}
       />
     </main>
   )

@@ -10,6 +10,8 @@ interface Props {
   onSelect: (r: Restaurant | null) => void
   /** 등록 폼에서 방금 고른 위치 (아직 저장 전) */
   draft: { lat: number; lng: number; name: string } | null
+  /** 구글 클라우드에서 발급한 Map ID. AdvancedMarker가 동작하려면 실제 ID여야 한다. */
+  mapId: string
 }
 
 // 선택된 맛집이 바뀌면 지도를 그 위치로 부드럽게 이동시킨다.
@@ -25,7 +27,7 @@ function PanTo({ target }: { target: { lat: number; lng: number } | null }) {
 
 const SEOUL = { lat: 37.5665, lng: 126.978 }
 
-export default function FoodMap({ restaurants, selected, onSelect, draft }: Props) {
+export default function FoodMap({ restaurants, selected, onSelect, draft, mapId }: Props) {
   // 지도 최초 중심: 등록된 맛집이 있으면 첫 번째, 없으면 서울
   const initialCenter = restaurants[0]
     ? { lat: restaurants[0].lat, lng: restaurants[0].lng }
@@ -36,7 +38,7 @@ export default function FoodMap({ restaurants, selected, onSelect, draft }: Prop
       <Map
         defaultCenter={initialCenter}
         defaultZoom={restaurants.length > 0 ? 13 : 11}
-        mapId="foxibu-food-map"
+        mapId={mapId}
         gestureHandling="greedy"
         disableDefaultUI={false}
         onClick={() => onSelect(null)}

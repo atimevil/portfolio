@@ -12,11 +12,12 @@ const CATEGORY_PRESETS = ['한식', '일식', '중식', '양식', '카페', '술
 interface Props {
   initial: Restaurant[]
   apiKey: string
+  mapId: string
 }
 
 type Draft = PickedPlace & { category: string; menus: string; memo: string }
 
-export default function FoodManager({ initial, apiKey }: Props) {
+export default function FoodManager({ initial, apiKey, mapId }: Props) {
   const router = useRouter()
   const [selected, setSelected] = useState<Restaurant | null>(null)
   const [draft, setDraft] = useState<Draft | null>(null)
@@ -83,14 +84,27 @@ export default function FoodManager({ initial, apiKey }: Props) {
     }
   }
 
-  if (!apiKey) {
+  // 키나 Map ID가 없으면 지도가 깨진 채로 뜨는 대신 무엇이 빠졌는지 알려준다.
+  // (Map ID 없이는 AdvancedMarker가 렌더되지 않아 핀이 조용히 사라진다)
+  const missing = [
+    !apiKey && 'NEXT_PUBLIC_GOOGLE_MAPS_API_KEY',
+    !mapId && 'NEXT_PUBLIC_GOOGLE_MAPS_MAP_ID',
+  ].filter(Boolean) as string[]
+
+  if (missing.length > 0) {
     return (
       <div className="rounded-xl border border-amber-300 bg-amber-50 p-5 text-sm text-amber-900 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200">
-        <p className="font-semibold">구글 지도 API 키가 설정되지 않았습니다.</p>
-        <p className="mt-1.5 text-xs leading-relaxed">
-          <code>.env</code>에 <code>NEXT_PUBLIC_GOOGLE_MAPS_API_KEY</code>를 추가한 뒤 앱을 다시
-          빌드하면 지도가 표시됩니다.
+        <p className="font-semibold">구글 지도 설정이 아직 없습니다.</p>
+        <p className="mt-2 text-xs leading-relaxed">
+          <code>.env</code>에 다음 항목을 추가한 뒤 앱을 다시 빌드하면 지도가 표시됩니다:
         </p>
+        <ul className="mt-1.5 list-inside list-disc text-xs">
+          {missing.map((k) => (
+            <li key={k}>
+              <code>{k}</code>
+            </li>
+          ))}
+        </ul>
       </div>
     )
   }
@@ -103,6 +117,7 @@ export default function FoodManager({ initial, apiKey }: Props) {
           selected={selected}
           onSelect={setSelected}
           draft={draft ? { lat: draft.lat, lng: draft.lng, name: draft.name } : null}
+          mapId={mapId}
         />
 
         {/* 추가 폼 */}

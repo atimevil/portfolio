@@ -24,6 +24,9 @@ export default function FoodManager({ initial, apiKey, mapId }: Props) {
   const [filter, setFilter] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [editing, setEditing] = useState<
+    { id: number; category: string; menus: string; memo: string } | null
+  >(null)
 
   const categories = useMemo(() => {
     const counts = new Map<string, number>()
@@ -63,6 +66,37 @@ export default function FoodManager({ initial, apiKey, mapId }: Props) {
       router.refresh()
     } catch {
       setError('저장에 실패했습니다.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  // 가게명·좌표는 구글에서 받은 값이라 수정 대상이 아니다.
+  // 사람이 쓴 것(카테고리·메뉴·메모)만 고칠 수 있게 한다.
+  async function saveEdit() {
+    if (!editing) return
+    setBusy(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/restaurants', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editing.id,
+          category: editing.category,
+          menus: editing.menus,
+          memo: editing.memo,
+        }),
+      })
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}))
+        setError(typeof body.error === 'string' ? body.error : '수정에 실패했습니다.')
+        return
+      }
+      setEditing(null)
+      router.refresh()
+    } catch {
+      setError('수정에 실패했습니다.')
     } finally {
       setBusy(false)
     }
@@ -228,36 +262,112 @@ export default function FoodManager({ initial, apiKey, mapId }: Props) {
             ))}
           </div>
 
+          {/* 수정/삭제 중 발생한 오류 (추가 폼이 닫혀 있어도 보이도록 목록 위에 둔다) */}
+          {error && !draft && <p className="mb-2 text-xs text-red-500">{error}</p>}
+
           {visible.length === 0 ? (
             <p className="py-12 text-center text-sm text-text-muted">
               {initial.length === 0 ? '아직 등록한 맛집이 없습니다.' : '이 카테고리엔 없습니다.'}
             </p>
           ) : (
             <ul className="divide-y divide-border">
-              {visible.map((r) => (
-                <li key={r.id} className="flex items-start justify-between gap-4 py-3">
-                  <button
-                    onClick={() => setSelected(r)}
-                    className="group min-w-0 flex-1 text-left"
-                  >
-                    <span className="flex items-baseline gap-2">
-                      <span className="text-sm font-medium text-text-primary transition-colors group-hover:text-accent-hover">
-                        {r.name}
+              {visible.map((r) =>
+                editing?.id === r.id ? (
+                  <li key={r.id} className="flex flex-col gap-2 py-3">
+                    <p className="text-sm font-medium text-text-primary">{r.name}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {CATEGORY_PRESETS.map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() =>
+                            setEditing({ ...editing, category: editing.category === c ? '' : c })
+                          }
+                          className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+                            editing.category === c
+                              ? 'border-accent bg-accent-soft text-accent'
+                              : 'border-border text-text-secondary hover:text-text-primary'
+                          }`}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </div>
+                    <input
+                      value={editing.menus}
+                      onChange={(e) => setEditing({ ...editing, menus: e.target.value })}
+                      placeholder="추천 메뉴"
+                      className="rounded-md border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none"
+                    />
+                    <input
+                      value={editing.memo}
+                      onChange={(e) => setEditing({ ...editing, memo: e.target.value })}
+                      placeholder="메모"
+                      className="rounded-md border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={saveEdit}
+                        disabled={busy}
+                        className="rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-bg transition-colors hover:bg-accent-hover disabled:opacity-50"
+                      >
+                        저장
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditing(null)
+                          setError(null)
+                        }}
+                        className="rounded-md border border-border px-3 py-1.5 text-xs text-text-secondary transition-colors hover:text-text-primary"
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </li>
+                ) : (
+                  <li key={r.id} className="flex items-start justify-between gap-4 py-3">
+                    <button
+                      onClick={() => setSelected(r)}
+                      className="group min-w-0 flex-1 text-left"
+                    >
+                      <span className="flex items-baseline gap-2">
+                        <span className="text-sm font-medium text-text-primary transition-colors group-hover:text-accent-hover">
+                          {r.name}
+                        </span>
+                        {r.category && <span className="text-xs text-accent">{r.category}</span>}
                       </span>
-                      {r.category && <span className="text-xs text-accent">{r.category}</span>}
-                    </span>
-                    {r.menus && <span className="mt-0.5 block text-xs text-text-secondary">🍽 {r.menus}</span>}
-                    {r.memo && <span className="mt-0.5 block text-xs text-text-muted">{r.memo}</span>}
-                  </button>
-                  <button
-                    onClick={() => remove(r.id)}
-                    disabled={busy}
-                    className="shrink-0 text-xs text-text-muted transition-colors hover:text-red-500 disabled:opacity-50"
-                  >
-                    삭제
-                  </button>
-                </li>
-              ))}
+                      {r.menus && (
+                        <span className="mt-0.5 block text-xs text-text-secondary">🍽 {r.menus}</span>
+                      )}
+                      {r.memo && <span className="mt-0.5 block text-xs text-text-muted">{r.memo}</span>}
+                    </button>
+                    <div className="flex shrink-0 gap-3">
+                      <button
+                        onClick={() => {
+                          setEditing({
+                            id: r.id,
+                            category: r.category ?? '',
+                            menus: r.menus ?? '',
+                            memo: r.memo ?? '',
+                          })
+                          setError(null)
+                        }}
+                        disabled={busy}
+                        className="text-xs text-text-muted transition-colors hover:text-accent disabled:opacity-50"
+                      >
+                        수정
+                      </button>
+                      <button
+                        onClick={() => remove(r.id)}
+                        disabled={busy}
+                        className="text-xs text-text-muted transition-colors hover:text-red-500 disabled:opacity-50"
+                      >
+                        삭제
+                      </button>
+                    </div>
+                  </li>
+                )
+              )}
             </ul>
           )}
         </section>

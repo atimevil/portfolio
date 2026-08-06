@@ -50,7 +50,10 @@ export default function PlaceSearch({ onPick }: Props) {
       return
     }
 
-    // 타이핑이 멈춘 뒤에만 호출 (불필요한 요청 억제)
+    // 타이핑이 멈춘 뒤에만 호출 (불필요한 요청 억제).
+    // cancelled 플래그가 필요한 이유: 타이머를 지워도 '이미 출발한' 요청은 못 막는다.
+    // 빠르게 타이핑하면 늦게 도착한 옛 응답이 최신 결과를 덮어쓰는 문제가 생긴다.
+    let cancelled = false
     const timer = setTimeout(async () => {
       setLoading(true)
       setError(null)
@@ -67,6 +70,7 @@ export default function PlaceSearch({ onPick }: Props) {
           input: query,
           sessionToken: sessionToken.current,
         })
+        if (cancelled) return
 
         setSuggestions(
           raw
@@ -85,15 +89,19 @@ export default function PlaceSearch({ onPick }: Props) {
             })
             .filter((s): s is Suggestion => s !== null)
         )
-      } catch (e) {
+      } catch {
+        if (cancelled) return
         setError('검색에 실패했습니다. 잠시 후 다시 시도해주세요.')
         setSuggestions([])
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
     }, 300)
 
-    return () => clearTimeout(timer)
+    return () => {
+      cancelled = true
+      clearTimeout(timer)
+    }
   }, [input, placesLib])
 
   async function handlePick(s: Suggestion) {
@@ -118,6 +126,8 @@ export default function PlaceSearch({ onPick }: Props) {
       sessionToken.current = null // 세션 종료 — 다음 검색은 새 세션
     } catch {
       setError('장소 정보를 가져오지 못했습니다.')
+      // 실패해도 세션은 끝난 것으로 보고 버린다. 재사용하면 과금 세션이 꼬인다.
+      sessionToken.current = null
     } finally {
       setLoading(false)
     }

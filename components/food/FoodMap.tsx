@@ -28,6 +28,10 @@ function PanTo({ target }: { target: { lat: number; lng: number } | null }) {
 const SEOUL = { lat: 37.5665, lng: 126.978 }
 
 export default function FoodMap({ restaurants, selected, onSelect, draft, mapId }: Props) {
+  // 카테고리 필터로 핀이 사라진 가게의 정보창이 공중에 남지 않도록,
+  // 현재 표시 중인 목록에 있는 경우에만 정보창을 띄운다.
+  const activeSelected =
+    selected && restaurants.some((r) => r.id === selected.id) ? selected : null
   // 지도 최초 중심: 등록된 맛집이 있으면 첫 번째, 없으면 서울
   const initialCenter = restaurants[0]
     ? { lat: restaurants[0].lat, lng: restaurants[0].lng }
@@ -43,7 +47,11 @@ export default function FoodMap({ restaurants, selected, onSelect, draft, mapId 
         disableDefaultUI={false}
         onClick={() => onSelect(null)}
       >
-        <PanTo target={draft ?? (selected ? { lat: selected.lat, lng: selected.lng } : null)} />
+        <PanTo
+          target={
+            draft ?? (activeSelected ? { lat: activeSelected.lat, lng: activeSelected.lng } : null)
+          }
+        />
 
         {restaurants.map((r) => (
           <AdvancedMarker
@@ -66,18 +74,20 @@ export default function FoodMap({ restaurants, selected, onSelect, draft, mapId 
           </AdvancedMarker>
         )}
 
-        {selected && (
+        {activeSelected && (
           <InfoWindow
-            position={{ lat: selected.lat, lng: selected.lng }}
+            position={{ lat: activeSelected.lat, lng: activeSelected.lng }}
             onCloseClick={() => onSelect(null)}
           >
             <div className="min-w-[160px] text-neutral-900">
-              <p className="text-sm font-bold">{selected.name}</p>
-              {selected.category && (
-                <p className="mt-0.5 text-xs text-violet-700">{selected.category}</p>
+              <p className="text-sm font-bold">{activeSelected.name}</p>
+              {activeSelected.category && (
+                <p className="mt-0.5 text-xs text-violet-700">{activeSelected.category}</p>
               )}
-              {selected.menus && <p className="mt-1 text-xs">🍽 {selected.menus}</p>}
-              {selected.memo && <p className="mt-1 text-xs text-neutral-600">{selected.memo}</p>}
+              {activeSelected.menus && <p className="mt-1 text-xs">🍽 {activeSelected.menus}</p>}
+              {activeSelected.memo && (
+                <p className="mt-1 text-xs text-neutral-600">{activeSelected.memo}</p>
+              )}
             </div>
           </InfoWindow>
         )}

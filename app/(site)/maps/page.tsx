@@ -6,7 +6,7 @@ import { getPlaces } from '@/lib/places'
 import MapsManager from '@/components/maps/MapsManager'
 
 export const metadata = {
-  title: '가고 싶은 곳',
+  title: '지도',
   robots: { index: false, follow: false },
 }
 
@@ -21,7 +21,7 @@ export default async function MapsPage() {
   return (
     <main className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
       <header className="mb-6">
-        <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">가고 싶은 곳</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">지도</h1>
         <p className="mt-1 text-sm text-text-secondary">
           맛집 · 쇼핑 {places.length}곳 · 나만 볼 수 있어요
         </p>

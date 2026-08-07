@@ -49,10 +49,10 @@ export default function AdminBookManager({ initialBooks }: Props) {
     const payload = {
       title: form.title,
       author: form.author,
-      genre: form.genre || undefined,
+      genre: form.genre,
       status: form.status,
-      rating: form.status === 'done' && form.rating > 0 ? form.rating : undefined,
-      memo: form.memo || undefined,
+      rating: form.status === 'done' && form.rating > 0 ? form.rating : null,
+      memo: form.memo,
     }
 
     const res = await fetch('/api/books', {

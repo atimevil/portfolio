@@ -16,7 +16,7 @@ const BookSchema = z.object({
   author: z.string().min(1),
   genre: z.string().optional(),
   status: z.enum(['reading', 'done', 'want']).optional(),
-  rating: z.number().int().min(1).max(5).optional(),
+  rating: z.number().int().min(1).max(5).nullable().optional(),
   memo: z.string().optional(),
 })
 

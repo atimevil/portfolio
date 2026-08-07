@@ -72,4 +72,11 @@ describe('인증', () => {
     const res = await POST(makeRequest('POST', { title: 'T', artist: 'A' }))
     expect(res.status).toBe(401)
   })
+
+  it('세션 없이 GET하면 200 (공개 조회)', async () => {
+    const { getServerSession } = await import('next-auth')
+    vi.mocked(getServerSession).mockResolvedValueOnce(null)
+    const res = await GET()
+    expect(res.status).toBe(200)
+  })
 })

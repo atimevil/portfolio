@@ -61,9 +61,9 @@ export default function AdminMusicManager({ initialTracks }: Props) {
     const payload = {
       title: form.title,
       artist: form.artist,
-      genre: form.genre || undefined,
-      cover: form.cover || undefined,
-      link: form.link || undefined,
+      genre: form.genre,
+      cover: form.cover,
+      link: form.link,
     }
 
     const res = await fetch('/api/music', {

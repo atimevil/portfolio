@@ -20,4 +20,6 @@ export async function resetDb(): Promise<void> {
   await prisma.post.deleteMany()
   await prisma.tag.deleteMany()
   await prisma.category.deleteMany()
+  await prisma.book.deleteMany()
+  await prisma.track.deleteMany()
 }

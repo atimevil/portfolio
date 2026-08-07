@@ -50,3 +50,4 @@ CLAUDE.md
 
 # 내부 프로세스 문서(설계/계획) — 공개 레포에서 제외, 로컬 전용
 /docs/superpowers/
+/.worktrees/

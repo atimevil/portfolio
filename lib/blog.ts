@@ -12,16 +12,17 @@ function calcReadingTime(content: string): number {
 // 요약(미리보기)용: 마크다운 문법 기호를 벗겨 순수 텍스트로.
 export function stripMarkdown(md: string): string {
   return md
+    // eslint-disable-next-line no-useless-escape
+    .replace(/\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/g, '$1') // CommonMark 이스케이프("\+", "\<script\>" 등) → 기호만 남기고 백슬래시 제거. HTML/코드펜스 판별보다 먼저 해야 "\<script>" 같은 패턴에서 백슬래시가 고아로 남지 않음
     .replace(/<[^>]+>/g, ' ') // HTML 태그 (무손실 html 글 본문/excerpt 대응)
     .replace(/```[\s\S]*?```/g, ' ') // 코드 펜스
     .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // 이미지
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1') // 링크 → 텍스트
-    .replace(/\\([*_~`])/g, '$1') // 이스케이프된 강조 기호("\*" 등) → 기호만 남기고 백슬래시 제거
-    .replace(/[*_~`]/g, '') // 강조/코드 기호 (헤딩·목록 판별보다 먼저 벗겨야 "**1\." 같은 패턴도 잡힘)
+    .replace(/[*_~`]/g, '') // 강조/코드 기호 (헤딩·목록 판별보다 먼저 벗겨야 "**1." 같은 패턴도 잡힘)
     .replace(/^[ \t]*#{1,6}[ \t]*/gm, '') // 헤딩 (앞 공백 허용, 후행 공백 옵션)
     .replace(/^[ \t]*>\s?/gm, '') // 인용
     .replace(/^[ \t]*[-+]\s+/gm, '') // 불릿 (*는 위에서 이미 제거됨)
-    .replace(/^[ \t]*\d+\\?\.\s+/gm, '') // 번호 목록 (WYSIWYG 내보내기가 "1\." 처럼 이스케이프하는 경우 포함)
+    .replace(/^[ \t]*\d+\.\s+/gm, '') // 번호 목록
     .replace(/#{2,}/g, ' ') // 남은 ## ### 덩어리
     .replace(/\s+/g, ' ')
     .trim()

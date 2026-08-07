@@ -11,6 +11,8 @@ interface AdminLayoutProps {
 const navItems = [
   { href: '/admin', label: '대시보드', exact: true },
   { href: '/admin/blog', label: '블로그' },
+  { href: '/admin/books', label: '책' },
+  { href: '/admin/music', label: '음악' },
   { href: '/admin/items', label: '이력' },
   { href: '/admin/gallery', label: '갤러리' },
   { href: '/admin/categories', label: '카테고리' },

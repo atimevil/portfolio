@@ -430,12 +430,14 @@ export default function MapsManager({ initial }: Props) {
                           </span>
                           {p.category && <span className="text-xs text-accent">{p.category}</span>}
                         </span>
-                        {p.items && (
-                          <span className="mt-0.5 block text-xs text-text-secondary">
-                            {p.type === 'shopping' ? '🛍' : '🍽'} {p.items}
-                          </span>
-                        )}
-                        {p.memo && <span className="mt-0.5 block text-xs text-text-muted">{p.memo}</span>}
+                        <span className="hidden group-hover:block">
+                          {p.items && (
+                            <span className="mt-0.5 block text-xs text-text-secondary">
+                              {p.type === 'shopping' ? '🛍' : '🍽'} {p.items}
+                            </span>
+                          )}
+                          {p.memo && <span className="mt-0.5 block text-xs text-text-muted">{p.memo}</span>}
+                        </span>
                       </span>
                     </button>
                     <div className="flex shrink-0 gap-3">

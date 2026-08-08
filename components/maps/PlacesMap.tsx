@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import type { Place } from '@prisma/client'
@@ -57,6 +57,8 @@ export default function PlacesMap({ places, selected, onSelect, draft }: Props) 
   // 필터로 핀이 사라진 곳의 정보창이 공중에 남지 않도록,
   // 현재 표시 중인 목록에 있는 경우에만 정보창을 띄운다.
   const activeSelected = selected && places.some((p) => p.id === selected.id) ? selected : null
+  // 평소엔 이름+카테고리만 보이다가, 마우스를 올리면 추천메뉴+메모로 내용이 바뀐다.
+  const [hoveredId, setHoveredId] = useState<number | null>(null)
 
   const initialCenter = places[0] ? { lat: places[0].lat, lng: places[0].lng } : SEOUL
 
@@ -90,12 +92,28 @@ export default function PlacesMap({ places, selected, onSelect, draft }: Props) 
               popupclose: () => {
                 if (selected?.id === p.id) onSelect(null)
               },
+              mouseover: () => setHoveredId(p.id),
+              mouseout: () => setHoveredId(null),
             }}
           >
-            <Tooltip direction="top" offset={[0, -10]}>
+            <Tooltip permanent direction="top" offset={[0, -10]}>
               <div className="max-w-[200px] text-xs text-neutral-900">
-                <p className="font-semibold">{p.name}</p>
-                {p.memo && <p className="mt-0.5 text-neutral-600">{p.memo}</p>}
+                {hoveredId === p.id ? (
+                  <>
+                    {p.items && (
+                      <p>
+                        {p.type === 'shopping' ? '🛍' : '🍽'} {p.items}
+                      </p>
+                    )}
+                    {p.memo && <p className="mt-0.5 text-neutral-600">{p.memo}</p>}
+                    {!p.items && !p.memo && <p className="font-semibold">{p.name}</p>}
+                  </>
+                ) : (
+                  <>
+                    <p className="font-semibold">{p.name}</p>
+                    {p.category && <p className="mt-0.5 text-violet-700">{p.category}</p>}
+                  </>
+                )}
               </div>
             </Tooltip>
 

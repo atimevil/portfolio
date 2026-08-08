@@ -13,9 +13,18 @@ type FormState = {
   genre: string
   cover: string
   link: string
+  memo: string
 }
 
-const EMPTY_FORM: FormState = { id: null, title: '', artist: '', genre: '', cover: '', link: '' }
+const EMPTY_FORM: FormState = {
+  id: null,
+  title: '',
+  artist: '',
+  genre: '',
+  cover: '',
+  link: '',
+  memo: '',
+}
 
 // youtube.com/watch?v=, youtu.be/, youtube.com/shorts/, /embed/ 형태에서 영상 ID를 뽑는다.
 function extractYoutubeId(url: string): string | null {
@@ -55,6 +64,7 @@ export default function AdminMusicManager({ initialTracks }: Props) {
       genre: track.genre ?? '',
       cover: track.cover ?? '',
       link: track.link ?? '',
+      memo: track.memo ?? '',
     })
   }
 
@@ -102,6 +112,7 @@ export default function AdminMusicManager({ initialTracks }: Props) {
       genre: form.genre,
       cover: form.cover,
       link: form.link,
+      memo: form.memo,
     }
 
     const res = await fetch('/api/music', {
@@ -183,6 +194,14 @@ export default function AdminMusicManager({ initialTracks }: Props) {
           onBlur={handleLinkBlur}
           placeholder="재생 링크 (Spotify/YouTube 등 — 유튜브 링크면 제목·아티스트·썸네일 자동 채움)"
           className="w-full border border-border rounded-md px-3 py-2 text-sm bg-bg"
+        />
+
+        <textarea
+          value={form.memo}
+          onChange={(e) => setForm({ ...form, memo: e.target.value })}
+          placeholder="설명/감상 메모 (목록에서 곡에 마우스를 올리면 보임)"
+          rows={2}
+          className="w-full border border-border rounded-md px-3 py-2 text-sm bg-bg resize-none"
         />
 
         <div className="flex items-center gap-3">

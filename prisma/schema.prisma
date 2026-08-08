@@ -84,6 +84,7 @@ model Track {
   genre     String?
   cover     String?  // 업로드한 커버 이미지 경로 (예: /uploads/music/music-123.jpg)
   link      String?  // Spotify/YouTube 등 재생 링크
+  memo      String?  // 곡 소개/감상 메모, 목록에서 호버하면 보임
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

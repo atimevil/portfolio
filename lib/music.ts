@@ -7,6 +7,7 @@ export type TrackInput = {
   genre?: string | null
   cover?: string | null
   link?: string | null
+  memo?: string | null
 }
 
 export async function getAllTracks(): Promise<Track[]> {
@@ -28,7 +29,7 @@ export async function deleteTrack(id: number): Promise<void> {
 // 빈 문자열은 null로 저장한다 (Place의 normalize()와 동일한 규칙).
 function normalize<T extends Partial<TrackInput>>(data: T): T {
   const out = { ...data }
-  for (const key of ['genre', 'cover', 'link'] as const) {
+  for (const key of ['genre', 'cover', 'link', 'memo'] as const) {
     if (key in out && typeof out[key] === 'string' && !(out[key] as string).trim()) {
       ;(out as Record<string, unknown>)[key] = null
     }

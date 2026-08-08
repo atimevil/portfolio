@@ -127,7 +127,14 @@ export default function MusicList({ tracks }: Props) {
             </thead>
             <tbody className="divide-y divide-border">
               {visible.map((track) => (
-                <tr key={track.id}>
+                <tr
+                  key={track.id}
+                  title={track.memo || undefined}
+                  onClick={() => {
+                    if (track.link) window.open(track.link, '_blank', 'noopener,noreferrer')
+                  }}
+                  className={track.link ? 'cursor-pointer hover:bg-bg-secondary transition-colors' : ''}
+                >
                   <td className="px-3 py-2">
                     {track.cover ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -141,21 +148,7 @@ export default function MusicList({ tracks }: Props) {
                   </td>
                   <td className="px-3 py-2 text-text-secondary truncate max-w-[160px]">{track.artist}</td>
                   <td className="px-3 py-2 text-text-secondary">{track.genre || '기타'}</td>
-                  <td className="px-3 py-2">
-                    {track.link ? (
-                      <a
-                        href={track.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-text-secondary hover:text-accent"
-                        aria-label="재생 링크 열기"
-                      >
-                        ↗
-                      </a>
-                    ) : (
-                      <span className="text-text-muted">-</span>
-                    )}
-                  </td>
+                  <td className="px-3 py-2 text-text-secondary">{track.link ? '↗' : '-'}</td>
                 </tr>
               ))}
             </tbody>

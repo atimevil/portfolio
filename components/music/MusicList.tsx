@@ -129,7 +129,6 @@ export default function MusicList({ tracks }: Props) {
               {visible.map((track) => (
                 <tr
                   key={track.id}
-                  title={track.memo || undefined}
                   onClick={() => {
                     if (track.link) window.open(track.link, '_blank', 'noopener,noreferrer')
                   }}
@@ -143,8 +142,13 @@ export default function MusicList({ tracks }: Props) {
                       <div className="w-8 h-8 rounded bg-surface" />
                     )}
                   </td>
-                  <td className="px-3 py-2 text-text-primary font-medium truncate max-w-[200px]">
+                  <td className="relative group px-3 py-2 text-text-primary font-medium truncate max-w-[200px]">
                     {track.title}
+                    {track.memo && (
+                      <div className="hidden group-hover:block absolute left-0 top-full z-10 mt-1 w-max max-w-xs whitespace-normal rounded-md border border-border bg-bg-secondary px-3 py-2 text-xs font-normal text-text-secondary shadow-lg">
+                        {track.memo}
+                      </div>
+                    )}
                   </td>
                   <td className="px-3 py-2 text-text-secondary truncate max-w-[160px]">{track.artist}</td>
                   <td className="px-3 py-2 text-text-secondary">{track.genre || '기타'}</td>

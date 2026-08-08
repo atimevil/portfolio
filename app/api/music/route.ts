@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { Prisma } from '@prisma/client'
 import { getAllTracks, createTrack, updateTrack, deleteTrack } from '@/lib/music'
@@ -29,7 +30,9 @@ export async function POST(req: NextRequest) {
   if (!result.success) {
     return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
   }
-  return NextResponse.json(await createTrack(result.data), { status: 201 })
+  const track = await createTrack(result.data)
+  revalidatePath('/music')
+  return NextResponse.json(track, { status: 201 })
 }
 
 export async function PUT(req: NextRequest) {
@@ -43,7 +46,9 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
   }
   try {
-    return NextResponse.json(await updateTrack(id, result.data))
+    const track = await updateTrack(id, result.data)
+    revalidatePath('/music')
+    return NextResponse.json(track)
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -63,5 +68,6 @@ export async function DELETE(req: NextRequest) {
   } catch (err) {
     if (!(err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025')) throw err
   }
+  revalidatePath('/music')
   return NextResponse.json({ ok: true })
 }

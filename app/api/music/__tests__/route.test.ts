@@ -8,6 +8,10 @@ vi.mock('next-auth', () => ({
   getServerSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
 }))
 
+vi.mock('next/cache', () => ({
+  revalidatePath: vi.fn(),
+}))
+
 beforeEach(resetDb)
 
 function makeRequest(method: string, body?: unknown): NextRequest {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
+import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { Prisma } from '@prisma/client'
 import { getAllBooks, createBook, updateBook, deleteBook } from '@/lib/books'
@@ -30,7 +31,9 @@ export async function POST(req: NextRequest) {
   if (!result.success) {
     return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
   }
-  return NextResponse.json(await createBook(result.data), { status: 201 })
+  const book = await createBook(result.data)
+  revalidatePath('/books')
+  return NextResponse.json(book, { status: 201 })
 }
 
 export async function PUT(req: NextRequest) {
@@ -44,7 +47,9 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
   }
   try {
-    return NextResponse.json(await updateBook(id, result.data))
+    const book = await updateBook(id, result.data)
+    revalidatePath('/books')
+    return NextResponse.json(book)
   } catch (err) {
     if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -64,5 +69,6 @@ export async function DELETE(req: NextRequest) {
   } catch (err) {
     if (!(err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025')) throw err
   }
+  revalidatePath('/books')
   return NextResponse.json({ ok: true })
 }

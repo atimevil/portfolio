@@ -25,6 +25,18 @@ function extractYoutubeId(url: string): string | null {
   return match ? match[1] : null
 }
 
+// 영상 제목이 보통 "아티스트 - 곡명" 형태라 그걸 분리하고, 없으면 채널명을 아티스트로 대신 쓴다.
+function parseYoutubeTitle(rawTitle: string, channelName: string): { title: string; artist: string } {
+  const cleaned = rawTitle
+    .replace(/[([（【][^)\]）】]*(official|m\/?v|mv|audio|lyrics?|video|hd|4k)[^)\]）】]*[)\]）】]/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim()
+
+  const match = cleaned.match(/^(.+?)\s*[-–—]\s*(.+)$/)
+  if (match) return { artist: match[1].trim(), title: match[2].trim() }
+  return { title: cleaned, artist: channelName }
+}
+
 interface Props {
   initialTracks: Track[]
 }
@@ -44,6 +56,24 @@ export default function AdminMusicManager({ initialTracks }: Props) {
       cover: track.cover ?? '',
       link: track.link ?? '',
     })
+  }
+
+  async function handleLinkBlur() {
+    const videoId = extractYoutubeId(form.link)
+    if (!videoId || (form.title.trim() && form.artist.trim())) return
+    try {
+      const res = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(form.link)}&format=json`)
+      if (!res.ok) return
+      const data = await res.json()
+      const parsed = parseYoutubeTitle(data.title, data.author_name)
+      setForm((f) => ({
+        ...f,
+        title: f.title.trim() ? f.title : parsed.title,
+        artist: f.artist.trim() ? f.artist : parsed.artist,
+      }))
+    } catch {
+      // 조회 실패해도 조용히 무시 — 어차피 직접 입력하면 됨
+    }
   }
 
   async function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -150,7 +180,8 @@ export default function AdminMusicManager({ initialTracks }: Props) {
             const cover = videoId && !form.cover ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : form.cover
             setForm({ ...form, link, cover })
           }}
-          placeholder="재생 링크 (Spotify/YouTube 등 — 유튜브 링크면 썸네일 자동 채움)"
+          onBlur={handleLinkBlur}
+          placeholder="재생 링크 (Spotify/YouTube 등 — 유튜브 링크면 제목·아티스트·썸네일 자동 채움)"
           className="w-full border border-border rounded-md px-3 py-2 text-sm bg-bg"
         />
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import type { Place } from '@prisma/client'
 
@@ -92,6 +92,13 @@ export default function PlacesMap({ places, selected, onSelect, draft }: Props) 
               },
             }}
           >
+            <Tooltip direction="top" offset={[0, -10]}>
+              <div className="max-w-[200px] text-xs text-neutral-900">
+                <p className="font-semibold">{p.name}</p>
+                {p.memo && <p className="mt-0.5 text-neutral-600">{p.memo}</p>}
+              </div>
+            </Tooltip>
+
             {activeSelected?.id === p.id && (
               <Popup>
                 <div className="min-w-[160px] max-w-[220px] text-neutral-900">

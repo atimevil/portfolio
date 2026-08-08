@@ -133,6 +133,10 @@ export default function MusicList({ tracks }: Props) {
                   onClick={() => {
                     if (track.link) window.open(track.link, '_blank', 'noopener,noreferrer')
                   }}
+                  onMouseMove={(e) => {
+                    if (track.memo) setTooltip({ text: track.memo, x: e.clientX, y: e.clientY })
+                  }}
+                  onMouseLeave={() => setTooltip(null)}
                   className={track.link ? 'cursor-pointer hover:bg-bg-secondary transition-colors' : ''}
                 >
                   <td className="px-3 py-2">
@@ -144,15 +148,7 @@ export default function MusicList({ tracks }: Props) {
                     )}
                   </td>
                   <td className="px-3 py-2 max-w-[200px]">
-                    <span
-                      className="block truncate text-text-primary font-medium"
-                      onMouseMove={(e) => {
-                        if (track.memo) setTooltip({ text: track.memo, x: e.clientX, y: e.clientY })
-                      }}
-                      onMouseLeave={() => setTooltip(null)}
-                    >
-                      {track.title}
-                    </span>
+                    <span className="block truncate text-text-primary font-medium">{track.title}</span>
                   </td>
                   <td className="px-3 py-2 text-text-secondary truncate max-w-[160px]">{track.artist}</td>
                   <td className="px-3 py-2 text-text-secondary">{track.genre || '기타'}</td>

@@ -25,7 +25,7 @@ export default function ProjectsPage() {
       {projects.length === 0 ? (
         <p className="py-12 text-center text-sm text-text-muted">아직 없습니다.</p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="flex flex-col gap-4">
           {projects.map((project) => (
             <ProjectCard key={project.id} project={project} />
           ))}

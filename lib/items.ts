@@ -46,8 +46,28 @@ export function getTimeline(): PortfolioItem[] {
 }
 
 /** project 타입 slug로 조회. 없으면 null. */
+// slug 후보를 순서대로 조회한다: 원본 → percent-decode → 각 후보의 NFC 정규화형.
+// 블로그(getPostBySlug)와 동일한 이유 — 한글 slug가 라우팅 경로에서 인코딩/정규화가
+// 엇갈려 들어올 수 있음.
 export function getProjectBySlug(slug: string): PortfolioItem | null {
-  return getProjects().find((p) => p.slug === slug) ?? null
+  const candidates: string[] = [slug]
+  try {
+    const decoded = decodeURIComponent(slug)
+    if (decoded !== slug) candidates.push(decoded)
+  } catch {
+    // 잘못된 % 시퀀스는 무시
+  }
+  for (const c of [...candidates]) {
+    const nfc = c.normalize('NFC')
+    if (!candidates.includes(nfc)) candidates.push(nfc)
+  }
+
+  const projects = getProjects()
+  for (const c of candidates) {
+    const found = projects.find((p) => p.slug === c)
+    if (found) return found
+  }
+  return null
 }
 
 // base로 시작하는 기존 slug들과 겹치지 않는 slug를 고른다 (base, base-2, base-3...).

@@ -13,6 +13,9 @@ const ItemSchema = z.object({
   link: z.string().optional(),
   thumbnail: z.string().optional(),
   order: z.number().optional(),
+  problem: z.string().optional(),
+  role: z.string().optional(),
+  outcome: z.string().optional(),
 })
 
 export async function GET() {

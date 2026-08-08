@@ -10,6 +10,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
     gallery: true,
     books: true,
     music: true,
+    projects: true,
   },
   profile: {
     name: '이름',

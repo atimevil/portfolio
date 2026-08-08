@@ -1,5 +1,6 @@
 export const dynamic = 'force-dynamic'
 
+import Link from 'next/link'
 import { getSettings } from '@/lib/settings'
 import { getProjects, getTimeline } from '@/lib/items'
 import { buildPageMetadata } from '@/lib/site'
@@ -29,41 +30,29 @@ export default async function AboutPage() {
 
       {projects.length > 0 && (
         <section>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-5">Projects</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {projects.map((project) => {
-              const href = project.github || project.link
-              const Card = (
-                <div className={`group h-full flex flex-col rounded-xl border border-border bg-bg-secondary p-5 transition-all ${href ? 'hover:border-accent hover:-translate-y-0.5 cursor-pointer' : ''}`}>
-                  {project.thumbnail && (
-                    <img src={project.thumbnail} alt={project.title}
-                      className="w-full h-32 object-cover rounded-lg mb-3 bg-surface" />
-                  )}
-                  <div className="flex items-baseline justify-between gap-2">
-                    <h3 className="font-bold text-[15px] text-text-primary transition-colors group-hover:text-accent-hover">
-                      {project.title}
-                    </h3>
-                    {project.year && (
-                      <span className="shrink-0 font-mono text-[11px] text-text-muted">{project.year}</span>
-                    )}
-                  </div>
-                  <p className="text-xs leading-relaxed text-text-secondary mt-2 mb-4 line-clamp-3">{project.description}</p>
-                  <div className="flex flex-wrap gap-1.5 mt-auto">
-                    {project.skills?.map((s) => (
-                      <span key={s} className="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-medium text-accent">{s}</span>
-                    ))}
-                  </div>
-                </div>
-              )
-              return href ? (
-                <a key={project.id} href={href} target="_blank" rel="noopener noreferrer">
-                  {Card}
-                </a>
-              ) : (
-                <div key={project.id}>{Card}</div>
-              )
-            })}
+          <div className="mb-5 flex items-baseline justify-between">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted">Projects</h2>
+            <Link href="/projects" className="text-xs text-accent hover:text-accent-hover transition-colors">
+              프로젝트 더보기 →
+            </Link>
           </div>
+          <ul className="flex flex-col gap-2.5">
+            {projects.slice(0, 5).map((project) => (
+              <li key={project.id}>
+                <Link
+                  href={`/projects/${project.slug}`}
+                  className="group flex items-baseline justify-between gap-3 rounded-lg border border-border bg-bg-secondary px-4 py-3 transition-colors hover:border-accent"
+                >
+                  <span className="truncate text-sm font-medium text-text-primary transition-colors group-hover:text-accent-hover">
+                    {project.title}
+                  </span>
+                  {project.year && (
+                    <span className="shrink-0 font-mono text-[11px] text-text-muted">{project.year}</span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
 

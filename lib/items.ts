@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import type { PortfolioItem } from '@/types'
+import { slugify } from '@/lib/slug'
 
 const FILE = path.join(process.cwd(), 'content/items.json')
 
@@ -44,9 +45,26 @@ export function getTimeline(): PortfolioItem[] {
   return read().sort((a, b) => timeKey(b.year) - timeKey(a.year))
 }
 
+/** project 타입 slug로 조회. 없으면 null. */
+export function getProjectBySlug(slug: string): PortfolioItem | null {
+  return getProjects().find((p) => p.slug === slug) ?? null
+}
+
+// base로 시작하는 기존 slug들과 겹치지 않는 slug를 고른다 (base, base-2, base-3...).
+function uniqueSlug(base: string, existing: PortfolioItem[]): string {
+  const taken = new Set(existing.map((i) => i.slug).filter(Boolean))
+  if (!taken.has(base)) return base
+  let n = 2
+  while (taken.has(`${base}-${n}`)) n++
+  return `${base}-${n}`
+}
+
 export function createItem(item: Omit<PortfolioItem, 'id'>): PortfolioItem {
   const data = read()
   const newItem: PortfolioItem = { ...item, id: Date.now().toString() }
+  if (newItem.type === 'project') {
+    newItem.slug = uniqueSlug(slugify(newItem.title), data)
+  }
   write([...data, newItem])
   return newItem
 }

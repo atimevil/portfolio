@@ -25,6 +25,9 @@ const EMPTY_FORM = {
   link: '',
   thumbnail: '',
   order: 0,
+  problem: '',
+  role: '',
+  outcome: '',
 }
 
 export default function AdminItemManager({ initialItems }: Props) {
@@ -45,6 +48,9 @@ export default function AdminItemManager({ initialItems }: Props) {
       link: item.link ?? '',
       thumbnail: item.thumbnail ?? '',
       order: item.order ?? 0,
+      problem: item.problem ?? '',
+      role: item.role ?? '',
+      outcome: item.outcome ?? '',
     })
   }
 
@@ -68,6 +74,9 @@ export default function AdminItemManager({ initialItems }: Props) {
       link: isProject ? (form.link || undefined) : undefined,
       thumbnail: isProject ? (form.thumbnail || undefined) : undefined,
       order: isProject ? Number(form.order) || 0 : undefined,
+      problem: isProject ? (form.problem || undefined) : undefined,
+      role: isProject ? (form.role || undefined) : undefined,
+      outcome: isProject ? (form.outcome || undefined) : undefined,
     }
     if (editId && editId !== 'new') {
       await fetch('/api/items', {
@@ -208,6 +217,30 @@ export default function AdminItemManager({ initialItems }: Props) {
                     type="text" value={form.link} placeholder="https://..."
                     onChange={(e) => setForm((f) => ({ ...f, link: e.target.value }))}
                     className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs text-text-muted mb-1">문제 (상세 페이지 섹션)</label>
+                  <textarea
+                    value={form.problem} rows={2}
+                    onChange={(e) => setForm((f) => ({ ...f, problem: e.target.value }))}
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors resize-none"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs text-text-muted mb-1">내 역할 (상세 페이지 섹션)</label>
+                  <textarea
+                    value={form.role} rows={2}
+                    onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))}
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors resize-none"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs text-text-muted mb-1">결과 (상세 페이지 섹션)</label>
+                  <textarea
+                    value={form.outcome} rows={2}
+                    onChange={(e) => setForm((f) => ({ ...f, outcome: e.target.value }))}
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors resize-none"
                   />
                 </div>
               </>

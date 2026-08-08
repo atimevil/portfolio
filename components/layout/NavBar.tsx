@@ -9,6 +9,8 @@ const navLinks = [
   { href: '/', label: '블로그' },
   { href: '/about', label: '소개' },
   { href: '/gallery', label: '갤러리' },
+  { href: '/books', label: '책' },
+  { href: '/music', label: '음악' },
 ]
 
 // 맛집지도는 비공개 개인 도구라 로그인했을 때만 메뉴에 노출한다.

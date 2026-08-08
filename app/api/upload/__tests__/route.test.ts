@@ -38,6 +38,16 @@ describe('POST /api/upload', () => {
     expect(existsSync(abs)).toBe(true)
   })
 
+  it('type=music이면 /uploads/music/ 아래에 저장하고 그 URL을 반환한다', async () => {
+    const res = await POST(makeUploadRequest({ file: pngFile('cover.png'), type: 'music' }))
+    expect(res.status).toBe(200)
+    const { url } = await res.json()
+    expect(url).toMatch(/^\/uploads\/music\/music-\d+\.png$/)
+    const abs = path.join(process.cwd(), 'public', url)
+    written.push(abs)
+    expect(existsSync(abs)).toBe(true)
+  })
+
   it('type이 없으면 기존 아바타 경로(/uploads/avatar-*)를 유지한다', async () => {
     const res = await POST(makeUploadRequest({ file: pngFile('me.png') }))
     expect(res.status).toBe(200)

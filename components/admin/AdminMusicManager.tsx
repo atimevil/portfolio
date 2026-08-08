@@ -17,6 +17,14 @@ type FormState = {
 
 const EMPTY_FORM: FormState = { id: null, title: '', artist: '', genre: '', cover: '', link: '' }
 
+// youtube.com/watch?v=, youtu.be/, youtube.com/shorts/, /embed/ 형태에서 영상 ID를 뽑는다.
+function extractYoutubeId(url: string): string | null {
+  const match = url.match(
+    /(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+  )
+  return match ? match[1] : null
+}
+
 interface Props {
   initialTracks: Track[]
 }
@@ -135,8 +143,14 @@ export default function AdminMusicManager({ initialTracks }: Props) {
 
         <input
           value={form.link}
-          onChange={(e) => setForm({ ...form, link: e.target.value })}
-          placeholder="재생 링크 (Spotify/YouTube 등)"
+          onChange={(e) => {
+            const link = e.target.value
+            const videoId = extractYoutubeId(link)
+            // 커버가 비어있을 때만 자동 채움 (직접 올린 이미지를 덮어쓰지 않음)
+            const cover = videoId && !form.cover ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : form.cover
+            setForm({ ...form, link, cover })
+          }}
+          placeholder="재생 링크 (Spotify/YouTube 등 — 유튜브 링크면 썸네일 자동 채움)"
           className="w-full border border-border rounded-md px-3 py-2 text-sm bg-bg"
         />
 

@@ -28,6 +28,7 @@ export default function MusicList({ tracks }: Props) {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null)
   const [sortKey, setSortKey] = useState<SortKey | null>(null)
   const [sortDir, setSortDir] = useState<SortDir>('asc')
+  const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null)
 
   const genres = useMemo(() => getGenres(tracks), [tracks])
 
@@ -143,14 +144,15 @@ export default function MusicList({ tracks }: Props) {
                     )}
                   </td>
                   <td className="px-3 py-2 max-w-[200px]">
-                    <div className="relative group inline-block max-w-full align-middle">
-                      <span className="block truncate text-text-primary font-medium">{track.title}</span>
-                      {track.memo && (
-                        <div className="hidden group-hover:block absolute left-0 top-full z-10 mt-1 w-max max-w-xs whitespace-normal rounded-md border border-border bg-bg-secondary px-3 py-2 text-xs font-normal text-text-secondary shadow-lg">
-                          {track.memo}
-                        </div>
-                      )}
-                    </div>
+                    <span
+                      className="block truncate text-text-primary font-medium"
+                      onMouseMove={(e) => {
+                        if (track.memo) setTooltip({ text: track.memo, x: e.clientX, y: e.clientY })
+                      }}
+                      onMouseLeave={() => setTooltip(null)}
+                    >
+                      {track.title}
+                    </span>
                   </td>
                   <td className="px-3 py-2 text-text-secondary truncate max-w-[160px]">{track.artist}</td>
                   <td className="px-3 py-2 text-text-secondary">{track.genre || '기타'}</td>
@@ -159,6 +161,15 @@ export default function MusicList({ tracks }: Props) {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {tooltip && (
+        <div
+          className="fixed z-50 max-w-xs whitespace-normal rounded-md border border-border bg-bg-secondary px-3 py-2 text-xs text-text-secondary shadow-lg pointer-events-none"
+          style={{ left: tooltip.x + 12, top: tooltip.y + 16 }}
+        >
+          {tooltip.text}
         </div>
       )}
     </div>

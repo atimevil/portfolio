@@ -37,6 +37,11 @@ export interface PortfolioItem {
 
 export interface SiteSettings {
   devMode: boolean
+  navVisibility: {
+    gallery: boolean
+    books: boolean
+    music: boolean
+  }
   profile: {
     name: string
     bio: string

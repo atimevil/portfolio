@@ -5,13 +5,17 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import ThemeToggle from '@/components/ui/ThemeToggle'
 
-const navLinks = [
+const CORE_LINKS = [
   { href: '/', label: '블로그' },
   { href: '/about', label: '소개' },
-  { href: '/gallery', label: '갤러리' },
-  { href: '/books', label: '책' },
-  { href: '/music', label: '음악' },
 ]
+
+// key는 SiteSettings.navVisibility의 필드명과 맞춘다 — 관리자가 설정에서 개별로 끄고 켤 수 있음.
+const TOGGLABLE_LINKS = [
+  { href: '/gallery', label: '갤러리', key: 'gallery' },
+  { href: '/books', label: '책', key: 'books' },
+  { href: '/music', label: '음악', key: 'music' },
+] as const
 
 // 맛집지도는 비공개 개인 도구라 로그인했을 때만 메뉴에 노출한다.
 // (비로그인 방문자에겐 존재 자체가 안 보여서 로그인 벽에 부딪히는 경험이 없다)
@@ -23,11 +27,19 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
-export default function NavBar({ isAdmin = false }: { isAdmin?: boolean }) {
+interface Props {
+  isAdmin?: boolean
+  navVisibility?: { gallery: boolean; books: boolean; music: boolean }
+}
+
+export default function NavBar({ isAdmin = false, navVisibility }: Props) {
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname() ?? '/'
 
-  const links = isAdmin ? [...navLinks, ...adminOnlyLinks] : navLinks
+  const visibleToggled = TOGGLABLE_LINKS.filter((link) => navVisibility?.[link.key] ?? true)
+  const links = isAdmin
+    ? [...CORE_LINKS, ...visibleToggled, ...adminOnlyLinks]
+    : [...CORE_LINKS, ...visibleToggled]
 
   const linkClass = (href: string) =>
     isActive(pathname, href)

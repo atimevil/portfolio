@@ -6,6 +6,11 @@ const FILE = path.join(process.cwd(), 'content/settings.json')
 
 const DEFAULT_SETTINGS: SiteSettings = {
   devMode: false,
+  navVisibility: {
+    gallery: true,
+    books: true,
+    music: true,
+  },
   profile: {
     name: '이름',
     bio: '개발자입니다.',
@@ -24,6 +29,7 @@ export function getSettings(): SiteSettings {
     return {
       ...DEFAULT_SETTINGS,
       ...saved,
+      navVisibility: { ...DEFAULT_SETTINGS.navVisibility, ...(saved.navVisibility ?? {}) },
       profile: { ...DEFAULT_SETTINGS.profile, ...(saved.profile ?? {}) },
     }
   } catch {
@@ -36,6 +42,10 @@ export function updateSettings(updates: Partial<SiteSettings>): SiteSettings {
   const merged: SiteSettings = {
     ...current,
     ...updates,
+    navVisibility: {
+      ...current.navVisibility,
+      ...(updates.navVisibility ?? {}),
+    },
     profile: {
       ...current.profile,
       ...(updates.profile ?? {}),

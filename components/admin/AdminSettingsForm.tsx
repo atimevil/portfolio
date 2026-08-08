@@ -8,8 +8,15 @@ interface AdminSettingsFormProps {
   initialSettings: SiteSettings
 }
 
+const NAV_TOGGLES = [
+  { key: 'gallery', label: '갤러리' },
+  { key: 'books', label: '책' },
+  { key: 'music', label: '음악' },
+] as const
+
 export default function AdminSettingsForm({ initialSettings }: AdminSettingsFormProps) {
   const [devMode, setDevMode] = useState(initialSettings.devMode)
+  const [navVisibility, setNavVisibility] = useState(initialSettings.navVisibility)
   const [profile, setProfile] = useState(initialSettings.profile)
   const [skillInput, setSkillInput] = useState('')
   const [saving, setSaving] = useState(false)
@@ -73,7 +80,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
     await fetch('/api/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ devMode, profile }),
+      body: JSON.stringify({ devMode, navVisibility, profile }),
     })
     setSaving(false)
     setSaved(true)
@@ -106,6 +113,31 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                 devMode ? 'translate-x-5' : 'translate-x-0'
               }`} />
             </button>
+          </div>
+        </section>
+
+        {/* 메뉴 노출 */}
+        <section className="bg-bg-secondary border border-border rounded-lg p-5">
+          <h2 className="text-sm font-medium text-text-primary mb-1">메뉴 노출</h2>
+          <p className="text-xs text-text-muted mb-4">OFF로 끄면 방문자 헤더 메뉴에서 사라짐 (블로그/소개는 항상 노출)</p>
+          <div className="flex flex-col gap-3">
+            {NAV_TOGGLES.map(({ key, label }) => (
+              <div key={key} className="flex items-center justify-between">
+                <p className="text-sm text-text-primary">{label}</p>
+                <button
+                  role="switch"
+                  aria-checked={navVisibility[key]}
+                  onClick={() => setNavVisibility((v) => ({ ...v, [key]: !v[key] }))}
+                  className={`relative inline-flex w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none overflow-hidden shrink-0 ${
+                    navVisibility[key] ? 'bg-text-primary' : 'bg-border'
+                  }`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-sm transition-transform duration-200 ${
+                    navVisibility[key] ? 'translate-x-5' : 'translate-x-0'
+                  }`} />
+                </button>
+              </div>
+            ))}
           </div>
         </section>
 

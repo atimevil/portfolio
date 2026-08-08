@@ -1,63 +1,167 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Track } from '@prisma/client'
 
 interface Props {
   tracks: Track[]
 }
 
-function groupByGenre(tracks: Track[]): [string, Track[]][] {
-  const groups = new Map<string, Track[]>()
-  for (const track of tracks) {
-    const key = track.genre || '기타'
-    const list = groups.get(key) ?? []
-    list.push(track)
-    groups.set(key, list)
-  }
-  return Array.from(groups.entries()).sort((a, b) => a[0].localeCompare(b[0], 'ko'))
+type SortKey = 'title' | 'artist' | 'genre'
+type SortDir = 'asc' | 'desc'
+
+const FILTER_STORAGE_KEY = 'music-filter-genre'
+
+function getGenres(tracks: Track[]): string[] {
+  const set = new Set(tracks.map((t) => t.genre || '기타'))
+  return Array.from(set).sort((a, b) => a.localeCompare(b, 'ko'))
+}
+
+function sortTracks(tracks: Track[], key: SortKey | null, dir: SortDir): Track[] {
+  if (!key) return tracks
+  const value = (t: Track) => (key === 'genre' ? t.genre || '기타' : t[key])
+  const sorted = [...tracks].sort((a, b) => value(a).localeCompare(value(b), 'ko'))
+  return dir === 'asc' ? sorted : sorted.reverse()
 }
 
 export default function MusicList({ tracks }: Props) {
-  const grouped = useMemo(() => groupByGenre(tracks), [tracks])
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null)
+  const [sortKey, setSortKey] = useState<SortKey | null>(null)
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
 
-  if (grouped.length === 0) {
+  const genres = useMemo(() => getGenres(tracks), [tracks])
+
+  // 저장된 필터를 마운트 후 복원 (SSR과 불일치 안 나게 useEffect에서). 데이터에 더 없는 장르면 무시.
+  useEffect(() => {
+    const saved = localStorage.getItem(FILTER_STORAGE_KEY)
+    if (saved && genres.includes(saved)) setSelectedGenre(saved)
+  }, [genres])
+
+  function selectGenre(genre: string | null) {
+    setSelectedGenre(genre)
+    if (genre) localStorage.setItem(FILTER_STORAGE_KEY, genre)
+    else localStorage.removeItem(FILTER_STORAGE_KEY)
+  }
+
+  function toggleSort(key: SortKey) {
+    if (sortKey !== key) {
+      setSortKey(key)
+      setSortDir('asc')
+    } else {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    }
+  }
+
+  const filtered = useMemo(
+    () => (selectedGenre ? tracks.filter((t) => (t.genre || '기타') === selectedGenre) : tracks),
+    [tracks, selectedGenre]
+  )
+  const visible = useMemo(() => sortTracks(filtered, sortKey, sortDir), [filtered, sortKey, sortDir])
+
+  function SortHeader({ label, sortKeyName }: { label: string; sortKeyName: SortKey }) {
+    const active = sortKey === sortKeyName
+    return (
+      <button
+        onClick={() => toggleSort(sortKeyName)}
+        className={`flex items-center gap-1 text-xs font-semibold uppercase tracking-wide ${
+          active ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'
+        }`}
+      >
+        {label}
+        {active && <span>{sortDir === 'asc' ? '▲' : '▼'}</span>}
+      </button>
+    )
+  }
+
+  if (tracks.length === 0) {
     return <p className="text-center text-text-secondary py-10 text-sm">아직 없습니다.</p>
   }
 
   return (
     <div>
-      {grouped.map(([genre, list]) => (
-        <div key={genre} className="mb-8">
-          <h2 className="text-xs font-semibold text-text-secondary uppercase tracking-wide mb-3">
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        <button
+          onClick={() => selectGenre(null)}
+          className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+            selectedGenre === null
+              ? 'border-accent text-accent'
+              : 'border-border text-text-secondary hover:text-text-primary'
+          }`}
+        >
+          전체
+        </button>
+        {genres.map((genre) => (
+          <button
+            key={genre}
+            onClick={() => selectGenre(genre)}
+            className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+              selectedGenre === genre
+                ? 'border-accent text-accent'
+                : 'border-border text-text-secondary hover:text-text-primary'
+            }`}
+          >
             {genre}
-          </h2>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {list.map((track) => (
-              <a
-                key={track.id}
-                href={track.link ?? undefined}
-                target={track.link ? '_blank' : undefined}
-                rel={track.link ? 'noopener noreferrer' : undefined}
-                className={`flex items-center gap-3 border border-border rounded-lg p-3 bg-bg-secondary ${
-                  track.link ? 'hover:border-accent transition-colors' : ''
-                }`}
-              >
-                {track.cover ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={track.cover} alt="" className="w-12 h-12 rounded object-cover shrink-0" />
-                ) : (
-                  <div className="w-12 h-12 rounded bg-surface shrink-0" />
-                )}
-                <div className="min-w-0">
-                  <p className="font-medium text-text-primary truncate">{track.title}</p>
-                  <p className="text-sm text-text-secondary truncate">{track.artist}</p>
-                </div>
-              </a>
-            ))}
-          </div>
+          </button>
+        ))}
+      </div>
+
+      {visible.length === 0 ? (
+        <p className="text-center text-text-secondary py-10 text-sm">해당 장르에 곡이 없습니다.</p>
+      ) : (
+        <div className="border border-border rounded-lg overflow-x-auto">
+          <table className="w-full text-sm min-w-[520px]">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="w-12 px-3 py-2"></th>
+                <th className="text-left px-3 py-2">
+                  <SortHeader label="제목" sortKeyName="title" />
+                </th>
+                <th className="text-left px-3 py-2">
+                  <SortHeader label="가수" sortKeyName="artist" />
+                </th>
+                <th className="text-left px-3 py-2">
+                  <SortHeader label="장르" sortKeyName="genre" />
+                </th>
+                <th className="w-12 px-3 py-2"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {visible.map((track) => (
+                <tr key={track.id}>
+                  <td className="px-3 py-2">
+                    {track.cover ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={track.cover} alt="" className="w-8 h-8 rounded object-cover" />
+                    ) : (
+                      <div className="w-8 h-8 rounded bg-surface" />
+                    )}
+                  </td>
+                  <td className="px-3 py-2 text-text-primary font-medium truncate max-w-[200px]">
+                    {track.title}
+                  </td>
+                  <td className="px-3 py-2 text-text-secondary truncate max-w-[160px]">{track.artist}</td>
+                  <td className="px-3 py-2 text-text-secondary">{track.genre || '기타'}</td>
+                  <td className="px-3 py-2">
+                    {track.link ? (
+                      <a
+                        href={track.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-text-secondary hover:text-accent"
+                        aria-label="재생 링크 열기"
+                      >
+                        ↗
+                      </a>
+                    ) : (
+                      <span className="text-text-muted">-</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      ))}
+      )}
     </div>
   )
 }

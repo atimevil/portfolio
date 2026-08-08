@@ -142,13 +142,15 @@ export default function MusicList({ tracks }: Props) {
                       <div className="w-8 h-8 rounded bg-surface" />
                     )}
                   </td>
-                  <td className="relative group px-3 py-2 max-w-[200px]">
-                    <span className="block truncate text-text-primary font-medium">{track.title}</span>
-                    {track.memo && (
-                      <div className="hidden group-hover:block absolute left-0 top-full z-10 mt-1 w-max max-w-xs whitespace-normal rounded-md border border-border bg-bg-secondary px-3 py-2 text-xs font-normal text-text-secondary shadow-lg">
-                        {track.memo}
-                      </div>
-                    )}
+                  <td className="px-3 py-2 max-w-[200px]">
+                    <div className="relative group inline-block max-w-full align-middle">
+                      <span className="block truncate text-text-primary font-medium">{track.title}</span>
+                      {track.memo && (
+                        <div className="hidden group-hover:block absolute left-0 top-full z-10 mt-1 w-max max-w-xs whitespace-normal rounded-md border border-border bg-bg-secondary px-3 py-2 text-xs font-normal text-text-secondary shadow-lg">
+                          {track.memo}
+                        </div>
+                      )}
+                    </div>
                   </td>
                   <td className="px-3 py-2 text-text-secondary truncate max-w-[160px]">{track.artist}</td>
                   <td className="px-3 py-2 text-text-secondary">{track.genre || '기타'}</td>

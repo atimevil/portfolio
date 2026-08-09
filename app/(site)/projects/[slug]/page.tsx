@@ -14,11 +14,16 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   })
 }
 
+const SECTION_ICON: Record<string, string> = { 문제: '🎯', '내 역할': '🛠️', 결과: '🏆' }
+
 function Section({ label, text }: { label: string; text?: string }) {
   if (!text) return null
   return (
-    <div className="mt-6">
-      <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-2">{label}</h2>
+    <div className="mt-5 rounded-r-lg border-l-2 border-accent bg-bg-secondary py-3 pl-4 pr-4">
+      <h2 className="mb-1.5 flex items-center gap-1.5 text-xs font-bold text-accent">
+        <span>{SECTION_ICON[label]}</span>
+        {label}
+      </h2>
       <p className="text-sm leading-relaxed text-text-secondary whitespace-pre-line">{text}</p>
     </div>
   )
@@ -30,13 +35,20 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
 
   return (
     <main className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
-      {project.thumbnail && (
+      {project.thumbnail ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={project.thumbnail}
           alt={project.title}
           className="mb-5 h-48 w-full rounded-xl bg-surface object-cover md:h-64"
         />
+      ) : (
+        <div
+          className="mb-5 flex h-48 w-full items-center justify-center overflow-hidden rounded-xl md:h-64"
+          style={{ background: 'linear-gradient(135deg, var(--color-accent-soft), var(--color-bg-secondary))' }}
+        >
+          <span className="select-none text-8xl opacity-10">💻</span>
+        </div>
       )}
 
       <header>

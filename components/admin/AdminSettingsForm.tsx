@@ -9,7 +9,6 @@ interface AdminSettingsFormProps {
 }
 
 const NAV_TOGGLES = [
-  { key: 'projects', label: '프로젝트' },
   { key: 'gallery', label: '갤러리' },
   { key: 'books', label: '책' },
   { key: 'music', label: '음악' },

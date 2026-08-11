@@ -33,12 +33,6 @@ export interface PortfolioItem {
   link?: string
   thumbnail?: string
   order?: number
-  /** project 타입 전용: 상세 페이지(/projects/[slug]) URL, 제목에서 자동 생성 */
-  slug?: string
-  /** project 타입 전용: 상세 페이지에 표시하는 케이스 스터디 섹션 */
-  problem?: string
-  role?: string
-  outcome?: string
 }
 
 export interface SiteSettings {
@@ -47,7 +41,6 @@ export interface SiteSettings {
     gallery: boolean
     books: boolean
     music: boolean
-    projects: boolean
   }
   profile: {
     name: string

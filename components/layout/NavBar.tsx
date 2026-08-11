@@ -12,7 +12,6 @@ const CORE_LINKS = [
 
 // key는 SiteSettings.navVisibility의 필드명과 맞춘다 — 관리자가 설정에서 개별로 끄고 켤 수 있음.
 const TOGGLABLE_LINKS = [
-  { href: '/projects', label: '프로젝트', key: 'projects' },
   { href: '/gallery', label: '갤러리', key: 'gallery' },
   { href: '/books', label: '책', key: 'books' },
   { href: '/music', label: '음악', key: 'music' },
@@ -30,7 +29,7 @@ function isActive(pathname: string, href: string) {
 
 interface Props {
   isAdmin?: boolean
-  navVisibility?: { gallery: boolean; books: boolean; music: boolean; projects: boolean }
+  navVisibility?: { gallery: boolean; books: boolean; music: boolean }
 }
 
 export default function NavBar({ isAdmin = false, navVisibility }: Props) {

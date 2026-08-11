@@ -34,6 +34,9 @@ export function generateMetadata(): Metadata {
     },
     robots: { index: true, follow: true },
     icons: { icon: '/icon.svg' },
+    alternates: {
+      types: { 'application/rss+xml': '/rss.xml' },
+    },
   }
 }
 

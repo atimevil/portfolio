@@ -4,6 +4,7 @@ import Link from 'next/link'
 import BlogViews from '@/components/blog/BlogViews'
 import Pagination from '@/components/blog/Pagination'
 import { CategoryFilter, PageSizeSelect } from '@/components/blog/BlogFilters'
+import SearchBox from '@/components/blog/SearchBox'
 import ProfileHeader from '@/components/layout/ProfileHeader'
 import { getAllPosts } from '@/lib/blog'
 import { getSettings } from '@/lib/settings'
@@ -13,7 +14,7 @@ const DEFAULT_PER_PAGE = 10
 const ALLOWED_PER_PAGE = [5, 10, 20]
 
 interface Props {
-  searchParams: { page?: string; tag?: string; category?: string; perPage?: string }
+  searchParams: { page?: string; tag?: string; category?: string; perPage?: string; q?: string }
 }
 
 export function generateMetadata() {
@@ -27,7 +28,8 @@ export default async function HomePage({ searchParams }: Props) {
   const { profile } = getSettings()
   const tag = searchParams.tag?.trim()
   const category = searchParams.category?.trim()
-  const filtering = Boolean(tag || category)
+  const q = searchParams.q?.trim()
+  const filtering = Boolean(tag || category || q)
 
   const perPageParsed = Number(searchParams.perPage)
   const perPage = ALLOWED_PER_PAGE.includes(perPageParsed) ? perPageParsed : DEFAULT_PER_PAGE
@@ -46,19 +48,28 @@ export default async function HomePage({ searchParams }: Props) {
   let posts = allPosts
   if (tag) posts = posts.filter((p) => p.tags?.includes(tag))
   if (category) posts = posts.filter((p) => p.category === category)
+  if (q) {
+    const needle = q.toLowerCase()
+    posts = posts.filter(
+      (p) =>
+        p.title.toLowerCase().includes(needle) ||
+        p.excerpt?.toLowerCase().includes(needle) ||
+        p.tags?.some((t) => t.toLowerCase().includes(needle))
+    )
+  }
 
   const currentPage = Math.max(1, Number(searchParams.page) || 1)
   const totalPages = Math.max(1, Math.ceil(posts.length / perPage))
   const pagePosts = posts.slice((currentPage - 1) * perPage, currentPage * perPage)
 
-  const extraParams = { category, tag, perPage: perPage !== DEFAULT_PER_PAGE ? String(perPage) : undefined }
+  const extraParams = { category, tag, q, perPage: perPage !== DEFAULT_PER_PAGE ? String(perPage) : undefined }
 
   return (
     <main className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
       {filtering ? (
         <section className="mb-6 flex flex-wrap items-center gap-3">
           <h1 className="text-lg font-semibold text-text-primary">
-            {category ? `카테고리: ${category}` : `#${tag}`}
+            {category ? `카테고리: ${category}` : tag ? `#${tag}` : `"${q}" 검색 결과`}
           </h1>
           <span className="text-sm text-text-muted">{posts.length}개</span>
           <Link href="/" className="text-sm text-text-secondary hover:text-text-primary transition-colors">
@@ -81,7 +92,10 @@ export default async function HomePage({ searchParams }: Props) {
             extraParams={extraParams}
             totalCount={allPosts.length}
           />
-          <PageSizeSelect perPage={perPage} extraParams={{ category, tag }} />
+          <div className="flex items-center gap-3">
+            <SearchBox initialQuery={q} extraParams={{ category, tag, perPage: extraParams.perPage }} />
+            <PageSizeSelect perPage={perPage} extraParams={{ category, tag, q }} />
+          </div>
         </div>
 
         {pagePosts.length === 0 ? (

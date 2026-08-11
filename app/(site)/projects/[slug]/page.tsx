@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { notFound } from 'next/navigation'
 import { getProjectBySlug } from '@/lib/items'
 import { buildPageMetadata } from '@/lib/site'
+import ProjectBanner from '@/components/projects/ProjectBanner'
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const project = getProjectBySlug(params.slug)
@@ -43,12 +44,7 @@ export default function ProjectDetailPage({ params }: { params: { slug: string }
           className="mb-5 h-48 w-full rounded-xl bg-surface object-cover md:h-64"
         />
       ) : (
-        <div
-          className="mb-5 flex h-48 w-full items-center justify-center overflow-hidden rounded-xl md:h-64"
-          style={{ background: 'linear-gradient(135deg, var(--color-accent-soft), var(--color-bg-secondary))' }}
-        >
-          <span className="select-none text-8xl opacity-10">💻</span>
-        </div>
+        <ProjectBanner title={project.title} className="mb-5 h-48 w-full rounded-xl md:h-64" />
       )}
 
       <header>

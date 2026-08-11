@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { PortfolioItem } from '@/types'
+import ProjectBanner from './ProjectBanner'
 
 export default function ProjectCard({ project }: { project: PortfolioItem }) {
   return (
@@ -13,12 +14,7 @@ export default function ProjectCard({ project }: { project: PortfolioItem }) {
             className="mb-3 h-32 w-full rounded-lg bg-surface object-cover"
           />
         ) : (
-          <div
-            className="mb-3 flex h-32 w-full items-center justify-center overflow-hidden rounded-lg"
-            style={{ background: 'linear-gradient(135deg, var(--color-accent-soft), var(--color-bg-secondary))' }}
-          >
-            <span className="select-none text-5xl opacity-10">💻</span>
-          </div>
+          <ProjectBanner title={project.title} className="mb-3 h-32 w-full rounded-lg" />
         )}
         <div className="flex items-baseline justify-between gap-2">
           <h3 className="text-[15px] font-bold text-text-primary transition-colors group-hover:text-accent-hover">

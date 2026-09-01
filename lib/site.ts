@@ -23,7 +23,12 @@ export function buildPageMetadata({
   return {
     title,
     description,
-    alternates: { canonical: url },
+    // types까지 여기서 같이 넣는 이유: Next 메타데이터는 최상위 필드 단위로 교체돼서,
+    // 페이지가 alternates를 정의하면 루트 레이아웃의 alternates(RSS 링크)가 통째로 사라진다.
+    alternates: {
+      canonical: url,
+      types: { 'application/rss+xml': `${SITE_URL}/rss.xml` },
+    },
     openGraph: {
       title,
       description,

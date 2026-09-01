@@ -55,20 +55,26 @@ export default function AdminBookManager({ initialBooks }: Props) {
       memo: form.memo,
     }
 
-    const res = await fetch('/api/books', {
-      method: form.id ? 'PUT' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form.id ? { id: form.id, ...payload } : payload),
-    })
+    // 네트워크 오류로 fetch가 reject되면 busy가 안 풀려 저장 버튼이 영구히 잠긴다 — finally로 항상 해제.
+    try {
+      const res = await fetch('/api/books', {
+        method: form.id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form.id ? { id: form.id, ...payload } : payload),
+      })
 
-    setBusy(false)
-    if (!res.ok) {
-      setError('저장에 실패했습니다.')
-      return
+      if (!res.ok) {
+        setError('저장에 실패했습니다.')
+        return
+      }
+      const saved: Book = await res.json()
+      setBooks((prev) => (form.id ? prev.map((b) => (b.id === saved.id ? saved : b)) : [saved, ...prev]))
+      setForm(EMPTY_FORM)
+    } catch {
+      setError('저장에 실패했습니다. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setBusy(false)
     }
-    const saved: Book = await res.json()
-    setBooks((prev) => (form.id ? prev.map((b) => (b.id === saved.id ? saved : b)) : [saved, ...prev]))
-    setForm(EMPTY_FORM)
   }
 
   async function handleDelete(id: number) {

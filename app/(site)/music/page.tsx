@@ -2,9 +2,14 @@ export const dynamic = 'force-dynamic'
 
 import { getAllTracks } from '@/lib/music'
 import MusicList from '@/components/music/MusicList'
+import { buildPageMetadata } from '@/lib/site'
 
-export const metadata = {
-  title: '음악',
+export function generateMetadata() {
+  return buildPageMetadata({
+    path: '/music',
+    title: '음악',
+    description: '즐겨 듣는 트랙 모음',
+  })
 }
 
 export default async function MusicPage() {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface Props {
   initialQuery?: string
@@ -13,6 +13,12 @@ interface Props {
 export default function SearchBox({ initialQuery, extraParams }: Props) {
   const router = useRouter()
   const [value, setValue] = useState(initialQuery ?? '')
+
+  // "← 전체 글"처럼 q를 떼는 이동을 해도 이 컴포넌트는 마운트된 채로 남아 입력값이 그대로 남는다.
+  // URL의 q가 바뀌면 입력창도 따라가게 맞춘다.
+  useEffect(() => {
+    setValue(initialQuery ?? '')
+  }, [initialQuery])
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

@@ -13,7 +13,7 @@ export type BookInput = {
 }
 
 export async function getAllBooks(): Promise<Book[]> {
-  return prisma.book.findMany({ orderBy: { createdAt: 'desc' } })
+  return prisma.book.findMany({ orderBy: [{ createdAt: 'desc' }, { id: 'desc' }] })
 }
 
 export async function createBook(data: BookInput): Promise<Book> {

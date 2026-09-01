@@ -6,6 +6,9 @@ import { uploadMusicCover } from '@/lib/uploadMusicCover'
 
 const GENRE_PRESETS = ['락', '힙합', '재즈', '팝', '알앤비', '인디']
 
+// 자동으로 채운 커버인지 판별하는 접두사 — 직접 업로드한 /uploads/... 경로와 구분한다.
+const YOUTUBE_THUMB_PREFIX = 'https://img.youtube.com/vi/'
+
 type FormState = {
   id: number | null
   title: string
@@ -115,20 +118,26 @@ export default function AdminMusicManager({ initialTracks }: Props) {
       memo: form.memo,
     }
 
-    const res = await fetch('/api/music', {
-      method: form.id ? 'PUT' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form.id ? { id: form.id, ...payload } : payload),
-    })
+    // 네트워크 오류로 fetch가 reject되면 busy가 안 풀려 저장 버튼이 영구히 잠긴다 — finally로 항상 해제.
+    try {
+      const res = await fetch('/api/music', {
+        method: form.id ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form.id ? { id: form.id, ...payload } : payload),
+      })
 
-    setBusy(false)
-    if (!res.ok) {
-      setError('저장에 실패했습니다.')
-      return
+      if (!res.ok) {
+        setError('저장에 실패했습니다.')
+        return
+      }
+      const saved: Track = await res.json()
+      setTracks((prev) => (form.id ? prev.map((t) => (t.id === saved.id ? saved : t)) : [saved, ...prev]))
+      setForm(EMPTY_FORM)
+    } catch {
+      setError('저장에 실패했습니다. 잠시 후 다시 시도해주세요.')
+    } finally {
+      setBusy(false)
     }
-    const saved: Track = await res.json()
-    setTracks((prev) => (form.id ? prev.map((t) => (t.id === saved.id ? saved : t)) : [saved, ...prev]))
-    setForm(EMPTY_FORM)
   }
 
   async function handleDelete(id: number) {
@@ -187,8 +196,13 @@ export default function AdminMusicManager({ initialTracks }: Props) {
           onChange={(e) => {
             const link = e.target.value
             const videoId = extractYoutubeId(link)
-            // 커버가 비어있을 때만 자동 채움 (직접 올린 이미지를 덮어쓰지 않음)
-            const cover = videoId && !form.cover ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : form.cover
+            // 커버가 비어있거나, 이전에 자동으로 채운 유튜브 썸네일일 때만 갱신한다.
+            // (직접 올린 이미지는 덮어쓰지 않고, 링크를 고쳐도 옛 영상 썸네일이 남지 않게)
+            const autoFilled = form.cover.startsWith(YOUTUBE_THUMB_PREFIX)
+            const cover =
+              videoId && (!form.cover || autoFilled)
+                ? `${YOUTUBE_THUMB_PREFIX}${videoId}/hqdefault.jpg`
+                : form.cover
             setForm({ ...form, link, cover })
           }}
           onBlur={handleLinkBlur}

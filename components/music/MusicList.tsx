@@ -33,15 +33,25 @@ export default function MusicList({ tracks }: Props) {
   const genres = useMemo(() => getGenres(tracks), [tracks])
 
   // 저장된 필터를 마운트 후 복원 (SSR과 불일치 안 나게 useEffect에서). 데이터에 더 없는 장르면 무시.
+  // 사파리 시크릿 모드처럼 사이트 데이터가 막힌 환경에선 localStorage 접근 자체가 throw하는데,
+  // 그게 이펙트 밖으로 튀면 목록 전체가 안 뜨므로 읽기/쓰기 모두 감싼다.
   useEffect(() => {
-    const saved = localStorage.getItem(FILTER_STORAGE_KEY)
-    if (saved && genres.includes(saved)) setSelectedGenre(saved)
+    try {
+      const saved = localStorage.getItem(FILTER_STORAGE_KEY)
+      if (saved && genres.includes(saved)) setSelectedGenre(saved)
+    } catch {
+      // 저장된 필터를 못 읽으면 그냥 "전체"로 시작한다
+    }
   }, [genres])
 
   function selectGenre(genre: string | null) {
     setSelectedGenre(genre)
-    if (genre) localStorage.setItem(FILTER_STORAGE_KEY, genre)
-    else localStorage.removeItem(FILTER_STORAGE_KEY)
+    try {
+      if (genre) localStorage.setItem(FILTER_STORAGE_KEY, genre)
+      else localStorage.removeItem(FILTER_STORAGE_KEY)
+    } catch {
+      // 저장만 실패할 뿐 필터링 자체는 정상 동작한다
+    }
   }
 
   function toggleSort(key: SortKey) {

@@ -11,7 +11,7 @@ export type TrackInput = {
 }
 
 export async function getAllTracks(): Promise<Track[]> {
-  return prisma.track.findMany({ orderBy: { createdAt: 'desc' } })
+  return prisma.track.findMany({ orderBy: [{ createdAt: 'desc' }, { id: 'desc' }] })
 }
 
 export async function createTrack(data: TrackInput): Promise<Track> {

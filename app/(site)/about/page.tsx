@@ -47,7 +47,7 @@ export default async function AboutPage() {
                       <span className="shrink-0 font-mono text-[11px] text-text-muted">{project.year}</span>
                     )}
                   </div>
-                  <p className="text-xs leading-relaxed text-text-secondary mt-2 mb-4 line-clamp-3">{project.description}</p>
+                  <p className="text-xs leading-relaxed text-text-secondary mt-2 mb-4">{project.description}</p>
                   <div className="flex flex-wrap gap-1.5 mt-auto">
                     {project.skills?.map((s) => (
                       <span key={s} className="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-medium text-accent">{s}</span>

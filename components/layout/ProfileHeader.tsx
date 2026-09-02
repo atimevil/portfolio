@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { SiteSettings } from '@/types'
+import { cleanEmail } from '@/lib/email'
 
 interface Props {
   profile: SiteSettings['profile']
@@ -15,6 +16,7 @@ export default function ProfileHeader({ profile, showAboutLink = false }: Props)
       ? `https://avatars.githubusercontent.com/${profile.github.split('/').pop()}`
       : '')
   const description = profile.aboutText?.trim() || profile.bio
+  const mail = cleanEmail(profile.email)
 
   return (
     <section className="mb-10 pb-8 border-b border-border flex gap-5 items-center">
@@ -42,9 +44,9 @@ export default function ProfileHeader({ profile, showAboutLink = false }: Props)
             <a href={profile.github} target="_blank" rel="noopener noreferrer"
               className="hover:text-accent transition-colors">GitHub</a>
           )}
-          {profile.email && (
-            <a href={`mailto:${profile.email}`} className="hover:text-accent transition-colors">
-              {profile.email}
+          {mail && (
+            <a href={`mailto:${mail}`} className="hover:text-accent transition-colors">
+              {mail}
             </a>
           )}
           {profile.linkedin && (

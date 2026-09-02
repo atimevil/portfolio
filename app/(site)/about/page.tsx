@@ -57,7 +57,7 @@ export default async function AboutPage() {
                       중첩 <a>는 안 되므로 목적지를 span으로만 표시한다. */}
                   {href && (
                     <div className="mt-3 flex items-center gap-1 text-[11px] text-text-muted transition-colors group-hover:text-accent">
-                      <span>{href === project.github ? 'GitHub' : '사이트'}</span>
+                      <span>{project.github ? 'GitHub' : '사이트'}</span>
                       <span aria-hidden>↗</span>
                     </div>
                   )}

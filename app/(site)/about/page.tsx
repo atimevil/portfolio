@@ -53,6 +53,14 @@ export default async function AboutPage() {
                       <span key={s} className="rounded-full bg-accent-soft px-2 py-0.5 text-[11px] font-medium text-accent">{s}</span>
                     ))}
                   </div>
+                  {/* 카드 전체가 링크지만 눈에 보이는 단서가 없으면 클릭 가능한지 알 수 없다.
+                      중첩 <a>는 안 되므로 목적지를 span으로만 표시한다. */}
+                  {href && (
+                    <div className="mt-3 flex items-center gap-1 text-[11px] text-text-muted transition-colors group-hover:text-accent">
+                      <span>{href === project.github ? 'GitHub' : '사이트'}</span>
+                      <span aria-hidden>↗</span>
+                    </div>
+                  )}
                 </div>
               )
               return href ? (

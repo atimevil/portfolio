@@ -203,7 +203,10 @@ export default function AdminItemManager({ initialItems }: Props) {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-text-muted mb-1">링크</label>
+                  {/* 카드는 github || link 순으로 한 곳만 연결한다 — 둘 다 채우면 link는 안 쓰인다 */}
+                  <label className="block text-xs text-text-muted mb-1">
+                    링크 <span className="text-text-muted/70">(GitHub이 비어 있을 때만 카드에 연결됨)</span>
+                  </label>
                   <input
                     type="text" value={form.link} placeholder="https://..."
                     onChange={(e) => setForm((f) => ({ ...f, link: e.target.value }))}

@@ -49,6 +49,7 @@ export interface SiteSettings {
     skills: string[]
     github: string
     linkedin: string
+    email: string
     aboutText: string
   }
 }

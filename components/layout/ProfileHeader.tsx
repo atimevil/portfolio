@@ -42,6 +42,11 @@ export default function ProfileHeader({ profile, showAboutLink = false }: Props)
             <a href={profile.github} target="_blank" rel="noopener noreferrer"
               className="hover:text-accent transition-colors">GitHub</a>
           )}
+          {profile.email && (
+            <a href={`mailto:${profile.email}`} className="hover:text-accent transition-colors">
+              {profile.email}
+            </a>
+          )}
           {profile.linkedin && (
             <a href={profile.linkedin} target="_blank" rel="noopener noreferrer"
               className="hover:text-accent transition-colors">LinkedIn</a>

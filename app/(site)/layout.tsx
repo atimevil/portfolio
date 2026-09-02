@@ -19,7 +19,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     <div className="min-h-screen bg-bg flex flex-col">
       <NavBar isAdmin={!!session} navVisibility={settings.navVisibility} />
       {children}
-      <Footer />
+      <Footer email={settings.profile.email} />
     </div>
   )
 }

@@ -18,6 +18,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
     skills: ['Next.js', 'TypeScript', 'React'],
     github: '',
     linkedin: '',
+    email: '',
     aboutText: '소개 텍스트를 입력하세요.',
   },
 }

@@ -33,6 +33,9 @@ export interface PortfolioItem {
   link?: string
   thumbnail?: string
   order?: number
+  /** 영문 페이지(/en)용 번역. 비어 있으면 한국어로 폴백한다. */
+  title_en?: string
+  description_en?: string
 }
 
 export interface SiteSettings {

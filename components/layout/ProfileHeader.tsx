@@ -1,21 +1,26 @@
 import Link from 'next/link'
 import type { SiteSettings } from '@/types'
 import { cleanEmail } from '@/lib/email'
+import { t, type Locale } from '@/lib/i18n'
 
 interface Props {
   profile: SiteSettings['profile']
   /** 홈에서만 "소개 →" 링크를 노출 */
   showAboutLink?: boolean
+  locale?: Locale
 }
 
+// 영문 태그라인 — 이력서와 같은 문구를 쓴다.
+const TAGLINE_EN = 'AI/ML · LLM Agents · Security'
+
 // 홈과 소개 페이지가 동일하게 쓰는 프로필 헤더 (이름 + 설명 + 스킬 + 링크)
-export default function ProfileHeader({ profile, showAboutLink = false }: Props) {
+export default function ProfileHeader({ profile, showAboutLink = false, locale = 'ko' }: Props) {
   const avatarSrc =
     profile.avatar ||
     (profile.github
       ? `https://avatars.githubusercontent.com/${profile.github.split('/').pop()}`
       : '')
-  const description = profile.aboutText?.trim() || profile.bio
+  const description = locale === 'en' ? TAGLINE_EN : profile.aboutText?.trim() || profile.bio
   const mail = cleanEmail(profile.email)
 
   return (
@@ -54,7 +59,7 @@ export default function ProfileHeader({ profile, showAboutLink = false }: Props)
               className="hover:text-accent transition-colors">LinkedIn</a>
           )}
           {showAboutLink && (
-            <Link href="/about" className="hover:text-accent transition-colors">소개 →</Link>
+            <Link href={locale === 'en' ? '/en/about' : '/about'} className="hover:text-accent transition-colors">{t(locale, 'aboutArrow')}</Link>
           )}
         </div>
       </div>

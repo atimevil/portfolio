@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { headers } from 'next/headers'
 import './globals.css'
 import 'katex/dist/katex.min.css'
 import 'leaflet/dist/leaflet.css'
@@ -41,8 +42,11 @@ export function generateMetadata(): Metadata {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // 미들웨어가 /en 요청에만 x-locale을 붙인다. 나머지는 기본값 ko.
+  const locale = headers().get('x-locale') === 'en' ? 'en' : 'ko'
+
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{

@@ -4,14 +4,15 @@ import { useState } from 'react'
 import Link from 'next/link'
 import type { BlogPost } from '@/types'
 import BlogListItem from './BlogListItem'
+import { t, type Locale } from '@/lib/i18n'
 
 type View = 'list' | 'grid' | 'image'
 
-const TABS: { key: View; label: string }[] = [
-  { key: 'list', label: '목록' },
-  { key: 'grid', label: '격자' },
-  { key: 'image', label: '이미지' },
-]
+const TABS = [
+  { key: 'list', labelKey: 'viewList' as const },
+  { key: 'grid', labelKey: 'viewGrid' as const },
+  { key: 'image', labelKey: 'viewImage' as const },
+] satisfies { key: View; labelKey: Parameters<typeof t>[1] }[]
 
 // 상대경로(./) 커버는 목록 라우트에서 안 잡히므로 절대경로/외부 URL만 사용.
 function usableCover(cover?: string) {
@@ -73,22 +74,22 @@ function ImageCard({ post }: { post: BlogPost }) {
   )
 }
 
-export default function BlogViews({ posts }: { posts: BlogPost[] }) {
+export default function BlogViews({ posts, locale = 'ko' }: { posts: BlogPost[]; locale?: Locale }) {
   const [view, setView] = useState<View>('list')
 
   return (
     <div>
       <div className="mb-4 flex justify-end">
         <div className="flex gap-1 rounded-lg border border-border p-1">
-          {TABS.map((t) => (
+          {TABS.map((tab) => (
             <button
-              key={t.key}
-              onClick={() => setView(t.key)}
+              key={tab.key}
+              onClick={() => setView(tab.key)}
               className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
-                view === t.key ? 'bg-accent-soft text-accent' : 'text-text-muted hover:text-text-primary'
+                view === tab.key ? 'bg-accent-soft text-accent' : 'text-text-muted hover:text-text-primary'
               }`}
             >
-              {t.label}
+              {t(locale, tab.labelKey)}
             </button>
           ))}
         </div>

@@ -6,6 +6,15 @@ import { getToken } from 'next-auth/jwt'
 // which the Edge runtime cannot do.
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
+
+  // 영문 페이지는 인증과 무관하다. 루트 레이아웃의 <html lang>이 읽을 로케일만 표시하고 통과시킨다.
+  // (아래 인증 분기로 흘러가면 비로그인 방문자가 로그인 페이지로 튕긴다)
+  if (pathname === '/en' || pathname.startsWith('/en/')) {
+    const headers = new Headers(req.headers)
+    headers.set('x-locale', 'en')
+    return NextResponse.next({ request: { headers } })
+  }
+
   const isLoginPage = pathname === '/admin/login'
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
 
@@ -24,5 +33,5 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   // /maps는 비공개 개인 도구(가고 싶은 곳 지도)라 admin과 동일하게 로그인을 요구한다.
-  matcher: ['/admin/:path*', '/maps'],
+  matcher: ['/admin/:path*', '/maps', '/en', '/en/:path*'],
 }

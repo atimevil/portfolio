@@ -38,13 +38,26 @@ export default function SearchBox({ initialQuery, extraParams, locale = 'ko' }: 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="relative w-full max-w-[220px]">
+    <form onSubmit={handleSubmit} role="search" className="relative w-full max-w-[220px]">
       <input
+        type="search"
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={t(locale, 'searchPosts')}
-        className="w-full rounded-md border border-border bg-bg px-3 py-1.5 text-xs text-text-primary placeholder:text-text-muted transition-colors focus:border-accent focus:outline-none"
+        aria-label={t(locale, 'searchPosts')}
+        className="w-full rounded-md border border-border bg-bg py-1.5 pl-3 pr-9 text-xs text-text-primary placeholder:text-text-muted transition-colors focus:border-accent focus:outline-none"
       />
+      {/* placeholder만으로는 레이블이 안 되고, 엔터 외에 제출 수단도 없었다. */}
+      <button
+        type="submit"
+        aria-label={t(locale, 'searchPosts')}
+        className="absolute inset-y-0 right-0 flex w-9 items-center justify-center rounded-r-md text-text-secondary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      >
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+      </button>
     </form>
   )
 }

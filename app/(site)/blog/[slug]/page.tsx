@@ -51,7 +51,7 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
   const htmlRendered = post.contentFormat === 'html' ? await renderBlogHtml(post.content) : null
 
   return (
-    <main className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
+    <main id="main" tabIndex={-1} className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
       <article className="min-w-0">
         {!isDraft && <ViewIncrementer slug={slug} />}
         <header className="mb-8 pb-6 border-b border-border">

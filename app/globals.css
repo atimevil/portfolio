@@ -12,7 +12,7 @@
   --color-border:         #ececf0;
   --color-text-primary:   #1c1b22;
   --color-text-secondary: #55535e;
-  --color-text-muted:     #a09eab;
+  --color-text-muted:     #6f6d7a;
   --color-accent:         #7c5fc9;
   --color-accent-hover:   #6a4dbd;
   --color-accent-soft:    rgba(124, 95, 201, 0.10);
@@ -26,7 +26,7 @@
   --color-border:         #26262e;
   --color-text-primary:   #d6d4de;
   --color-text-secondary: #93919f;
-  --color-text-muted:     #5d5b68;
+  --color-text-muted:     #8a8896;
   --color-accent:         #9d8cd8;
   --color-accent-hover:   #b7a8ea;
   --color-accent-soft:    rgba(157, 140, 216, 0.10);
@@ -34,6 +34,16 @@
 
 * {
   box-sizing: border-box;
+}
+
+/* Tailwind preflight가 -webkit-tap-highlight-color를 지워서 모바일에 탭 피드백이 전혀 없다.
+   hover가 없는 기기(터치)에서만 눌림 상태를 되살린다. */
+@media (hover: none) {
+  a:active,
+  button:active,
+  [role='button']:active {
+    opacity: 0.6;
+  }
 }
 
 body {

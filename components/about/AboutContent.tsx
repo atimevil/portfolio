@@ -12,7 +12,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
   const hasEvents = timeline.length > 0
 
   return (
-    <main className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8">
+    <main id="main" tabIndex={-1} className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
       <ProfileHeader profile={profile} locale={locale} />
 
       {projects.length > 0 && (

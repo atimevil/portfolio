@@ -28,10 +28,10 @@ export function CategoryFilter({ categories, activeCategory, extraParams, totalC
   const base = locale === 'en' ? '/en' : '/'
 
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div className="flex flex-wrap gap-2">
       <Link
         href={buildHref({ category: undefined, page: undefined }, extraParams, base)}
-        className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+        className={`inline-flex min-h-[36px] items-center rounded-full border px-3 py-2 text-xs font-medium transition-colors md:min-h-0 md:py-1 ${
           !activeCategory
             ? 'border-accent bg-accent-soft text-accent'
             : 'border-border text-text-secondary hover:text-text-primary'
@@ -43,7 +43,7 @@ export function CategoryFilter({ categories, activeCategory, extraParams, totalC
         <Link
           key={c.name}
           href={buildHref({ category: c.name, page: undefined }, extraParams, base)}
-          className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+          className={`inline-flex min-h-[36px] items-center rounded-full border px-3 py-2 text-xs font-medium transition-colors md:min-h-0 md:py-1 ${
             activeCategory === c.name
               ? 'border-accent bg-accent-soft text-accent'
               : 'border-border text-text-secondary hover:text-text-primary'
@@ -66,13 +66,13 @@ interface PageSizeSelectProps {
 export function PageSizeSelect({ perPage, extraParams, locale = 'ko' }: PageSizeSelectProps) {
   const base = locale === 'en' ? '/en' : '/'
   return (
-    <div className="flex items-center gap-1.5 text-xs text-text-muted">
+    <div className="flex items-center gap-2 text-xs text-text-muted">
       <span>{t(locale, 'perPage')}</span>
       {PAGE_SIZE_OPTIONS.map((n) => (
         <Link
           key={n}
           href={buildHref({ perPage: n === 10 ? undefined : String(n), page: undefined }, extraParams, base)}
-          className={`rounded-md px-2 py-1 transition-colors ${
+          className={`inline-flex min-h-[36px] min-w-[36px] items-center justify-center rounded-md px-2 py-1 transition-colors md:min-h-0 md:min-w-0 ${
             perPage === n ? 'bg-accent-soft font-medium text-accent' : 'hover:text-text-primary'
           }`}
         >

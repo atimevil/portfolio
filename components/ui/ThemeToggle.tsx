@@ -27,7 +27,7 @@ export default function ThemeToggle() {
       aria-checked={isDark}
       aria-label={isDark ? '라이트 모드로 전환' : '다크 모드로 전환'}
       onClick={toggle}
-      className={`relative inline-flex w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-text-muted ${
+      className={`relative inline-flex w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg ${
         isDark ? 'bg-surface border border-border' : 'bg-border'
       }`}
     >

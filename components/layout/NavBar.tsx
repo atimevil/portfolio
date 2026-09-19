@@ -73,6 +73,12 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-bg/80 backdrop-blur-md">
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:text-text-primary focus:ring-2 focus:ring-accent"
+      >
+        {isEn ? 'Skip to content' : '본문으로 건너뛰기'}
+      </a>
       <nav className="max-w-3xl mx-auto flex items-center justify-between h-14 px-4 md:px-8">
         <Link
           href={isEn ? '/en' : '/'}
@@ -91,17 +97,28 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
           <ThemeToggle />
         </div>
 
+        {/* ☰/✕는 텍스트 글리프라 폰트에 따라 깨진다 → 인라인 SVG.
+            터치 타겟 44px, 열림 상태는 aria-expanded로 노출. */}
         <button
-          className="md:hidden p-2 text-text-secondary"
+          type="button"
+          className="md:hidden -mr-2 inline-flex h-11 w-11 items-center justify-center text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={isEn ? 'Menu' : '메뉴'}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
         >
-          {menuOpen ? '✕' : '☰'}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            {menuOpen ? (
+              <path d="M6 6l12 12M18 6L6 18" />
+            ) : (
+              <path d="M4 7h16M4 12h16M4 17h16" />
+            )}
+          </svg>
         </button>
       </nav>
 
       {menuOpen && (
-        <div className="md:hidden border-t border-border bg-bg px-4 py-4 flex flex-col gap-4">
+        <div id="mobile-menu" className="md:hidden border-t border-border bg-bg px-4 py-4 flex flex-col gap-4">
           {links.map((link) => (
             <Link
               key={link.href}

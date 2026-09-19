@@ -1,7 +1,9 @@
+import Link from 'next/link'
 import { cleanEmail } from '@/lib/email'
 
-export default function Footer({ email, github }: { email?: string; github?: string }) {
+export default function Footer({ email, github, name }: { email?: string; github?: string; name?: string }) {
   const mail = cleanEmail(email)
+  const handle = name?.trim() || 'admin'
 
   return (
     <footer className="border-t border-border mt-12 py-4">
@@ -17,13 +19,16 @@ export default function Footer({ email, github }: { email?: string; github?: str
           <a href="/rss.xml" className="hover:text-accent transition-colors">
             RSS
           </a>
-          {/* 원래 여기 있던 "@foxibu"는 /admin으로 갔다 — 라벨과 목적지가 다르고
-              관리자 경로가 모든 페이지 하단에 노출됐다. */}
           {github && (
             <a href={github} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
               GitHub
             </a>
           )}
+          {/* 관리자 로그인 진입점. 앱 안에 다른 경로가 없으므로 눈에 띄지 않게 여기 둔다.
+              (/admin 자체는 미들웨어가 막고 비로그인은 /admin/login으로 보낸다) */}
+          <Link href="/admin" className="hover:text-accent transition-colors">
+            @{handle}
+          </Link>
         </div>
       </div>
     </footer>

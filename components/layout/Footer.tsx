@@ -1,7 +1,6 @@
-import Link from 'next/link'
 import { cleanEmail } from '@/lib/email'
 
-export default function Footer({ email }: { email?: string }) {
+export default function Footer({ email, github }: { email?: string; github?: string }) {
   const mail = cleanEmail(email)
 
   return (
@@ -18,9 +17,13 @@ export default function Footer({ email }: { email?: string }) {
           <a href="/rss.xml" className="hover:text-accent transition-colors">
             RSS
           </a>
-          <Link href="/admin" className="hover:text-accent transition-colors">
-            @foxibu
-          </Link>
+          {/* 원래 여기 있던 "@foxibu"는 /admin으로 갔다 — 라벨과 목적지가 다르고
+              관리자 경로가 모든 페이지 하단에 노출됐다. */}
+          {github && (
+            <a href={github} target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">
+              GitHub
+            </a>
+          )}
         </div>
       </div>
     </footer>

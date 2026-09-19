@@ -17,7 +17,7 @@ export default async function EnLayout({ children }: { children: React.ReactNode
     <div className="min-h-screen bg-bg flex flex-col">
       <NavBar isAdmin={!!session} navVisibility={settings.navVisibility} locale="en" />
       {children}
-      <Footer email={settings.profile.email} />
+      <Footer email={settings.profile.email} github={settings.profile.github} />
     </div>
   )
 }

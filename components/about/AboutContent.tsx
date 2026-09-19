@@ -3,6 +3,7 @@ import { getProjects, getTimeline } from '@/lib/items'
 import ProfileHeader from '@/components/layout/ProfileHeader'
 import AwardsGantt from '@/components/about/AwardsGantt'
 import { t, localized, type Locale } from '@/lib/i18n'
+import { splitSummary } from '@/lib/summary'
 
 /** 한국어(/about) · 영문(/en/about)이 공유하는 소개 본문. */
 export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
@@ -24,45 +25,57 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
             {projects.map((project) => {
               const href = project.github || project.link
               const title = localized(project, 'title', locale)
-              const Card = (
-                <div className={`group h-full flex flex-col rounded-xl border border-border bg-bg-secondary p-5 transition-all ${href ? 'hover:border-accent hover:-translate-y-0.5 cursor-pointer motion-reduce:transition-none motion-reduce:hover:translate-y-0' : ''}`}>
+              return (
+                <div
+                  key={project.id}
+                  className={`group h-full flex flex-col rounded-xl border border-border bg-bg-secondary p-5 transition-all ${href ? 'hover:border-accent hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0' : ''}`}
+                >
                   {project.thumbnail && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={project.thumbnail} alt={title}
+                    <img src={project.thumbnail} alt={title} loading="lazy" decoding="async"
                       className="w-full h-32 object-cover rounded-lg mb-3 bg-surface" />
                   )}
                   <div className="flex items-baseline justify-between gap-2">
+                    {/* 카드 전체를 <a>로 감싸면 안쪽 <details>(설명 펼치기)가 링크 안에 들어가
+                        잘못된 중첩이 된다. 제목만 링크로 두고 카드는 hover 스타일만 맡는다. */}
                     <h3 className="font-bold text-base text-text-primary transition-colors group-hover:text-accent-hover">
-                      {title}
+                      {href ? (
+                        <a
+                          href={href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        >
+                          {title}
+                        </a>
+                      ) : (
+                        title
+                      )}
                     </h3>
                     {project.year && (
                       <span className="shrink-0 font-mono text-xs text-text-secondary">{project.year}</span>
                     )}
                   </div>
-                  <p className="text-sm leading-relaxed text-text-secondary mt-2 mb-4 max-w-[68ch]">
-                    {localized(project, 'description', locale)}
-                  </p>
+                  <ProjectDescription text={localized(project, 'description', locale)} locale={locale} />
                   <div className="flex flex-wrap gap-1.5 mt-auto">
                     {project.skills?.map((s) => (
                       <span key={s} className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent">{s}</span>
                     ))}
                   </div>
-                  {/* 카드 전체가 링크지만 눈에 보이는 단서가 없으면 클릭 가능한지 알 수 없다.
-                      중첩 <a>는 안 되므로 목적지를 span으로만 표시한다. */}
                   {href && (
-                    <div className="mt-3 flex items-center gap-1 text-xs text-text-secondary transition-colors group-hover:text-accent">
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center gap-1 self-start rounded-sm text-xs text-text-secondary transition-colors hover:text-accent group-hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    >
                       <span>{project.github ? 'GitHub' : locale === 'en' ? 'Website' : '사이트'}</span>
-                      <span aria-hidden>↗</span>
-                    </div>
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M7 17 17 7M9 7h8v8" />
+                      </svg>
+                    </a>
                   )}
                 </div>
-              )
-              return href ? (
-                <a key={project.id} href={href} target="_blank" rel="noopener noreferrer">
-                  {Card}
-                </a>
-              ) : (
-                <div key={project.id}>{Card}</div>
               )
             })}
           </div>
@@ -74,5 +87,30 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
         <AwardsGantt items={timeline.filter((i) => i.type !== 'project')} locale={locale} />
       )}
     </main>
+  )
+}
+
+/**
+ * 프로젝트 설명 — 긴 것만 요약 + 펼치기로 자른다.
+ *
+ * 같은 페이지 아래 Awards 목록이 이미 <details>로 접혀 있으므로 같은 방식을 쓴다.
+ * JS 없이 동작하고, 접힌 내용도 페이지 내 검색(Ctrl+F)으로 찾을 수 있다.
+ */
+function ProjectDescription({ text, locale }: { text: string; locale: Locale }) {
+  const { summary, rest } = splitSummary(text)
+  const className = 'text-sm leading-relaxed text-text-secondary mt-2 mb-4 max-w-[68ch]'
+
+  if (!rest) return <p className={className}>{text}</p>
+
+  return (
+    <div className={className}>
+      {summary}{' '}
+      <details className="group/desc inline">
+        <summary className="inline cursor-pointer list-none text-text-secondary underline underline-offset-2 transition-colors hover:text-accent [&::-webkit-details-marker]:hidden">
+          <span className="group-open/desc:hidden">{t(locale, 'readMore')} +</span>
+        </summary>
+        <span className="block mt-1.5">{rest}</span>
+      </details>
+    </div>
   )
 }

@@ -8,7 +8,14 @@ export function generateMetadata() {
   const { profile } = getSettings()
   const name = profile.name?.trim() || '포트폴리오'
   const description = profile.bio?.trim() || profile.aboutText?.trim() || '개발자 포트폴리오 · 블로그'
-  return buildPageMetadata({ path: '', title: name, description })
+  return buildPageMetadata({
+    path: '',
+    title: `${name} — ${description}`,
+    description,
+    // 제목이 사이트명과 같아 템플릿을 태우면 "foxibu · foxibu"가 된다
+    absoluteTitle: true,
+    languages: { ko: '/', en: '/en' },
+  })
 }
 
 export default async function HomePage({ searchParams }: { searchParams: BlogHomeSearchParams }) {

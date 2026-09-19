@@ -28,7 +28,6 @@ export default function MusicList({ tracks }: Props) {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null)
   const [sortKey, setSortKey] = useState<SortKey | null>(null)
   const [sortDir, setSortDir] = useState<SortDir>('asc')
-  const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null)
 
   const genres = useMemo(() => getGenres(tracks), [tracks])
 
@@ -90,10 +89,10 @@ export default function MusicList({ tracks }: Props) {
 
   return (
     <div>
-      <div className="flex flex-wrap gap-1.5 mb-4">
+      <div className="flex flex-wrap gap-2 mb-4">
         <button
           onClick={() => selectGenre(null)}
-          className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+          className={`inline-flex min-h-[36px] items-center rounded-full border px-3 py-2 text-xs transition-colors md:min-h-0 md:py-1 ${
             selectedGenre === null
               ? 'border-accent text-accent'
               : 'border-border text-text-secondary hover:text-text-primary'
@@ -105,7 +104,7 @@ export default function MusicList({ tracks }: Props) {
           <button
             key={genre}
             onClick={() => selectGenre(genre)}
-            className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+            className={`inline-flex min-h-[36px] items-center rounded-full border px-3 py-2 text-xs transition-colors md:min-h-0 md:py-1 ${
               selectedGenre === genre
                 ? 'border-accent text-accent'
                 : 'border-border text-text-secondary hover:text-text-primary'
@@ -138,31 +137,53 @@ export default function MusicList({ tracks }: Props) {
             </thead>
             <tbody className="divide-y divide-border">
               {visible.map((track) => (
-                <tr
-                  key={track.id}
-                  onClick={() => {
-                    if (track.link) window.open(track.link, '_blank', 'noopener,noreferrer')
-                  }}
-                  onMouseMove={(e) => {
-                    if (track.memo) setTooltip({ text: track.memo, x: e.clientX, y: e.clientY })
-                  }}
-                  onMouseLeave={() => setTooltip(null)}
-                  className={track.link ? 'cursor-pointer hover:bg-bg-secondary transition-colors' : ''}
-                >
+                <tr key={track.id} className="hover:bg-bg-secondary transition-colors">
                   <td className="px-3 py-2">
                     {track.cover ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={track.cover} alt="" className="w-8 h-8 rounded object-cover" />
+                      <img
+                        src={track.cover}
+                        alt=""
+                        width={32}
+                        height={32}
+                        loading="lazy"
+                        className="w-8 h-8 rounded object-cover bg-surface"
+                      />
                     ) : (
                       <div className="w-8 h-8 rounded bg-surface" />
                     )}
                   </td>
-                  <td className="px-3 py-2 max-w-[200px]">
-                    <span className="block truncate text-text-primary font-medium">{track.title}</span>
+                  <td className="px-3 py-2 max-w-[240px]">
+                    {/* 행 전체 onClick은 키보드로 도달할 수도, Enter로 실행할 수도 없었다.
+                        제목을 진짜 링크로 두면 탭 이동·새 탭 열기·링크 복사가 전부 된다. */}
+                    {track.link ? (
+                      <a
+                        href={track.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block truncate font-medium text-text-primary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      >
+                        {track.title}
+                      </a>
+                    ) : (
+                      <span className="block truncate font-medium text-text-primary">{track.title}</span>
+                    )}
+                    {/* 메모는 마우스 호버 툴팁에만 있어서 터치·키보드 사용자에겐 없는 정보였다 */}
+                    {track.memo && (
+                      <span className="mt-0.5 block truncate text-xs text-text-secondary" title={track.memo}>
+                        {track.memo}
+                      </span>
+                    )}
                   </td>
                   <td className="px-3 py-2 text-text-secondary truncate max-w-[160px]">{track.artist}</td>
                   <td className="px-3 py-2 text-text-secondary">{track.genre || '기타'}</td>
-                  <td className="px-3 py-2 text-text-secondary">{track.link ? '↗' : '-'}</td>
+                  <td className="px-3 py-2 text-text-secondary">
+                    {track.link && (
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M7 17 17 7M9 7h8v8" />
+                      </svg>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -170,14 +191,6 @@ export default function MusicList({ tracks }: Props) {
         </div>
       )}
 
-      {tooltip && (
-        <div
-          className="fixed z-50 max-w-xs whitespace-normal rounded-md border border-border bg-bg-secondary px-3 py-2 text-xs text-text-secondary shadow-lg pointer-events-none"
-          style={{ left: tooltip.x + 12, top: tooltip.y + 16 }}
-        >
-          {tooltip.text}
-        </div>
-      )}
     </div>
   )
 }

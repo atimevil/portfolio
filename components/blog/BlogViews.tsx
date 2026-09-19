@@ -29,7 +29,7 @@ function GridCard({ post }: { post: BlogPost }) {
       {/* 커버 이미지가 있으면 상단 썸네일 + 글, 없으면 텍스트만(카드 높이는 자연스럽게 달라짐) */}
       {cover && (
         <div className="h-40 shrink-0 overflow-hidden">
-          <img src={cover} alt="" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+          <img src={cover} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform group-hover:scale-105" />
         </div>
       )}
       <div className="flex flex-1 flex-col p-5">
@@ -55,7 +55,7 @@ function ImageCard({ post }: { post: BlogPost }) {
     >
       <div className="relative h-40">
         {cover ? (
-          <img src={cover} alt="" className="h-full w-full object-cover" />
+          <img src={cover} alt="" loading="lazy" decoding="async" className="h-full w-full object-cover" />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-accent-soft">
             <span className="text-sm font-medium text-accent">{post.category ?? '글'}</span>

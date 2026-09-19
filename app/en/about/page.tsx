@@ -8,6 +8,7 @@ export function generateMetadata() {
     path: '/en/about',
     title: 'About',
     description: 'Projects, awards and activity',
+    languages: { ko: '/about', en: '/en/about' },
   })
 }
 

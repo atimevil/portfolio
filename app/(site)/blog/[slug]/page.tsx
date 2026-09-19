@@ -96,20 +96,36 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
           </div>
         )}
 
-        <div className="mt-12 pt-8 border-t border-border flex justify-between gap-4">
+        {/* 화살표만 있으면 어느 쪽이 이전인지 알 수 없고, 제목이 길면 두 칸이 서로 밀린다.
+            라벨을 붙이고 제목은 두 줄로 자른다. */}
+        <nav className="mt-12 grid grid-cols-2 gap-4 border-t border-border pt-8" aria-label="글 이동">
           {prevPost ? (
-            <Link href={`/blog/${prevPost.slug}`}
-              className="flex-1 text-sm text-text-secondary hover:text-text-primary transition-colors">
-              ← {prevPost.title}
+            <Link
+              href={`/blog/${prevPost.slug}`}
+              className="group rounded-lg border border-border p-3 transition-colors hover:border-accent"
+            >
+              <span className="block text-xs text-text-muted">← 이전 글</span>
+              <span className="mt-1 block line-clamp-2 text-sm text-text-secondary transition-colors group-hover:text-text-primary">
+                {prevPost.title}
+              </span>
             </Link>
-          ) : <div />}
+          ) : (
+            <div />
+          )}
           {nextPost ? (
-            <Link href={`/blog/${nextPost.slug}`}
-              className="flex-1 text-right text-sm text-text-secondary hover:text-text-primary transition-colors">
-              {nextPost.title} →
+            <Link
+              href={`/blog/${nextPost.slug}`}
+              className="group rounded-lg border border-border p-3 text-right transition-colors hover:border-accent"
+            >
+              <span className="block text-xs text-text-muted">다음 글 →</span>
+              <span className="mt-1 block line-clamp-2 text-sm text-text-secondary transition-colors group-hover:text-text-primary">
+                {nextPost.title}
+              </span>
             </Link>
-          ) : <div />}
-        </div>
+          ) : (
+            <div />
+          )}
+        </nav>
       </article>
     </main>
   )

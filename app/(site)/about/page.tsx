@@ -11,6 +11,7 @@ export function generateMetadata() {
     path: '/about',
     title: '소개',
     description: `${name}의 기술 스택, 활동 및 수상 내역`,
+    languages: { ko: '/about', en: '/en/about' },
   })
 }
 

@@ -14,20 +14,27 @@ export function buildPageMetadata({
   path,
   title,
   description,
+  absoluteTitle = false,
+  languages,
 }: {
   path: string
   title: string
   description: string
+  /** 루트 템플릿(`%s · foxibu`)을 건너뛴다. 제목이 사이트명과 같아 "foxibu · foxibu"가 되는 홈에서 쓴다. */
+  absoluteTitle?: boolean
+  /** hreflang 짝. 같은 내용의 ko/en 경로가 둘 다 있는 페이지에서만 넘긴다. */
+  languages?: Record<string, string>
 }): Metadata {
   const url = `${SITE_URL}${path || '/'}`
   return {
-    title,
+    title: absoluteTitle ? { absolute: title } : title,
     description,
     // types까지 여기서 같이 넣는 이유: Next 메타데이터는 최상위 필드 단위로 교체돼서,
     // 페이지가 alternates를 정의하면 루트 레이아웃의 alternates(RSS 링크)가 통째로 사라진다.
     alternates: {
       canonical: url,
       types: { 'application/rss+xml': `${SITE_URL}/rss.xml` },
+      ...(languages ? { languages } : {}),
     },
     openGraph: {
       title,

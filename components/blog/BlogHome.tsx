@@ -4,6 +4,7 @@ import Pagination from '@/components/blog/Pagination'
 import { CategoryFilter, PageSizeSelect } from '@/components/blog/BlogFilters'
 import SearchBox from '@/components/blog/SearchBox'
 import ProfileHeader from '@/components/layout/ProfileHeader'
+import SelectedWork from '@/components/home/SelectedWork'
 import { getAllPosts } from '@/lib/blog'
 import { getSettings } from '@/lib/settings'
 import { t, categoryLabel, type Locale } from '@/lib/i18n'
@@ -91,7 +92,11 @@ export default async function BlogHome({
           </Link>
         </section>
       ) : (
-        <ProfileHeader profile={profile} showAboutLink locale={locale} />
+        <>
+          <ProfileHeader profile={profile} showAboutLink locale={locale} />
+          {/* 방문자가 먼저 알아야 할 건 무엇을 만들었는가지, 어제 푼 알고리즘 문제가 아니다. */}
+          <SelectedWork locale={locale} />
+        </>
       )}
 
       <section>

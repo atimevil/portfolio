@@ -48,6 +48,11 @@
   }
 }
 
+/* 헤더가 sticky라 본문으로 건너뛰면 대상이 헤더(56px) 밑에 깔린다 */
+#main {
+  scroll-margin-top: 4rem;
+}
+
 body {
   background-color: var(--color-bg);
   color: var(--color-text-primary);

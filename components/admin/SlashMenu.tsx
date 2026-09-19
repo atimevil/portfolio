@@ -73,7 +73,7 @@ const SlashMenuList = forwardRef<SlashMenuListRef, SlashMenuListProps>(({ items,
           }`}
         >
           <span className="font-medium">{item.title}</span>
-          <span className={`text-xs ${index === selectedIndex ? 'text-bg/70' : 'text-text-secondary'}`}>
+          <span className={`text-xs ${index === selectedIndex ? 'text-bg' : 'text-text-secondary'}`}>
             {item.description}
           </span>
         </button>

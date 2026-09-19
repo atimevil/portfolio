@@ -18,6 +18,10 @@
   --color-accent:         #6a4dbd;
   --color-accent-hover:   #5d43a3;
   --color-accent-soft:    rgba(106, 77, 189, 0.10);
+  /* 알파가 필요한 색은 토큰으로 직접 정의한다 — var() 문자열 토큰에는
+     Tailwind의 /80 같은 수식어가 적용되지 않고 유틸리티가 통째로 사라진다. */
+  --color-bg-translucent: rgba(255, 255, 255, 0.80);
+  --color-text-soft:      rgba(28, 27, 34, 0.08);
 }
 
 /* 다크(기본): C-2 편안한 다크 퍼플 */
@@ -32,6 +36,8 @@
   --color-accent:         #9d8cd8;
   --color-accent-hover:   #b7a8ea;
   --color-accent-soft:    rgba(157, 140, 216, 0.10);
+  --color-bg-translucent: rgba(19, 19, 23, 0.80);
+  --color-text-soft:      rgba(214, 212, 222, 0.10);
 }
 
 * {

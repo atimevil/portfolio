@@ -28,7 +28,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
               return (
                 <div
                   key={project.id}
-                  className={`group h-full flex flex-col rounded-xl border border-border bg-bg-secondary p-5 transition-all ${href ? 'hover:border-accent hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0' : ''}`}
+                  className={`group flex h-full flex-col rounded-xl border border-border bg-bg-secondary p-5 transition-colors ${href ? 'hover:border-accent focus-within:border-accent' : ''}`}
                 >
                   {project.thumbnail && (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -38,13 +38,13 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
                   <div className="flex items-baseline justify-between gap-2">
                     {/* 카드 전체를 <a>로 감싸면 안쪽 <details>(설명 펼치기)가 링크 안에 들어가
                         잘못된 중첩이 된다. 제목만 링크로 두고 카드는 hover 스타일만 맡는다. */}
-                    <h3 className="font-bold text-base text-text-primary transition-colors group-hover:text-accent-hover">
+                    <h3 className="text-base font-bold text-text-primary">
                       {href ? (
                         <a
                           href={href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                          className="rounded-sm transition-colors hover:text-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                         >
                           {title}
                         </a>
@@ -63,17 +63,15 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
                     ))}
                   </div>
                   {href && (
-                    <a
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-3 inline-flex items-center gap-1 self-start rounded-sm text-xs text-text-secondary transition-colors hover:text-accent group-hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    <span
+                      aria-hidden="true"
+                      className="mt-3 inline-flex items-center gap-1 self-start text-xs text-text-secondary transition-colors group-hover:text-accent"
                     >
-                      <span>{project.github ? 'GitHub' : locale === 'en' ? 'Website' : '사이트'}</span>
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      {project.github ? 'GitHub' : locale === 'en' ? 'Website' : '사이트'}
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M7 17 17 7M9 7h8v8" />
                       </svg>
-                    </a>
+                    </span>
                   )}
                 </div>
               )

@@ -72,7 +72,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
   )
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-border bg-bg/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-bg-translucent backdrop-blur-md">
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-surface focus:px-3 focus:py-2 focus:text-sm focus:text-text-primary focus:ring-2 focus:ring-accent"
@@ -117,24 +117,28 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
         </button>
       </nav>
 
-      {menuOpen && (
-        <div id="mobile-menu" className="md:hidden border-t border-border bg-bg px-4 py-2 flex flex-col">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex min-h-[44px] items-center ${linkClass(link.href)}`}
-              onClick={() => setMenuOpen(false)}
-            >
-              {t(locale, link.labelKey)}
-            </Link>
-          ))}
-          <div className="flex min-h-[44px] items-center gap-4">
-            {localeToggle}
-            <ThemeToggle />
-          </div>
+      {/* 닫혔을 때 언마운트하면 aria-controls가 없는 id를 가리킨다. 항상 렌더하고 감춘다.
+          hidden 속성만으로는 부족하다 — .flex(작성자 스타일)가 UA의 [hidden]{display:none}을
+          이기므로 표시 여부는 클래스로 정한다. */}
+      <div
+        id="mobile-menu"
+        className={`md:hidden flex-col border-t border-border bg-bg px-4 py-2 ${menuOpen ? 'flex' : 'hidden'}`}
+      >
+        {links.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`flex min-h-[44px] items-center ${linkClass(link.href)}`}
+            onClick={() => setMenuOpen(false)}
+          >
+            {t(locale, link.labelKey)}
+          </Link>
+        ))}
+        <div className="flex min-h-[44px] items-center gap-4">
+          {localeToggle}
+          <ThemeToggle />
         </div>
-      )}
+      </div>
     </header>
   )
 }

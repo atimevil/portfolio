@@ -73,7 +73,7 @@ export default function MusicList({ tracks }: Props) {
     return (
       <button
         onClick={() => toggleSort(sortKeyName)}
-        className={`flex items-center gap-1 text-xs font-semibold uppercase tracking-wide ${
+        className={`flex min-h-[24px] items-center gap-1 py-1 text-xs font-semibold uppercase tracking-wide ${
           active ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'
         }`}
       >
@@ -137,7 +137,7 @@ export default function MusicList({ tracks }: Props) {
             </thead>
             <tbody className="divide-y divide-border">
               {visible.map((track) => (
-                <tr key={track.id} className="hover:bg-bg-secondary transition-colors">
+                <tr key={track.id} className={track.link ? 'transition-colors hover:bg-bg-secondary' : ''}>
                   <td className="px-3 py-2">
                     {track.cover ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -161,7 +161,7 @@ export default function MusicList({ tracks }: Props) {
                         href={track.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block truncate font-medium text-text-primary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        className="block truncate py-0.5 font-medium text-text-primary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                       >
                         {track.title}
                       </a>
@@ -170,7 +170,7 @@ export default function MusicList({ tracks }: Props) {
                     )}
                     {/* 메모는 마우스 호버 툴팁에만 있어서 터치·키보드 사용자에겐 없는 정보였다 */}
                     {track.memo && (
-                      <span className="mt-0.5 block truncate text-xs text-text-secondary" title={track.memo}>
+                      <span className="mt-0.5 block line-clamp-2 text-xs text-text-secondary" title={track.memo}>
                         {track.memo}
                       </span>
                     )}

@@ -31,6 +31,7 @@ const UI = {
   collapse: { ko: '접기', en: 'Collapse' },
   all: { ko: '전체', en: 'All' },
   searchPosts: { ko: '글 검색', en: 'Search posts' },
+  searchSubmit: { ko: '검색', en: 'Search' },
   perPage: { ko: '페이지당', en: 'Per page' },
   viewList: { ko: '목록', en: 'List' },
   viewGrid: { ko: '격자', en: 'Grid' },

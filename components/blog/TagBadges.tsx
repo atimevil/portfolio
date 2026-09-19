@@ -14,7 +14,7 @@ export default function TagBadges({ tags, category, className = '' }: TagBadgesP
       {category && (
         <Link
           href={`/?category=${encodeURIComponent(category)}`}
-          className="inline-flex min-h-[26px] items-center rounded-full bg-text-primary/10 px-2.5 py-1 text-xs font-medium text-text-secondary transition-colors hover:text-text-primary"
+          className="inline-flex min-h-[26px] items-center rounded-full bg-text-soft px-2.5 py-1 text-xs font-medium text-text-secondary transition-colors hover:text-text-primary"
         >
           {category}
         </Link>

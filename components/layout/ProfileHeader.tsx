@@ -44,7 +44,7 @@ export default function ProfileHeader({ profile, showAboutLink = false, locale =
             ))}
           </div>
         )}
-        <div className="flex flex-wrap gap-4 mt-3 text-xs text-text-muted">
+        <div className="flex flex-wrap items-center gap-4 mt-3 text-xs text-text-muted [&>a]:inline-flex [&>a]:min-h-[24px] [&>a]:items-center">
           {profile.github && (
             <a href={profile.github} target="_blank" rel="noopener noreferrer"
               className="hover:text-accent transition-colors">GitHub</a>

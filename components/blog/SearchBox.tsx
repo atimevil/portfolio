@@ -50,7 +50,7 @@ export default function SearchBox({ initialQuery, extraParams, locale = 'ko' }: 
       {/* placeholder만으로는 레이블이 안 되고, 엔터 외에 제출 수단도 없었다. */}
       <button
         type="submit"
-        aria-label={t(locale, 'searchPosts')}
+        aria-label={t(locale, 'searchSubmit')}
         className="absolute inset-y-0 right-0 flex w-9 items-center justify-center rounded-r-md text-text-secondary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">

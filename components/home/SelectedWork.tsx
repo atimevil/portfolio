@@ -27,7 +27,7 @@ export default function SelectedWork({ locale = 'ko' }: { locale?: Locale }) {
         </h2>
         <Link
           href={aboutHref}
-          className="text-xs text-text-secondary transition-colors hover:text-accent"
+          className="inline-flex min-h-[24px] items-center text-xs text-text-secondary transition-colors hover:text-accent"
         >
           {t(locale, 'viewAllWork')}
         </Link>

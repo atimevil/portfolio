@@ -13,12 +13,14 @@ const config: Config = {
     extend: {
       colors: {
         bg: {
-          DEFAULT:   'var(--color-bg)',
-          secondary: 'var(--color-bg-secondary)',
+          DEFAULT:     'var(--color-bg)',
+          secondary:   'var(--color-bg-secondary)',
+          translucent: 'var(--color-bg-translucent)',
         },
         surface: 'var(--color-surface)',
         border: 'var(--color-border)',
         'text-primary':   'var(--color-text-primary)',
+        'text-soft':      'var(--color-text-soft)',
         'text-secondary': 'var(--color-text-secondary)',
         'text-muted':     'var(--color-text-muted)',
         accent: {

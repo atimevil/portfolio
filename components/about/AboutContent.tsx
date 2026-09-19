@@ -20,7 +20,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
           <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-5">
             {t(locale, 'projects')}
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4">
             {projects.map((project) => {
               const href = project.github || project.link
               const title = localized(project, 'title', locale)

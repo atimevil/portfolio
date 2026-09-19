@@ -65,7 +65,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
     <Link
       href={otherLocaleHref}
       hrefLang={isEn ? 'ko' : 'en'}
-      className="rounded border border-border px-1.5 py-0.5 text-[11px] font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent"
+      className="inline-flex min-h-[26px] items-center rounded border border-border px-2 py-1 text-[11px] font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
       {isEn ? 'KO' : 'EN'}
     </Link>
@@ -82,7 +82,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
       <nav className="max-w-3xl mx-auto flex items-center justify-between h-14 px-4 md:px-8">
         <Link
           href={isEn ? '/en' : '/'}
-          className="font-semibold text-[15px] tracking-tight text-text-primary hover:text-text-primary transition-colors"
+          className="inline-flex h-11 items-center rounded-sm font-semibold text-[15px] tracking-tight text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           fo<span className="text-accent">xi</span>bu
         </Link>
@@ -118,18 +118,18 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
       </nav>
 
       {menuOpen && (
-        <div id="mobile-menu" className="md:hidden border-t border-border bg-bg px-4 py-4 flex flex-col gap-4">
+        <div id="mobile-menu" className="md:hidden border-t border-border bg-bg px-4 py-2 flex flex-col">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={linkClass(link.href)}
+              className={`flex min-h-[44px] items-center ${linkClass(link.href)}`}
               onClick={() => setMenuOpen(false)}
             >
               {t(locale, link.labelKey)}
             </Link>
           ))}
-          <div className="flex items-center gap-4">
+          <div className="flex min-h-[44px] items-center gap-4">
             {localeToggle}
             <ThemeToggle />
           </div>

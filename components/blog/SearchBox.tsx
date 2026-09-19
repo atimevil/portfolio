@@ -38,7 +38,7 @@ export default function SearchBox({ initialQuery, extraParams, locale = 'ko' }: 
   }
 
   return (
-    <form onSubmit={handleSubmit} role="search" className="relative w-full max-w-[220px]">
+    <form onSubmit={handleSubmit} role="search" className="relative min-w-[150px] flex-1 sm:max-w-[220px] sm:flex-none">
       <input
         type="search"
         value={value}

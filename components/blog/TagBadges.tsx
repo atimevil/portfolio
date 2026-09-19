@@ -10,11 +10,11 @@ interface TagBadgesProps {
 export default function TagBadges({ tags, category, className = '' }: TagBadgesProps) {
   if (!category && !(tags && tags.length)) return null
   return (
-    <div className={`flex flex-wrap items-center gap-1.5 ${className}`}>
+    <div className={`flex flex-wrap items-center gap-2 ${className}`}>
       {category && (
         <Link
           href={`/?category=${encodeURIComponent(category)}`}
-          className="rounded-full bg-text-primary/10 px-2 py-0.5 text-xs font-medium text-text-secondary hover:text-text-primary transition-colors"
+          className="inline-flex min-h-[26px] items-center rounded-full bg-text-primary/10 px-2.5 py-1 text-xs font-medium text-text-secondary transition-colors hover:text-text-primary"
         >
           {category}
         </Link>
@@ -23,7 +23,7 @@ export default function TagBadges({ tags, category, className = '' }: TagBadgesP
         <Link
           key={t}
           href={`/?tag=${encodeURIComponent(t)}`}
-          className="rounded-full border border-transparent bg-accent-soft px-2 py-0.5 text-xs text-accent hover:border-accent transition-colors"
+          className="inline-flex min-h-[26px] items-center rounded-full border border-transparent bg-accent-soft px-2.5 py-1 text-xs text-accent transition-colors hover:border-accent"
         >
           #{t}
         </Link>

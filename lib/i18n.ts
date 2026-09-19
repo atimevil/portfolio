@@ -28,6 +28,7 @@ const UI = {
   selectedWork: { ko: '주요 작업', en: 'Selected Work' },
   viewAllWork: { ko: '전체 보기 →', en: 'View all →' },
   readMore: { ko: '자세히 보기', en: 'Read more' },
+  collapse: { ko: '접기', en: 'Collapse' },
   all: { ko: '전체', en: 'All' },
   searchPosts: { ko: '글 검색', en: 'Search posts' },
   perPage: { ko: '페이지당', en: 'Per page' },

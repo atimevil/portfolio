@@ -79,8 +79,8 @@ export default function BlogViews({ posts, locale = 'ko' }: { posts: BlogPost[];
 
   return (
     <div>
-      <div className="mb-4 flex justify-end">
-        <div className="flex gap-1 rounded-lg border border-border p-1">
+      <div className="-mt-1 mb-4 flex justify-end">
+        <div className="flex shrink-0 gap-1 rounded-lg border border-border p-1">
           {TABS.map((tab) => (
             <button
               key={tab.key}

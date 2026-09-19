@@ -112,7 +112,8 @@ export default async function BlogHome({
           </div>
         )}
 
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        {/* 칩과 검색창을 한 줄에 두면 칩이 줄어들지 않아 검색창을 덮는다. 줄을 나눈다. */}
+        <div className="mb-4 flex flex-col gap-3">
           <CategoryFilter
             categories={categories}
             activeCategory={category}
@@ -120,7 +121,7 @@ export default async function BlogHome({
             totalCount={allPosts.length}
             locale={locale}
           />
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
             <SearchBox
               initialQuery={q}
               extraParams={{ category, tag, perPage: extraParams.perPage }}

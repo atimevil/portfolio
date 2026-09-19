@@ -107,7 +107,9 @@ function ProjectDescription({ text, locale }: { text: string; locale: Locale }) 
       {summary}{' '}
       <details className="group/desc inline">
         <summary className="inline cursor-pointer list-none text-text-secondary underline underline-offset-2 transition-colors hover:text-accent [&::-webkit-details-marker]:hidden">
-          <span className="group-open/desc:hidden">{t(locale, 'readMore')} +</span>
+          <span className="whitespace-nowrap group-open/desc:hidden">{t(locale, 'readMore')} +</span>
+          {/* 펼친 뒤에도 라벨이 남아야 되돌릴 수 있다 */}
+          <span className="hidden whitespace-nowrap group-open/desc:inline">{t(locale, 'collapse')} −</span>
         </summary>
         <span className="block mt-1.5">{rest}</span>
       </details>

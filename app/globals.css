@@ -13,9 +13,11 @@
   --color-text-primary:   #1c1b22;
   --color-text-secondary: #55535e;
   --color-text-muted:     #6f6d7a;
-  --color-accent:         #7c5fc9;
-  --color-accent-hover:   #6a4dbd;
-  --color-accent-soft:    rgba(124, 95, 201, 0.10);
+  /* accent-soft(10% 틴트) 위에 올라가는 배지 텍스트가 4.09:1까지 떨어져서 한 단계씩 어둡게.
+     최악 조건(카드 배경 위 소프트 틴트)에서 5.13:1. */
+  --color-accent:         #6a4dbd;
+  --color-accent-hover:   #5d43a3;
+  --color-accent-soft:    rgba(106, 77, 189, 0.10);
 }
 
 /* 다크(기본): C-2 편안한 다크 퍼플 */

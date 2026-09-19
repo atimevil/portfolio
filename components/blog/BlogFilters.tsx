@@ -66,8 +66,8 @@ interface PageSizeSelectProps {
 export function PageSizeSelect({ perPage, extraParams, locale = 'ko' }: PageSizeSelectProps) {
   const base = locale === 'en' ? '/en' : '/'
   return (
-    <div className="flex items-center gap-2 text-xs text-text-muted">
-      <span>{t(locale, 'perPage')}</span>
+    <div className="flex shrink-0 items-center gap-2 text-xs text-text-muted">
+      <span className="whitespace-nowrap">{t(locale, 'perPage')}</span>
       {PAGE_SIZE_OPTIONS.map((n) => (
         <Link
           key={n}

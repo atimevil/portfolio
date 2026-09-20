@@ -10,6 +10,11 @@ export function localeFromPath(pathname: string): Locale {
   return pathname === '/en' || pathname.startsWith('/en/') ? 'en' : 'ko'
 }
 
+/** 블로그 인덱스 경로. 홈(/)은 포트폴리오이고 글 목록은 여기 산다. */
+export function blogBase(locale: Locale): string {
+  return locale === 'en' ? '/en/blog' : '/blog'
+}
+
 /** ko 경로 ↔ en 경로 변환 (KO/EN 토글용). en에 없는 페이지는 호출부에서 제외한다. */
 export function pathForLocale(pathname: string, locale: Locale): string {
   const base = pathname.replace(/^\/en(?=\/|$)/, '') || '/'
@@ -25,6 +30,9 @@ const UI = {
   music: { ko: '음악', en: 'Music' },
   maps: { ko: '지도', en: 'Maps' },
   recentPosts: { ko: '최근 글', en: 'Recent Posts' },
+  writing: { ko: '글', en: 'Writing' },
+  moreWriting: { ko: '글 더 보기 →', en: 'More writing →' },
+  awardsShort: { ko: '수상 · 활동', en: 'Awards & Activity' },
   selectedWork: { ko: '주요 작업', en: 'Selected Work' },
   viewAllWork: { ko: '전체 보기 →', en: 'View all →' },
   readMore: { ko: '자세히 보기', en: 'Read more' },

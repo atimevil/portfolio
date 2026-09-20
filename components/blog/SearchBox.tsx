@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { t, type Locale } from '@/lib/i18n'
+import { t, blogBase, type Locale } from '@/lib/i18n'
 
 interface Props {
   initialQuery?: string
@@ -13,7 +13,7 @@ interface Props {
 
 // 제출 시 홈으로 이동하며 q를 세팅, page는 항상 리셋. 다른 필터(category/tag/perPage)는 유지.
 export default function SearchBox({ initialQuery, extraParams, locale = 'ko' }: Props) {
-  const base = locale === 'en' ? '/en' : '/'
+  const base = blogBase(locale)
   const router = useRouter()
   const [value, setValue] = useState(initialQuery ?? '')
 

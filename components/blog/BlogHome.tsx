@@ -3,11 +3,8 @@ import BlogViews from '@/components/blog/BlogViews'
 import Pagination from '@/components/blog/Pagination'
 import { CategoryFilter, PageSizeSelect } from '@/components/blog/BlogFilters'
 import SearchBox from '@/components/blog/SearchBox'
-import ProfileHeader from '@/components/layout/ProfileHeader'
-import SelectedWork from '@/components/home/SelectedWork'
 import { getAllPosts } from '@/lib/blog'
-import { getSettings } from '@/lib/settings'
-import { t, categoryLabel, type Locale } from '@/lib/i18n'
+import { t, categoryLabel, blogBase, type Locale } from '@/lib/i18n'
 
 export const DEFAULT_PER_PAGE = 10
 const ALLOWED_PER_PAGE = [5, 10, 20]
@@ -20,7 +17,12 @@ export interface BlogHomeSearchParams {
   q?: string
 }
 
-/** 한국어(/) · 영문(/en) 홈이 공유하는 글 목록. 글 본문은 번역하지 않으므로 목록 자체는 동일하다. */
+/**
+ * 블로그 인덱스(/blog · /en/blog).
+ *
+ * 홈(/)은 포트폴리오라 여기에 프로필이나 작업 목록은 없다. 이 페이지는 글만 다룬다.
+ * 글 본문은 번역하지 않으므로 목록 자체는 ko/en이 동일하다.
+ */
 export default async function BlogHome({
   searchParams,
   locale = 'ko',
@@ -28,12 +30,11 @@ export default async function BlogHome({
   searchParams: BlogHomeSearchParams
   locale?: Locale
 }) {
-  const { profile } = getSettings()
   const tag = searchParams.tag?.trim()
   const category = searchParams.category?.trim()
   const q = searchParams.q?.trim()
   const filtering = Boolean(tag || category || q)
-  const base = locale === 'en' ? '/en' : '/'
+  const base = blogBase(locale)
 
   const perPageParsed = Number(searchParams.perPage)
   const perPage = ALLOWED_PER_PAGE.includes(perPageParsed) ? perPageParsed : DEFAULT_PER_PAGE
@@ -80,37 +81,30 @@ export default async function BlogHome({
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
-      {filtering ? (
-        <section className="mb-6 flex flex-wrap items-center gap-3">
-          <h1 className="text-lg font-semibold text-text-primary">{filterHeading}</h1>
-          <span className="text-sm text-text-muted">
-            {posts.length}
-            {t(locale, 'count')}
-          </span>
-          <Link href={base} className="text-sm text-text-secondary hover:text-text-primary transition-colors">
-            {t(locale, 'allPosts')}
-          </Link>
-        </section>
-      ) : (
-        <>
-          <ProfileHeader profile={profile} showAboutLink locale={locale} />
-          {/* 방문자가 먼저 알아야 할 건 무엇을 만들었는가지, 어제 푼 알고리즘 문제가 아니다. */}
-          <SelectedWork locale={locale} />
-        </>
-      )}
-
-      <section>
-        {!filtering && (
-          <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-            <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-              {t(locale, 'recentPosts')}
-            </h2>
+      <header className="mb-6">
+        {filtering ? (
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">{filterHeading}</h1>
+            <span className="text-sm text-text-muted">
+              {posts.length}
+              {t(locale, 'count')}
+            </span>
+            <Link href={base} className="text-sm text-text-secondary hover:text-text-primary transition-colors">
+              {t(locale, 'allPosts')}
+            </Link>
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-baseline justify-between gap-2">
+            <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">{t(locale, 'writing')}</h1>
             {/* 글 본문은 번역하지 않으므로 영문 방문자에게 한국어 글임을 미리 알린다 */}
-            {locale === 'en' && (
-              <span className="text-xs text-text-muted">{t(locale, 'postsInKorean')}</span>
-            )}
+            <span className="text-sm text-text-muted">
+              {locale === 'en' ? t(locale, 'postsInKorean') : `${allPosts.length}${t(locale, 'count')}`}
+            </span>
           </div>
         )}
+      </header>
+
+      <section>
 
         {/* 칩과 검색창을 한 줄에 두면 칩이 줄어들지 않아 검색창을 덮는다. 줄을 나눈다. */}
         <div className="mb-4 flex flex-col gap-3">

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { blogBase } from '@/lib/i18n'
 
 interface TagBadgesProps {
   tags?: string[]
@@ -13,7 +14,7 @@ export default function TagBadges({ tags, category, className = '' }: TagBadgesP
     <div className={`flex flex-wrap items-center gap-2 ${className}`}>
       {category && (
         <Link
-          href={`/?category=${encodeURIComponent(category)}`}
+          href={`${blogBase('ko')}?category=${encodeURIComponent(category)}`}
           className="inline-flex min-h-[26px] items-center rounded-full bg-text-soft px-2.5 py-1 text-xs font-medium text-text-secondary transition-colors hover:text-text-primary"
         >
           {category}
@@ -22,7 +23,7 @@ export default function TagBadges({ tags, category, className = '' }: TagBadgesP
       {tags?.map((t) => (
         <Link
           key={t}
-          href={`/?tag=${encodeURIComponent(t)}`}
+          href={`${blogBase('ko')}?tag=${encodeURIComponent(t)}`}
           className="inline-flex min-h-[26px] items-center rounded-full border border-transparent bg-accent-soft px-2.5 py-1 text-xs text-accent transition-colors hover:border-accent"
         >
           #{t}

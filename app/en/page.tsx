@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 
-import BlogHome, { type BlogHomeSearchParams } from '@/components/blog/BlogHome'
+import { redirect } from 'next/navigation'
+import PortfolioHome from '@/components/home/PortfolioHome'
 import { getSettings } from '@/lib/settings'
 import { buildPageMetadata } from '@/lib/site'
 
@@ -16,6 +17,26 @@ export function generateMetadata() {
   })
 }
 
-export default async function EnHomePage({ searchParams }: { searchParams: BlogHomeSearchParams }) {
-  return <BlogHome searchParams={searchParams} locale="en" />
+
+/** 글 목록이 /에 있던 시절의 링크(/?category=…, /?tag=…, /?q=…, /?page=2)를 살린다. */
+const BLOG_PARAMS = ['category', 'tag', 'q', 'page', 'perPage'] as const
+
+function legacyBlogQuery(searchParams: Record<string, string | string[] | undefined>): string | null {
+  const params = new URLSearchParams()
+  for (const key of BLOG_PARAMS) {
+    const value = searchParams[key]
+    if (typeof value === 'string' && value) params.set(key, value)
+  }
+  const qs = params.toString()
+  return qs ? qs : null
+}
+
+export default async function EnHomePage({
+  searchParams,
+}: {
+  searchParams: Record<string, string | string[] | undefined>
+}) {
+  const qs = legacyBlogQuery(searchParams)
+  if (qs) redirect(`/en/blog?${qs}`)
+  return <PortfolioHome locale="en" />
 }

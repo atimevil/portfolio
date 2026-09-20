@@ -4,10 +4,10 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import ThemeToggle from '@/components/ui/ThemeToggle'
-import { t, type Locale, type UiKey } from '@/lib/i18n'
+import { t, pathForLocale, type Locale, type UiKey } from '@/lib/i18n'
 
 const CORE_LINKS = [
-  { href: '/', labelKey: 'blog' as UiKey },
+  { href: '/blog', labelKey: 'blog' as UiKey },
   { href: '/about', labelKey: 'about' as UiKey },
 ]
 
@@ -45,15 +45,15 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
     ? [...CORE_LINKS, ...TOGGLABLE_LINKS.filter((l) => navVisibility?.[l.key] ?? true), ...adminOnlyLinks]
     : [...CORE_LINKS, ...TOGGLABLE_LINKS.filter((l) => navVisibility?.[l.key] ?? true)]
 
-  const links = isEn
-    ? CORE_LINKS.map((l) => ({ ...l, href: l.href === '/' ? '/en' : `/en${l.href}` }))
-    : koLinks
+  const links = isEn ? CORE_LINKS.map((l) => ({ ...l, href: `/en${l.href}` })) : koLinks
 
   // 반대 로케일로 가는 경로. /en에 짝이 없는 페이지(음악·글 상세 등)에서는 /en 첫 화면으로 보낸다.
+  // /en에 짝이 있는 경로만 그대로 넘기고, 없는 페이지(음악·글 상세 등)는 /en 첫 화면으로 보낸다.
+  const EN_PAIRS = ['/', '/blog', '/about']
   const otherLocaleHref = isEn
     ? pathname.replace(/^\/en(?=\/|$)/, '') || '/'
-    : pathname === '/about'
-      ? '/en/about'
+    : EN_PAIRS.includes(pathname)
+      ? pathForLocale(pathname, 'en')
       : '/en'
 
   const linkClass = (href: string) =>

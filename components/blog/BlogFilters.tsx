@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { t, categoryLabel, type Locale } from '@/lib/i18n'
+import { t, categoryLabel, blogBase, type Locale } from '@/lib/i18n'
 
 const PAGE_SIZE_OPTIONS = [5, 10, 20]
 
@@ -12,7 +12,7 @@ interface CategoryFilterProps {
   totalCount: number
 }
 
-function buildHref(overrides: Record<string, string | undefined>, extraParams?: Record<string, string | undefined>, base = '/') {
+function buildHref(overrides: Record<string, string | undefined>, extraParams?: Record<string, string | undefined>, base = '/blog') {
   const params = new URLSearchParams()
   const merged = { ...extraParams, ...overrides }
   for (const [key, value] of Object.entries(merged)) {
@@ -25,7 +25,7 @@ function buildHref(overrides: Record<string, string | undefined>, extraParams?: 
 // 카테고리 필터 칩 — 전체/카테고리별 글 수, 현재 활성 카테고리는 accent로 강조.
 export function CategoryFilter({ categories, activeCategory, extraParams, totalCount, locale = 'ko' }: CategoryFilterProps) {
   if (categories.length === 0) return null
-  const base = locale === 'en' ? '/en' : '/'
+  const base = blogBase(locale)
 
   return (
     <div className="flex flex-wrap gap-2">
@@ -64,7 +64,7 @@ interface PageSizeSelectProps {
 
 // 페이지당 글 개수 선택 — 값을 바꾸면 1페이지로 리셋, 현재 필터(카테고리 등)는 유지.
 export function PageSizeSelect({ perPage, extraParams, locale = 'ko' }: PageSizeSelectProps) {
-  const base = locale === 'en' ? '/en' : '/'
+  const base = blogBase(locale)
   return (
     <div className="flex shrink-0 items-center gap-2 text-xs text-text-muted">
       <span className="whitespace-nowrap">{t(locale, 'perPage')}</span>

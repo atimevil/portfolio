@@ -1,13 +1,13 @@
 {
   "devMode": false,
   "navVisibility": {
-    "gallery": true,
-    "books": true,
+    "gallery": false,
+    "books": false,
     "music": true
   },
   "profile": {
     "name": "foxibu",
-    "bio": "Dev, ML/DL/Sec Junior",
+    "bio": "돌려보고 눈으로 확인해야 납득하는 편입니다 · ML · LLM 에이전트 · 보안",
     "avatar": "https://avatars.githubusercontent.com/atimevil",
     "skills": [
       "Python",

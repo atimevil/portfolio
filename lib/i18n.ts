@@ -36,6 +36,8 @@ const UI = {
   csProblem: { ko: '문제', en: 'Problem' },
   csContribution: { ko: '내가 한 것', en: 'My part' },
   csResult: { ko: '결과', en: 'Result' },
+  linkPaper: { ko: '논문', en: 'Paper' },
+  linkSite: { ko: '사이트', en: 'Website' },
   selectedWork: { ko: '주요 작업', en: 'Selected Work' },
   viewAllWork: { ko: '전체 보기 →', en: 'View all →' },
   readMore: { ko: '자세히 보기', en: 'Read more' },

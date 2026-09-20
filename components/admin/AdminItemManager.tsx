@@ -26,6 +26,7 @@ const EMPTY_FORM = {
   metrics: '',
   skills: '',
   github: '',
+  paper: '',
   link: '',
   thumbnail: '',
   order: 0,
@@ -50,6 +51,7 @@ export default function AdminItemManager({ initialItems }: Props) {
       metrics: item.metrics ?? '',
       skills: (item.skills ?? []).join(', '),
       github: item.github ?? '',
+      paper: item.paper ?? '',
       link: item.link ?? '',
       thumbnail: item.thumbnail ?? '',
       order: item.order ?? 0,
@@ -77,6 +79,7 @@ export default function AdminItemManager({ initialItems }: Props) {
       metrics: isProject ? (form.metrics || undefined) : undefined,
       skills: isProject ? form.skills.split(',').map((s) => s.trim()).filter(Boolean) : undefined,
       github: isProject ? (form.github || undefined) : undefined,
+      paper: isProject ? (form.paper || undefined) : undefined,
       link: isProject ? (form.link || undefined) : undefined,
       thumbnail: isProject ? (form.thumbnail || undefined) : undefined,
       order: isProject ? Number(form.order) || 0 : undefined,
@@ -253,6 +256,14 @@ export default function AdminItemManager({ initialItems }: Props) {
                   <input
                     type="text" value={form.github} placeholder="https://github.com/..."
                     onChange={(e) => setForm((f) => ({ ...f, github: e.target.value }))}
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-text-muted mb-1">논문 링크 URL</label>
+                  <input
+                    type="text" value={form.paper} placeholder="https://github.com/..."
+                    onChange={(e) => setForm((f) => ({ ...f, paper: e.target.value }))}
                     className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>

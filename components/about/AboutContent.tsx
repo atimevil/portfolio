@@ -6,6 +6,7 @@ import AwardsGantt from '@/components/about/AwardsGantt'
 import { t, localized, type Locale } from '@/lib/i18n'
 import { splitSummary } from '@/lib/summary'
 import { hasCaseStudy, parseMetrics } from '@/lib/caseStudy'
+import { projectLinks } from '@/lib/projectLinks'
 
 /** 한국어(/about) · 영문(/en/about)이 공유하는 소개 본문. */
 export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
@@ -25,12 +26,14 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
           </h2>
           <div className="flex flex-col gap-4">
             {projects.map((project) => {
-              const href = project.github || project.link
+              const links = projectLinks(project, locale)
+              // 목적지가 하나뿐이면 제목에 걸어 탭 정지점을 늘리지 않는다.
+              const soleHref = links.length === 1 ? links[0].href : undefined
               const title = localized(project, 'title', locale)
               return (
                 <div
                   key={project.id}
-                  className={`group flex h-full flex-col rounded-xl border border-border bg-bg-secondary p-5 transition-colors ${href ? 'hover:border-accent focus-within:border-accent' : ''}`}
+                  className={`group flex h-full flex-col rounded-xl border border-border bg-bg-secondary p-5 transition-colors ${links.length > 0 ? 'hover:border-accent focus-within:border-accent' : ''}`}
                 >
                   {project.thumbnail && (
                     // 다이어그램·스크린샷은 잘리면 뜻이 사라진다. object-cover(사진용)가 아니라 contain.
@@ -42,9 +45,9 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
                     {/* 카드 전체를 <a>로 감싸면 안쪽 <details>(설명 펼치기)가 링크 안에 들어가
                         잘못된 중첩이 된다. 제목만 링크로 두고 카드는 hover 스타일만 맡는다. */}
                     <h3 className="text-base font-bold text-text-primary">
-                      {href ? (
+                      {soleHref ? (
                         <a
-                          href={href}
+                          href={soleHref}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="rounded-sm transition-colors hover:text-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
@@ -69,16 +72,38 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
                       <span key={s} className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent">{s}</span>
                     ))}
                   </div>
-                  {href && (
-                    <span
-                      aria-hidden="true"
-                      className="mt-3 inline-flex items-center gap-1 self-start text-xs text-text-secondary transition-colors group-hover:text-accent"
-                    >
-                      {project.github ? 'GitHub' : locale === 'en' ? 'Website' : '사이트'}
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M7 17 17 7M9 7h8v8" />
-                      </svg>
-                    </span>
+                  {links.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1">
+                      {links.map((l) =>
+                        soleHref ? (
+                          // 제목이 이미 같은 곳을 가리키므로 시각 단서로만 남긴다
+                          <span
+                            key={l.href}
+                            aria-hidden="true"
+                            className="inline-flex items-center gap-1 text-xs text-text-secondary transition-colors group-hover:text-accent"
+                          >
+                            {l.label}
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M7 17 17 7M9 7h8v8" />
+                            </svg>
+                          </span>
+                        ) : (
+                          <a
+                            key={l.href}
+                            href={l.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            aria-label={`${title} — ${l.label}`}
+                            className="inline-flex min-h-[24px] items-center gap-1 rounded-sm text-xs text-text-secondary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                          >
+                            {l.label}
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M7 17 17 7M9 7h8v8" />
+                            </svg>
+                          </a>
+                        )
+                      )}
+                    </div>
                   )}
                 </div>
               )

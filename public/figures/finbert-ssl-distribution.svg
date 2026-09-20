@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 316" width="880" height="316" role="img" aria-label="의사라벨 감성 분포 비교. 원본 금융 도메인은 부정 12.5% 중립 59.4% 긍정 28.1%. 임계값 0.75로 7사이클 학습하면 부정 12% 중립 58% 긍정 30%로 원본과 거의 같다. 임계값 0.9로 3사이클 학습하면 부정 31% 중립 47% 긍정 22%로 원본 분포에서 멀어진다.">
+  <style>
+    :root {
+      --ink: #1c1b22;
+      --ink-dim: #55535e;
+      --ink-faint: #8a8896;
+      --line: #d9d6e0;
+      --neg: #c2410c;
+      --neu: #a8a29e;
+      --pos: #1d4ed8;
+      --on-neg: #ffffff;
+      --on-neu: #1c1b22;
+      --on-pos: #ffffff;
+      --mark-ring: #ffffff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --ink: #d6d4de;
+        --ink-dim: #93919f;
+        --ink-faint: #6f6d7a;
+        --line: #33313d;
+        --neg: #ea580c;
+        --neu: #8a8580;
+        --pos: #3b82f6;
+        --on-neg: #131317;
+        --on-neu: #131317;
+        --on-pos: #131317;
+        --mark-ring: #131317;
+      }
+    }
+    .title { fill: var(--ink); font: 600 14px 'Helvetica Neue', Arial, sans-serif; }
+    .sub   { fill: var(--ink-dim); font: 400 11px 'Helvetica Neue', Arial, sans-serif; }
+    .cap   { fill: var(--ink-faint); font: 400 10px 'Helvetica Neue', Arial, sans-serif; }
+    .rowt  { fill: var(--ink); font: 600 12px 'Helvetica Neue', Arial, sans-serif; }
+    .rows  { fill: var(--ink-dim); font: 400 10px 'Helvetica Neue', Arial, sans-serif; }
+    .val   { font: 700 11px 'Helvetica Neue', Arial, sans-serif; }
+    .seg   { stroke: var(--mark-ring); stroke-width: 2; }
+    .rule  { stroke: var(--line); stroke-width: 1; }
+  </style>
+
+  <text class="title" x="16" y="24">의사라벨 감성 분포 — 임계값이 원본 도메인 구조를 지키는가</text>
+  <text class="sub" x="16" y="43">신뢰도 임계값 α가 낮을수록 원본 금융 도메인 분포를 그대로 유지한다</text>
+
+  <!-- 범례 -->
+  <rect x="640" y="14" width="10" height="10" rx="2" fill="var(--neg)" />
+  <text class="sub" x="656" y="23">부정</text>
+  <rect x="694" y="14" width="10" height="10" rx="2" fill="var(--neu)" />
+  <text class="sub" x="710" y="23">중립</text>
+  <rect x="748" y="14" width="10" height="10" rx="2" fill="var(--pos)" />
+  <text class="sub" x="764" y="23">긍정</text>
+
+  <line class="rule" x1="16" y1="58" x2="864" y2="58" />
+
+  <!-- ── 행 1: 원본 금융 도메인 (기준선) ── -->
+  <text class="rowt" x="16" y="86">원본 금융 도메인</text>
+  <text class="rows" x="16" y="101">Financial PhraseBank 테스트 4,846건</text>
+  <rect class="seg" x="256" y="76" width="72.8" height="26" rx="3" fill="var(--neg)" />
+  <text class="val" x="292" y="93" text-anchor="middle" fill="var(--on-neg)">12.5</text>
+  <rect class="seg" x="330.8" y="76" width="354.5" height="26" rx="3" fill="var(--neu)" />
+  <text class="val" x="508" y="93" text-anchor="middle" fill="var(--on-neu)">59.4</text>
+  <rect class="seg" x="687.3" y="76" width="166.8" height="26" rx="3" fill="var(--pos)" />
+  <text class="val" x="770" y="93" text-anchor="middle" fill="var(--on-pos)">28.1</text>
+
+  <!-- ── 행 2: α=0.75 ── -->
+  <text class="rowt" x="16" y="142">α = 0.75 · 7 사이클</text>
+  <text class="rows" x="16" y="157">원본 분포를 거의 그대로 유지</text>
+  <rect class="seg" x="256" y="132" width="70" height="26" rx="3" fill="var(--neg)" />
+  <text class="val" x="291" y="149" text-anchor="middle" fill="var(--on-neg)">12</text>
+  <rect class="seg" x="328" y="132" width="346" height="26" rx="3" fill="var(--neu)" />
+  <text class="val" x="501" y="149" text-anchor="middle" fill="var(--on-neu)">58</text>
+  <rect class="seg" x="676" y="132" width="178" height="26" rx="3" fill="var(--pos)" />
+  <text class="val" x="765" y="149" text-anchor="middle" fill="var(--on-pos)">30</text>
+
+  <!-- ── 행 3: α=0.9 ── -->
+  <text class="rowt" x="16" y="198">α = 0.9 · 3 사이클</text>
+  <text class="rows" x="16" y="213">부정이 세 배로 늘며 원본에서 멀어짐</text>
+  <rect class="seg" x="256" y="188" width="184" height="26" rx="3" fill="var(--neg)" />
+  <text class="val" x="348" y="205" text-anchor="middle" fill="var(--on-neg)">31</text>
+  <rect class="seg" x="442" y="188" width="280" height="26" rx="3" fill="var(--neu)" />
+  <text class="val" x="582" y="205" text-anchor="middle" fill="var(--on-neu)">47</text>
+  <rect class="seg" x="724" y="188" width="130" height="26" rx="3" fill="var(--pos)" />
+  <text class="val" x="789" y="205" text-anchor="middle" fill="var(--on-pos)">22</text>
+
+  <line class="rule" x1="16" y1="240" x2="864" y2="240" />
+
+  <text class="sub" x="16" y="262">α = 0.75에서 Macro F1 0.85 / 0.84 → 0.87, Macro Accuracy 0.86 → 0.88</text>
+  <text class="cap" x="16" y="284">단위 %. 값은 반올림돼 합이 100이 아닐 수 있다.</text>
+  <text class="cap" x="16" y="300">출처: KCC 2026 게재분이 아닌 후속 준지도 자기학습(미출판) — Evaluating the Model Stability of FinBERT through SSL under Cross-Domain Mismatch, Team C</text>
+</svg>

@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { getSettings } from '@/lib/settings'
-import { getProjects, getTimeline, projectSlug, timeKey } from '@/lib/items'
+import { getOrderedProjects, getTimeline, projectSlug } from '@/lib/items'
 import ProfileHeader from '@/components/layout/ProfileHeader'
 import AwardsGantt from '@/components/about/AwardsGantt'
 import { hasCaseStudy } from '@/lib/caseStudy'
@@ -17,12 +17,8 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
   const { profile } = getSettings()
   const workBase = locale === 'en' ? '/en/work' : '/work'
 
-  // 케이스 스터디가 채워진 것을 먼저(손으로 고른 order), 나머지는 최신순.
-  const all = getProjects()
-  const projects = [
-    ...all.filter(hasCaseStudy),
-    ...all.filter((p) => !hasCaseStudy(p)).sort((a, b) => timeKey(b.year) - timeKey(a.year)),
-  ]
+  // 상세의 이전/다음도 같은 함수를 쓴다 — 목록 순서와 어긋나면 안 된다.
+  const projects = getOrderedProjects(hasCaseStudy)
   const events = getTimeline().filter((i) => i.type !== 'project')
 
   return (

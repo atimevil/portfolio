@@ -59,7 +59,9 @@ jobs:
           npx prisma generate
           npx prisma migrate deploy
 
-      # lint는 ESLint 설정이 없어 `next lint`가 대화형 프롬프트에서 멈춘다. 설정을 추가한 뒤 되살릴 것.
+      # 에러는 빌드를 막고(종료코드 1), 경고는 통과한다. 현재 경고 1건: components/admin/SlashMenu.tsx(exhaustive-deps).
+      - name: Lint
+        run: npm run lint
 
       - name: Type check
         run: npm run typecheck

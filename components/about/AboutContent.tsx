@@ -20,7 +20,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
   const hasEvents = timeline.length > 0
 
   return (
-    <main id="main" tabIndex={-1} className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
+    <main id="main" tabIndex={-1} className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
       <ProfileHeader profile={profile} locale={locale} />
 
       {all.length > 0 && (
@@ -215,7 +215,7 @@ function CaseStudy({ project, locale }: { project: PortfolioItem; locale: Locale
   return (
     <div className="mt-3 mb-4">
       <dl
-        className="grid gap-x-5 gap-y-4 sm:grid-cols-[repeat(var(--cols),minmax(0,1fr))]"
+        className="grid gap-x-6 gap-y-4 lg:grid-cols-[repeat(var(--cols),minmax(0,1fr))]"
         style={{ ['--cols' as string]: String(columns.length) }}
       >
         {columns.map(([key, body]) => (

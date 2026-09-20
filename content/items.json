@@ -1,0 +1,260 @@
+[
+  {
+    "id": "p1",
+    "type": "project",
+    "order": 0,
+    "year": "2026.01~02",
+    "title": "UCSD Qualcomm Institute — FinBERT vs LLM 감성분류 연구",
+    "description": "UC 샌디에이고 퀄컴연구소 37일 AI 연구 집중형 프로그램(교내 선발 5명, 부기수장). 두 학교에서 모인 5인 팀에서 BERT·FinBERT 베이스라인을 작성해 돌리고, Yelp 리뷰 65만 건을 Gemini 품질 필터로 617,611건까지 정제해 OpenAI 배치·Gemini API로 라벨링하는 데이터 파이프라인을 맡았다. FPB만 학습한 FinBERT가 평점 3 이상 리뷰의 90~96%를 중립으로 분류한 반면 제로샷 Gemini는 1점 리뷰의 98.7%를 부정, 5점 리뷰의 97.6%를 긍정으로 분류해 부정적 전이(negative transfer)를 실증했다. 프로그램 종료 후에도 지도교수와 연구를 이어가 KCC 2026에 게재(6인 중 2저자). 후속으로 FinBERT·Gemini 합의 124,381건을 풀로 삼은 준지도 자기학습으로 금융 테스트셋 Macro-F1을 0.84~0.85에서 0.87로 올렸으며, 이 후속 연구는 미출판(최종 해커톤 발표만).",
+    "skills": [
+      "Python",
+      "PyTorch",
+      "Hugging Face",
+      "FinBERT",
+      "Gemini API",
+      "OpenAI API",
+      "pandas"
+    ],
+    "problem": "금융 코퍼스(FPB)만 학습한 FinBERT를 일반 리뷰 도메인에 그대로 쓰면 어떻게 되는지 확인되지 않았다.",
+    "contribution": "BERT·FinBERT 베이스라인을 작성해 돌리고, Yelp 리뷰 65만 건을 Gemini 품질 필터로 정제하는 데이터 파이프라인을 맡았다.",
+    "result": "부정적 전이를 수치로 실증하고 KCC 2026에 게재(6인 중 2저자). 후속 준지도 자기학습으로 금융 테스트셋 성능을 끌어올렸다.",
+    "metrics": "0.84 → 0.87 | 금융 테스트셋 Macro-F1\n617,611 | 65만 건에서 정제한 리뷰\n90~96% | FinBERT가 중립으로 흘린 비율",
+    "thumbnail": "/figures/finbert-ssl-distribution.svg",
+    "paper": "https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE12929843",
+    "slug": "finbert-vs-llm"
+  },
+  {
+    "id": "p9",
+    "type": "project",
+    "order": 1,
+    "year": "2026.09",
+    "title": "VOCAB CURATOR — 개인 맞춤 어휘 큐레이션",
+    "description": "MABC 2026(Upstage×Timely) 결선 진출작. 2인 팀(불독)에서 개발을 맡아 예선 당선 스킬 vocab-curator를 웹 서비스로 구현했다.",
+    "problem": "시중 단어장은 존재하지 않는 '평균 학습자'를 타겟으로 만들어져, 정작 자주 쓸 단어는 빠지고 일상과 무관한 교과서적 예문만 남는다.",
+    "contribution": "2인 팀에서 개발 전담 — 아이디어와 기획은 팀원이 맡았다. 예선 스킬을 웹 서비스로 옮기면서 Solar Pro 4 직접 호출, 원문·페르소나·학습 이력의 프롬프트 전달, DB 연동(중복 단어 탐지·학습자 프로필 추적)을 구현했다.",
+    "result": "원문에서 학습 이력과 프로필로 어휘를 선별해 단어별 중요도, \"오늘 바로 쓸 표현\", CSV 단어장을 낸다. MABC 2026 결선 진출(팀 불독, No.45).",
+    "metrics": "20 | 원문당 선별 어휘(최대)\n3 | 단어별 \"오늘 바로 쓸 표현\"\n6일 | 회의에서 테스트까지",
+    "skills": [
+      "Node.js",
+      "Express.js",
+      "Solar Pro 4",
+      "PDF.js",
+      "Docker"
+    ],
+    "github": "https://github.com/atimevil/mabc-vocab-curator",
+    "slug": "vocab-curator",
+    "thumbnail": "/figures/vocab-curator-flow.svg"
+  },
+  {
+    "id": "p2",
+    "type": "project",
+    "order": 2,
+    "year": "2026",
+    "title": "ChosunInsight — 하이브리드 RAG 챗봇",
+    "description": "조선대 학사 정보를 안내하는 하이브리드 RAG 챗봇. 질문 의도에 따라 정형 답변·벡터 검색·공식 웹 검색으로 라우팅한다. 밀집 검색(ChromaDB)과 희소 검색(BM25)을 RRF(Reciprocal Rank Fusion)로 결합하고, 학사 공식 도메인 실시간 검색을 별도 경로로 두었다. 산학프로젝트 5인 팀에서 RAG 엔진 개발·고도화 담당.",
+    "skills": [
+      "Python",
+      "FastAPI",
+      "LangChain",
+      "ChromaDB",
+      "BM25",
+      "Vue 3",
+      "Docker"
+    ],
+    "github": "https://github.com/chosuninsight/chosuninsight",
+    "problem": "학사 정보는 정형·비정형·실시간이 섞여 있어 단일 검색 방식으로는 답이 나오지 않았다.",
+    "contribution": "산학 5인 팀에서 RAG 엔진 개발과 고도화를 담당하고, 질문 의도에 따른 3-way 라우팅을 설계했다.",
+    "result": "밀집 검색(ChromaDB)과 희소 검색(BM25)을 RRF로 결합하고, 학사 공식 도메인 실시간 검색을 별도 경로로 분리했다.",
+    "thumbnail": "/figures/chosuninsight-rag.svg",
+    "slug": "chosun-insight"
+  },
+  {
+    "id": "p3",
+    "type": "project",
+    "order": 3,
+    "year": "2025.09~11",
+    "title": "CTF-Solver — 보안 자동화 MCP 서버 (⭐53)",
+    "description": "MIT 라이선스로 공개된 Wh0am123/MCP-Kali-Server(도구 약 10종)를 기반으로 Kali Linux 보안도구 55종 이상까지 확장하고, 멀티스텝 워크플로를 설계했다. 화이트햇 스쿨 최종 프로젝트 Not-Yet(팀 프로젝트, 개발 담당)의 후속으로, 발표 이후 혼자 이어서 확장했다.",
+    "skills": [
+      "Python",
+      "MCP",
+      "FastMCP",
+      "Flask",
+      "Docker"
+    ],
+    "github": "https://github.com/foxibu/CTF-Solver",
+    "problem": "기반이 된 MCP-Kali-Server는 도구가 약 10종이고 단발 실행만 가능했다.",
+    "contribution": "Kali Linux 보안도구를 55종 이상으로 확장하고 멀티스텝 워크플로를 설계했다.",
+    "result": "화이트햇 스쿨 최종 프로젝트의 후속으로 발표 이후 혼자 이어서 확장했다.",
+    "metrics": "★ 53 | GitHub 스타\n55+ | 감싼 보안도구",
+    "thumbnail": "/figures/ctf-solver-mcp.svg",
+    "slug": "ctf-solver"
+  },
+  {
+    "id": "p4",
+    "type": "project",
+    "order": 4,
+    "year": "2025.07",
+    "title": "Not-Yet — 보안 MCP 서버",
+    "description": "화이트햇 스쿨 3기 최종 프로젝트(팀 프로젝트, 개발 담당). Kali Linux 침투 테스트 도구와 Perplexity AI 검색을 통합한 MCP 서버. → 발표 이후 CTF-Solver로 이어서 확장.",
+    "skills": [
+      "Python",
+      "MCP",
+      "Flask"
+    ],
+    "github": "https://github.com/alphateam-mcp/Not-Yet",
+    "thumbnail": "/figures/notyet-mcp.svg",
+    "slug": "not-yet"
+  },
+  {
+    "id": "p5",
+    "type": "project",
+    "order": 5,
+    "year": "2025",
+    "title": "딥보이스 탐지 서비스 — 정보보안 공모전 우수상 (2025.04)",
+    "description": "통화 음성의 합성 여부를 판별하는 서비스의 백엔드 담당. 요청마다 모델을 재로드하던 구조를 기동 시 1회 로드 + 비동기 작업 큐로 재설계하고, Oracle Cloud ARM64에 배포했다. 「미래와소프트웨어」 정보보안 공모전 우수상.",
+    "skills": [
+      "Python",
+      "FastAPI",
+      "Oracle Cloud",
+      "Docker"
+    ],
+    "thumbnail": "/figures/deepvoice-redesign.svg",
+    "slug": "deepvoice-detector"
+  },
+  {
+    "id": "p6",
+    "type": "project",
+    "order": 6,
+    "year": "2026~",
+    "title": "개인 포트폴리오 · 블로그",
+    "description": "Next.js로 만든 포트폴리오 겸 블로그. MDX 블로그·갤러리·관리자 CMS·다크모드, Docker·Nginx로 HTTPS 자체 배포.",
+    "skills": [
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Docker"
+    ],
+    "github": "https://github.com/atimevil/portfolio",
+    "thumbnail": "/figures/portfolio-stack.svg",
+    "slug": "portfolio-site"
+  },
+  {
+    "id": "p7",
+    "type": "project",
+    "order": 7,
+    "year": "2026.03",
+    "title": "iPod Classic ithmb Converter",
+    "description": "iPod Classic 사진 복원 Python GUI 툴. 기존 ithmb 변환기가 유료여서 무료 대안으로 직접 제작. Real-ESRGAN AI 업스케일링 지원.",
+    "skills": [
+      "Python",
+      "ONNX",
+      "DirectML"
+    ],
+    "github": "https://github.com/atimevil/Ithmb-Converter",
+    "thumbnail": "/figures/ipod-pipeline.svg",
+    "slug": "ithmb-converter"
+  },
+  {
+    "id": "p8",
+    "type": "project",
+    "order": 8,
+    "year": "2024",
+    "title": "PALLOW - 지역 및 MBTI 기반 친구 추천 웹사이트",
+    "description": "위치 기반 소셜 모임 플랫폼. 알고리즘 친구 추천, 그룹 모임 관리, 실시간 채팅, 관심사 커뮤니티. 5인 팀 리더로 Java/Spring 메인 서버와 코사인 유사도 기반 Flask 추천 서버를 분리 설계하고 Docker로 Oracle Cloud에 배포.",
+    "skills": [
+      "Java",
+      "Spring",
+      "Docker",
+      "Python",
+      "Flask"
+    ],
+    "github": "https://github.com/pallows",
+    "thumbnail": "/figures/pallow-architecture.svg",
+    "slug": "pallow"
+  },
+  {
+    "id": "a1",
+    "type": "activity",
+    "year": "2026.07",
+    "title": "2026 AI·SW중심대학 디지털 경진대회 AI부문 28위 / 269팀",
+    "description": "AI 에이전트의 다음 행동을 14개 클래스로 예측. 추론 10분·1GB·오프라인 제약 아래 269팀 중 28위(팀 HUE, Macro-F1 0.79334). 계속 혼동되던 4개 클래스를 모델 성능이 아니라 라벨 모호성으로 진단하고, 입력 37.6%가 잘려나가던 것과 실패한 앙상블의 원인이 보정되지 않은 logit임을 찾아냈다."
+  },
+  {
+    "id": "a2",
+    "type": "award",
+    "year": "2026.07",
+    "title": "호남권 SW중심대학 LLM 해커톤 경진대회 우수상",
+    "description": "1박 2일 해커톤."
+  },
+  {
+    "id": "a3",
+    "type": "activity",
+    "year": "2026.06",
+    "title": "KCC 2026 논문 게재 — FinBERT와 LLM 성능 비교",
+    "description": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」, 한국정보과학회 학술발표논문집 2026.06. 6인 중 2저자 (교신저자 조석헌, UCSD)."
+  },
+  {
+    "id": "a4",
+    "type": "activity",
+    "year": "2026.04~06",
+    "title": "인공지능 중급과정(AWS 클라우드 아키텍처) 160시간 이수",
+    "description": "과학기술정보통신부·NIPA / 호남 ICT 이노베이션스퀘어."
+  },
+  {
+    "id": "a5",
+    "type": "activity",
+    "year": "2026.01~02",
+    "title": "2026년 동계 해외교육연수(QI AI 연구 집중형 프로젝트) 프로그램 수료",
+    "description": "16기 부기수장, 미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교 논문 작성"
+  },
+  {
+    "id": "a6",
+    "type": "award",
+    "year": "2026.09",
+    "title": "AI Pilot Top Gun Challenge 2026 장려상 (KAI 사장상)",
+    "description": "2026.09.17 수상."
+  },
+  {
+    "id": "a7",
+    "type": "award",
+    "year": "2026",
+    "title": "호남 IS 해커톤 장려상",
+    "description": ""
+  },
+  {
+    "id": "a8",
+    "type": "activity",
+    "year": "2025.11",
+    "title": "2025 LLM Safety Challenge 참가",
+    "description": "https://app.notion.com/p/2025-LLM-Safety-Challnge-2b96b6b36a168003ab50f3019c7d286d?source=copy_link\n문제는 다 풀었지만 아쉽게 예선 탈락,,,"
+  },
+  {
+    "id": "a9",
+    "type": "award",
+    "year": "2025.10~11",
+    "title": "2025년 조선대학교 SW중심대학 AI 챌린지 최우수상",
+    "description": "리더보드 5위였으나 상위 3팀이 500M MACs 제한을 초과해 실격, 30팀 중 최종 2위. 파라미터 5.01M / MACs 499.5M.\nhttps://www.kaggle.com/competitions/2025-csu-sw-ai-challenge"
+  },
+  {
+    "id": "a10",
+    "type": "award",
+    "year": "2025.04",
+    "title": "제5회 미래와 소프트웨어 공모전 우수상",
+    "description": "재단법인 미래와소프트웨어 주최 정보보안 SW 웹·앱 개발 공모전 (전국 98개 대학 204팀)"
+  },
+  {
+    "id": "a11",
+    "type": "activity",
+    "year": "2025.03~09",
+    "title": "Whitehat School 3기 수료",
+    "description": ""
+  },
+  {
+    "id": "a12",
+    "type": "activity",
+    "year": "2026.09",
+    "title": "Making AI Beneficial Challenge 2026 (MABC) 결선 진출",
+    "description": "2026.09.19 결선 진출. Upstage 주최. 학습자 프로필과 원문에서 지금 필요한 어휘만 골라 단어 카드로 만드는 서비스로 진출했다. [mabc-vocab-curator](https://github.com/atimevil/mabc-vocab-curator)"
+  }
+]

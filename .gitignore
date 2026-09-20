@@ -36,7 +36,14 @@ yarn-error.log*
 next-env.d.ts
 
 # content & uploads (mounted as Docker volumes)
-/content/
+#
+# 편집 내용(items/settings)은 추적하고 런타임 상태는 뺀다. 허용 목록인 이유는
+# auth.json(비밀번호 해시) 때문 — 차단 목록이면 새 파일이 기본으로 딸려 올라간다.
+#   views.json  방문자가 열 때마다 서버가 고쳐 쓴다
+#   auth.json   관리자 비밀번호 scrypt 해시. 절대 올리지 않는다
+/content/*
+!/content/items.json
+!/content/settings.json
 /public/uploads/
 
 # claude code local settings (machine-specific permissions)

@@ -1,0 +1,24 @@
+{
+  "devMode": false,
+  "navVisibility": {
+    "gallery": true,
+    "books": true,
+    "music": true
+  },
+  "profile": {
+    "name": "foxibu",
+    "bio": "Dev, ML/DL/Sec Junior",
+    "avatar": "https://avatars.githubusercontent.com/atimevil",
+    "skills": [
+      "Python",
+      "PyTorch",
+      "Next.js",
+      "TypeScript",
+      "Docker"
+    ],
+    "github": "https://github.com/atimevil",
+    "linkedin": "",
+    "email": "atimevil@gmail.com",
+    "aboutText": ""
+  }
+}

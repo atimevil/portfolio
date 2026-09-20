@@ -46,27 +46,9 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
                 <li key={project.id}>
                   <Link
                     href={`${workBase}/${projectSlug(project)}`}
-                    className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-bg-secondary transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    className="group flex h-full flex-col rounded-xl border border-border bg-bg-secondary transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   >
-                    {/* 다이어그램은 폭이 곧 가독성이라 타일에서는 줄여 싣고,
-                        읽을 수 있는 크기는 상세 페이지가 맡는다. */}
-                    <div className="border-b border-border bg-bg">
-                      {project.thumbnail ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={project.thumbnail}
-                          alt=""
-                          loading="lazy"
-                          decoding="async"
-                          className="h-36 w-full object-contain p-2"
-                        />
-                      ) : (
-                        <div className="flex h-36 w-full items-center justify-center">
-                          <span className="font-mono text-xs text-text-muted">{project.year}</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex flex-1 flex-col p-4">
+                    <div className="flex flex-1 flex-col p-5">
                       <div className="flex items-baseline justify-between gap-3">
                         <h3 className="text-sm font-bold leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
                           {title}

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 230" width="880" height="230" role="img" aria-label="iPod Classic ithmb 변환 파이프라인. ithmb 파일을 읽어 헤더를 해석하고 픽셀을 디코딩한 뒤 Real-ESRGAN으로 업스케일해 이미지 파일로 저장한다.">
+  <style>
+    :root{--ink:#1c1b22;--dim:#55535e;--faint:#8a8896;--line:#c9c6d2;--panel:#f4f2f8;--accent:#6a4dbd;--soft:#ece7f8}
+    @media (prefers-color-scheme:dark){:root{--ink:#d6d4de;--dim:#93919f;--faint:#6f6d7a;--line:#3a3846;--panel:#1a1a20;--accent:#9d8cd8;--soft:#241f33}}
+    .box{fill:var(--panel);stroke:var(--line);stroke-width:1}
+    .acc{fill:var(--soft);stroke:var(--accent);stroke-width:1}
+    .dash{fill:none;stroke:var(--line);stroke-width:1;stroke-dasharray:4 3}
+    .t{fill:var(--ink);font:600 13px "Helvetica Neue",Arial,sans-serif}
+    .s{fill:var(--dim);font:400 11px "Helvetica Neue",Arial,sans-serif}
+    .c{fill:var(--faint);font:400 10px "Helvetica Neue",Arial,sans-serif}
+    .lb{fill:var(--accent);font:600 10px "Helvetica Neue",Arial,sans-serif;letter-spacing:.08em}
+    .ar{stroke:var(--line);stroke-width:1.5;fill:none}
+    .rule{stroke:var(--line);stroke-width:1}
+  </style>
+  <defs><marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="var(--line)"/></marker></defs>
+  <text class="t" x="16" y="24">사진 복원 파이프라인 — 독점 포맷에서 이미지까지</text>
+  <line class="rule" x1="16" y1="40" x2="864" y2="40"/>
+
+  <rect class="box" x="16" y="74" width="140" height="58" rx="8"/>
+  <text class="t" x="86" y="98" text-anchor="middle">.ithmb</text>
+  <text class="s" x="86" y="115" text-anchor="middle">iPod 독점 포맷</text>
+
+  <path class="ar" d="M156 103 H190" marker-end="url(#a)"/>
+  <rect class="box" x="194" y="74" width="150" height="58" rx="8"/>
+  <text class="t" x="269" y="98" text-anchor="middle">헤더 해석</text>
+  <text class="s" x="269" y="115" text-anchor="middle">해상도 · 오프셋</text>
+
+  <path class="ar" d="M344 103 H378" marker-end="url(#a)"/>
+  <rect class="box" x="382" y="74" width="150" height="58" rx="8"/>
+  <text class="t" x="457" y="98" text-anchor="middle">픽셀 디코딩</text>
+  <text class="s" x="457" y="115" text-anchor="middle">RGB565 → RGB</text>
+
+  <path class="ar" d="M532 103 H566" marker-end="url(#a)"/>
+  <rect class="acc" x="570" y="74" width="160" height="58" rx="8"/>
+  <text class="lb" x="650" y="96" text-anchor="middle">OPTIONAL</text>
+  <text class="t" x="650" y="115" text-anchor="middle">Real-ESRGAN 업스케일</text>
+
+  <path class="ar" d="M730 103 H764" marker-end="url(#a)"/>
+  <rect class="box" x="768" y="74" width="96" height="58" rx="8"/>
+  <text class="t" x="816" y="107" text-anchor="middle">PNG</text>
+
+  <text class="c" x="16" y="172">ONNX · DirectML로 GPU 추론 · Python GUI</text>
+  <text class="c" x="16" y="192">기존 변환기가 유료여서 무료 대안으로 직접 제작 · 2026.03</text>
+</svg>

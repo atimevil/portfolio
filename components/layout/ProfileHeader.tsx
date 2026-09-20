@@ -23,8 +23,10 @@ export default function ProfileHeader({ profile, showAboutLink = false, locale =
   const description = locale === 'en' ? TAGLINE_EN : profile.aboutText?.trim() || profile.bio
   const mail = cleanEmail(profile.email)
 
+  // 아바타를 왼쪽에 두면 이름·소개만 92px 안으로 밀려, 아래 섹션들과 왼쪽
+  // 가장자리가 어긋난다. 오른쪽으로 보내 본문 기준선에 맞춘다.
   return (
-    <section className="mb-10 pb-8 border-b border-border flex gap-5 items-center">
+    <section className="mb-10 flex flex-row-reverse items-center justify-end gap-5 border-b border-border pb-8">
       <div className="w-[72px] h-[72px] rounded-full bg-surface border border-border overflow-hidden shrink-0">
         {avatarSrc ? (
           <img src={avatarSrc} alt={profile.name} className="w-full h-full object-cover" />
@@ -32,7 +34,7 @@ export default function ProfileHeader({ profile, showAboutLink = false, locale =
           <div className="w-full h-full flex items-center justify-center text-2xl text-text-muted">👤</div>
         )}
       </div>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">{profile.name}</h1>
         {description && (
           <p className="text-sm text-text-secondary mt-1.5 whitespace-pre-line leading-relaxed">{description}</p>

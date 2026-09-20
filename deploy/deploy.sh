@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 운영 서버 배포 스크립트. GitHub Actions가 SSH(forced command)로 호출한다.
+# 운영 서버 배포 스크립트. GitHub Actions가 SSH(forced command)로 호출한다. (CD 종단 시험 완료)
 #
 # 설치:  mkdir -p ~/deploy && cp deploy/deploy.sh ~/deploy/deploy.sh && chmod 700 ~/deploy/deploy.sh
 # 호출:  ssh <배포키> ubuntu@서버 <커밋 SHA 40자>        (SSH_ORIGINAL_COMMAND로 전달됨)

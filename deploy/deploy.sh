@@ -53,6 +53,23 @@ if [ -z "${ALLOW_MIGRATIONS:-}" ] && git cat-file -e "${CURRENT}^{commit}" 2>/de
 fi
 
 log "코드 갱신: ${CURRENT:0:7} → ${TARGET:0:7}"
+
+# content/items.json·settings.json은 git이 추적하면서 서버 /admin도 직접 쓴다.
+# 관리자가 운영 화면에서 뭘 고치면 추적 파일의 로컬 수정으로 남아 fast-forward가
+# 막히고 배포가 통째로 멈춘다. 그래서 백업을 남기고 git 쪽으로 맞춘다.
+# 조용히 버리지 않는 이유: 폰에서 급히 넣은 수상 같은 게 여기 들어있을 수 있다.
+DIRTY="$(git status --porcelain -- content | awk '{print $2}')"
+if [ -n "$DIRTY" ]; then
+  BACKUP="$REPO/deploy-backups/content-$(date +%Y%m%d-%H%M%S)"
+  mkdir -p "$BACKUP"
+  for f in $DIRTY; do
+    cp -a "$REPO/$f" "$BACKUP/$(basename "$f")"
+    log "⚠ 서버에서 수정된 $f → $BACKUP/$(basename "$f") 에 백업 후 git 버전으로 되돌림"
+  done
+  log "⚠ 운영 화면에서 고친 내용이라면 위 백업에서 꺼내 저장소에 커밋하세요"
+  git checkout -- content
+fi
+
 git merge --ff-only "$TARGET" >/dev/null || die "fast-forward 실패. 서버 작업트리의 미커밋 변경과 충돌했을 수 있습니다"
 
 # 롤백용으로 지금 돌고 있는 이미지를 태그해 둔다

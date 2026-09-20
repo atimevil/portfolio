@@ -44,6 +44,9 @@ next-env.d.ts
 /content/*
 !/content/items.json
 !/content/settings.json
+
+# 배포가 서버 쪽 content/ 수정을 되돌리기 전에 남기는 백업
+/deploy-backups/
 /public/uploads/
 
 # claude code local settings (machine-specific permissions)

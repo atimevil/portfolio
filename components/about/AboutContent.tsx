@@ -1,6 +1,6 @@
 import type { PortfolioItem } from '@/types'
 import { getSettings } from '@/lib/settings'
-import { getProjects, getTimeline } from '@/lib/items'
+import { getProjects, getTimeline, timeKey } from '@/lib/items'
 import ProfileHeader from '@/components/layout/ProfileHeader'
 import AwardsGantt from '@/components/about/AwardsGantt'
 import { t, localized, type Locale } from '@/lib/i18n'
@@ -15,12 +15,16 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
   // 케이스 스터디(문제·한 일·결과)가 채워진 것만 대표로 펼친다.
   // 설명 한 줄뿐인 프로젝트에 256px 그림을 붙이면 그림이 본문보다 커진다.
   const projects = all.filter(hasCaseStudy)
-  const rest = all.filter((p) => !hasCaseStudy(p))
+  // 대표는 손으로 고른 순서(order)를 따르고, 목록은 최신순으로 둔다.
+  // 목록까지 수동 순서를 유지하면 항목이 늘 때마다 order를 다시 매겨야 한다.
+  const rest = all
+    .filter((p) => !hasCaseStudy(p))
+    .sort((a, b) => timeKey(b.year) - timeKey(a.year))
   const timeline = getTimeline()
   const hasEvents = timeline.length > 0
 
   return (
-    <main id="main" tabIndex={-1} className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
+    <main id="main" tabIndex={-1} className="flex-1 max-w-5xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
       <ProfileHeader profile={profile} locale={locale} />
 
       {all.length > 0 && (

@@ -26,7 +26,7 @@ export function getItems(): PortfolioItem[] {
 }
 
 /** "2025" 또는 "2025.03"/"2025-3" 형태의 시점을 정렬용 숫자(연*100+월)로 변환. 월 없으면 0 */
-function timeKey(value: string): number {
+export function timeKey(value: string): number {
   const m = value.match(/(\d{4})(?:[.\-/]\s*(\d{1,2}))?/)
   if (!m) return 0
   return parseInt(m[1], 10) * 100 + (m[2] ? parseInt(m[2], 10) : 0)

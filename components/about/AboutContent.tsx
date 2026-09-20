@@ -26,7 +26,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
   const events = getTimeline().filter((i) => i.type !== 'project')
 
   return (
-    <main id="main" tabIndex={-1} className="flex-1 max-w-5xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
+    <main id="main" tabIndex={-1} className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
       <header className="mb-6">
         <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">{t(locale, 'about')}</h1>
       </header>

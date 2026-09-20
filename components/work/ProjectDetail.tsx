@@ -24,7 +24,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
   const aboutHref = locale === 'en' ? '/en/about' : '/about'
 
   return (
-    <main id="main" tabIndex={-1} className="flex-1 max-w-5xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
+    <main id="main" tabIndex={-1} className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
       <Link
         href={aboutHref}
         className="inline-flex min-h-[24px] items-center text-sm text-text-secondary transition-colors hover:text-accent"

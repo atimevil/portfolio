@@ -44,7 +44,7 @@ export default function AwardsGantt({ items, locale = 'ko' }: Props) {
 
   return (
     <section className="mt-12">
-      <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-5">Awards &amp; Activity</h2>
+      <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-5">{t(locale, 'awards')}</h2>
       <ul className="flex flex-col divide-y divide-border">
         {items.map((it) => {
           const isAward = it.type === 'award'

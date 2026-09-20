@@ -25,7 +25,12 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 max-w-5xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
-      <ProfileHeader profile={profile} locale={locale} />
+      <header className="mb-6">
+        <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">{t(locale, 'about')}</h1>
+        <p className="mt-1 text-sm text-text-secondary">{t(locale, 'aboutLead')}</p>
+      </header>
+
+      <ProfileHeader profile={profile} locale={locale} headingLevel={2} />
 
       {all.length > 0 && (
         <section>

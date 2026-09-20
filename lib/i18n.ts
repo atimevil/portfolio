@@ -23,8 +23,9 @@ export function pathForLocale(pathname: string, locale: Locale): string {
 
 // UI 크롬 문구. 값이 하나뿐인 항목(PROJECTS 등)은 양쪽 동일하게 둔다.
 const UI = {
-  blog: { ko: '블로그', en: 'Blog' },
+  blog: { ko: '글', en: 'Writing' },
   about: { ko: '소개', en: 'About' },
+  aboutLead: { ko: '지금까지 만든 것들', en: 'What I have built' },
   gallery: { ko: '갤러리', en: 'Gallery' },
   books: { ko: '책', en: 'Books' },
   music: { ko: '음악', en: 'Music' },
@@ -51,8 +52,8 @@ const UI = {
   viewGrid: { ko: '격자', en: 'Grid' },
   viewImage: { ko: '이미지', en: 'Image' },
   details: { ko: '자세히', en: 'Details' },
-  projects: { ko: 'Projects', en: 'Projects' },
-  awards: { ko: 'Awards & Activity', en: 'Awards & Activity' },
+  projects: { ko: '프로젝트', en: 'Projects' },
+  awards: { ko: '수상 · 활동', en: 'Awards & Activity' },
   noPosts: { ko: '글이 없습니다.', en: 'No posts yet.' },
   noMatch: { ko: '해당 분류의 글이 없습니다.', en: 'No posts match this filter.' },
   allPosts: { ko: '← 전체 글', en: '← All posts' },

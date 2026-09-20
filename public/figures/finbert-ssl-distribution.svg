@@ -1,33 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 316" width="880" height="316" role="img" aria-label="의사라벨 감성 분포 비교. 원본 금융 도메인은 부정 12.5% 중립 59.4% 긍정 28.1%. 임계값 0.75로 7사이클 학습하면 부정 12% 중립 58% 긍정 30%로 원본과 거의 같다. 임계값 0.9로 3사이클 학습하면 부정 31% 중립 47% 긍정 22%로 원본 분포에서 멀어진다.">
   <style>
-    :root {
-      --ink: #1c1b22;
-      --ink-dim: #55535e;
-      --ink-faint: #8a8896;
-      --line: #d9d6e0;
-      --neg: #c2410c;
-      --neu: #a8a29e;
-      --pos: #1d4ed8;
-      --on-neg: #ffffff;
-      --on-neu: #1c1b22;
-      --on-pos: #ffffff;
-      --mark-ring: #ffffff;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --ink: #d6d4de;
-        --ink-dim: #93919f;
-        --ink-faint: #6f6d7a;
-        --line: #33313d;
-        --neg: #ea580c;
-        --neu: #8a8580;
-        --pos: #3b82f6;
-        --on-neg: #131317;
-        --on-neu: #131317;
-        --on-pos: #131317;
-        --mark-ring: #131317;
-      }
-    }
+
+    
     .title { fill: var(--ink); font: 600 14px 'Helvetica Neue', Arial, sans-serif; }
     .sub   { fill: var(--ink-dim); font: 400 11px 'Helvetica Neue', Arial, sans-serif; }
     .cap   { fill: var(--ink-faint); font: 400 10px 'Helvetica Neue', Arial, sans-serif; }

@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 230" width="880" height="230" role="img" aria-label="iPod Classic ithmb 변환 파이프라인. ithmb 파일을 읽어 헤더를 해석하고 픽셀을 디코딩한 뒤 Real-ESRGAN으로 업스케일해 이미지 파일로 저장한다.">
   <style>
-    :root{--ink:#1c1b22;--dim:#55535e;--faint:#8a8896;--line:#c9c6d2;--panel:#f4f2f8;--accent:#6a4dbd;--soft:#ece7f8}
-    @media (prefers-color-scheme:dark){:root{--ink:#d6d4de;--dim:#93919f;--faint:#6f6d7a;--line:#3a3846;--panel:#1a1a20;--accent:#9d8cd8;--soft:#241f33}}
+
+    
     .box{fill:var(--panel);stroke:var(--line);stroke-width:1}
     .acc{fill:var(--soft);stroke:var(--accent);stroke-width:1}
     .dash{fill:none;stroke:var(--line);stroke-width:1;stroke-dasharray:4 3}

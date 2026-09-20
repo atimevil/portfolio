@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" width="880" height="300" role="img" aria-label="VOCAB CURATOR 흐름. 학습자 프로필과 원문을 받아 Solar Pro 4가 어휘를 선별하고, 학습 이력 DB로 중복을 걸러 단어 카드와 CSV 단어장을 낸다.">
   <style>
-    :root{--ink:#1c1b22;--dim:#55535e;--faint:#8a8896;--line:#c9c6d2;--panel:#f4f2f8;--accent:#6a4dbd;--soft:#ece7f8}
-    @media (prefers-color-scheme:dark){:root{--ink:#d6d4de;--dim:#93919f;--faint:#6f6d7a;--line:#3a3846;--panel:#1a1a20;--accent:#9d8cd8;--soft:#241f33}}
+
+    
     .box{fill:var(--panel);stroke:var(--line);stroke-width:1}
     .acc{fill:var(--soft);stroke:var(--accent);stroke-width:1}
     .t{fill:var(--ink);font:600 13px 'Helvetica Neue',Arial,sans-serif}

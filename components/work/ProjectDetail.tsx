@@ -3,6 +3,7 @@ import type { PortfolioItem } from '@/types'
 import { getOrderedProjects, projectSlug } from '@/lib/items'
 import { hasCaseStudy, parseMetrics } from '@/lib/caseStudy'
 import { projectLinks } from '@/lib/projectLinks'
+import { readFigure } from '@/lib/figure'
 import { t, localized, type Locale } from '@/lib/i18n'
 
 /**
@@ -15,6 +16,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
   const title = localized(project, 'title', locale)
   const links = projectLinks(project, locale)
   const metrics = parseMetrics(project.metrics)
+  const figure = readFigure(project.thumbnail)
   const columns = (
     [
       ['csProblem', project.problem],
@@ -53,14 +55,21 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
         )}
       </header>
 
-      {project.thumbnail && (
+      {/* 다이어그램은 인라인 — 사이트 테마를 따라가고 SVG 안의 aria-label이 읽힌다.
+          업로드한 이미지 등 그 외 썸네일은 그대로 <img>로 건다. */}
+      {figure ? (
+        <div
+          className="fig mb-8 overflow-hidden rounded-xl border border-border bg-bg"
+          dangerouslySetInnerHTML={{ __html: figure }}
+        />
+      ) : project.thumbnail ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={project.thumbnail}
           alt={title}
           className="mb-8 w-full rounded-xl border border-border bg-bg object-contain"
         />
-      )}
+      ) : null}
 
       {columns.length > 0 && (
         <dl

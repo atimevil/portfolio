@@ -1,25 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 330" width="880" height="330" role="img" aria-label="CTF-Solver 구조: LLM이 MCP로 FastMCP 서버에 연결되고, 서버가 Kali 보안도구 55종 이상을 호출한다. 기존 서버가 단발 실행만 가능했던 것과 달리 도구 실행, 출력 해석, 다음 도구 선택을 반복하는 멀티스텝 워크플로로 동작한다">
   <style>
-    :root {
-      --ink: #1c1b22;
-      --ink-dim: #55535e;
-      --line: #c9c6d2;
-      --panel: #f4f2f8;
-      --accent: #6a4dbd;
-      --accent-soft: #ece7f8;
-      --past: #efedf2;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --ink: #d6d4de;
-        --ink-dim: #93919f;
-        --line: #3a3846;
-        --panel: #1a1a20;
-        --accent: #9d8cd8;
-        --accent-soft: #241f33;
-        --past: #18171d;
-      }
-    }
+
+    
     .box { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
     .box-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1; }
     .box-past { fill: var(--past); stroke: var(--line); stroke-width: 1; stroke-dasharray: 4 3; }

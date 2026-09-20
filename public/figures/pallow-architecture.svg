@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 290" width="880" height="290" role="img" aria-label="PALLOW 아키텍처. 클라이언트 요청을 Java Spring 메인 서버가 받고, 친구 추천은 코사인 유사도를 쓰는 별도 Flask 추천 서버에 위임한다. 둘 다 Docker로 Oracle Cloud에 배포된다.">
   <style>
-    :root{--ink:#1c1b22;--dim:#55535e;--faint:#8a8896;--line:#c9c6d2;--panel:#f4f2f8;--accent:#6a4dbd;--soft:#ece7f8;--warn:#c2410c;--warn-soft:#fbeae1;--ok:#1d4ed8;--ok-soft:#e4ecfd}
-    @media (prefers-color-scheme:dark){:root{--ink:#d6d4de;--dim:#93919f;--faint:#6f6d7a;--line:#3a3846;--panel:#1a1a20;--accent:#9d8cd8;--soft:#241f33;--warn:#ea580c;--warn-soft:#2a1810;--ok:#3b82f6;--ok-soft:#111d33}}
+
+    
     .box{fill:var(--panel);stroke:var(--line);stroke-width:1}
     .acc{fill:var(--soft);stroke:var(--accent);stroke-width:1}
     .bad{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1}

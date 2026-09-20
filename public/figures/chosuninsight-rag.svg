@@ -2,24 +2,8 @@
   <style>
     /* 페이지가 아니라 이 그림 자체가 테마를 따른다 (img로 불러도 동작).
        사이트의 수동 다크 토글까지는 못 따라가므로 OS 설정 기준이다. */
-    :root {
-      --ink: #1c1b22;
-      --ink-dim: #55535e;
-      --line: #c9c6d2;
-      --panel: #f4f2f8;
-      --accent: #6a4dbd;
-      --accent-soft: #ece7f8;
-    }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --ink: #d6d4de;
-        --ink-dim: #93919f;
-        --line: #3a3846;
-        --panel: #1a1a20;
-        --accent: #9d8cd8;
-        --accent-soft: #241f33;
-      }
-    }
+
+    
     .box { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
     .box-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1; }
     .t { fill: var(--ink); font: 600 13px 'Helvetica Neue', Arial, sans-serif; }

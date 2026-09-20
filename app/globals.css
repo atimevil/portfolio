@@ -362,3 +362,57 @@ code {
   background: var(--color-border);
   border-radius: 3px;
 }
+
+/* ── 다이어그램 팔레트 ──
+ *
+ * public/figures/*.svg 는 <img>가 아니라 페이지에 인라인된다(ProjectDetail).
+ * <img>로 부르면 SVG가 문서의 .dark 클래스를 못 보고 OS의 prefers-color-scheme만
+ * 따라가는데, 이 사이트는 기본이 다크라서 OS가 라이트인 방문자에게 어두운 페이지 위
+ * 흰 상자가 떴다. 인라인하면 아래 값이 SVG 안으로 상속돼 테마 토글을 그대로 따른다.
+ *
+ * 사이트 토큰에 대응이 있는 것은 넘겨받고, 다이어그램 전용 색(감성 분류의 neg/neu/pos
+ * 등)만 여기서 직접 정의한다.
+ */
+.fig {
+  --ink:          var(--color-text-primary);
+  --dim:          var(--color-text-secondary);
+  --ink-dim:      var(--color-text-secondary);
+  --faint:        var(--color-text-muted);
+  --ink-faint:    var(--color-text-muted);
+  --line:         var(--color-border);
+  --panel:        var(--color-bg-secondary);
+  --accent:       var(--color-accent);
+  --soft:         var(--color-accent-soft);
+  --accent-soft:  var(--color-accent-soft);
+  /* 마크 사이 2px 간격과 색 위 글씨는 페이지 바탕색을 그대로 쓴다 */
+  --mark-ring:    var(--color-bg);
+  --on-neg:       var(--color-bg);
+  --on-pos:       var(--color-bg);
+  --on-neu:       #1c1b22;
+  --neg:          #c2410c;
+  --warn:         #c2410c;
+  --warn-soft:    #fbeae1;
+  --neu:          #a8a29e;
+  --pos:          #1d4ed8;
+  --ok:           #1d4ed8;
+  --ok-soft:      #e4ecfd;
+  --past:         #efedf2;
+}
+
+.dark .fig {
+  --on-neu:       #131317;
+  --neg:          #ea580c;
+  --warn:         #ea580c;
+  --warn-soft:    #2a1810;
+  --neu:          #8a8580;
+  --pos:          #3b82f6;
+  --ok:           #3b82f6;
+  --ok-soft:      #111d33;
+  --past:         #18171d;
+}
+
+.fig > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}

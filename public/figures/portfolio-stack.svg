@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 280" width="880" height="280" role="img" aria-label="포트폴리오 사이트 배포 구조. Nginx가 HTTPS를 종단하고 Next.js 앱으로 넘기며, 앱은 Postgres와 콘텐츠 볼륨을 쓴다. 전체가 Docker로 묶여 자체 서버에 배포된다.">
   <style>
-    :root{--ink:#1c1b22;--dim:#55535e;--faint:#8a8896;--line:#c9c6d2;--panel:#f4f2f8;--accent:#6a4dbd;--soft:#ece7f8}
-    @media (prefers-color-scheme:dark){:root{--ink:#d6d4de;--dim:#93919f;--faint:#6f6d7a;--line:#3a3846;--panel:#1a1a20;--accent:#9d8cd8;--soft:#241f33}}
+
+    
     .box{fill:var(--panel);stroke:var(--line);stroke-width:1}
     .acc{fill:var(--soft);stroke:var(--accent);stroke-width:1}
     .dash{fill:none;stroke:var(--line);stroke-width:1;stroke-dasharray:4 3}

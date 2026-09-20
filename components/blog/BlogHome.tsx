@@ -18,7 +18,7 @@ export interface BlogHomeSearchParams {
 }
 
 /**
- * 블로그 인덱스(/blog · /en/blog).
+ * 블로그 인덱스(/blog — 글은 한국어로만 쓰므로 en 짝이 없다).
  *
  * 홈(/)은 포트폴리오라 여기에 프로필이나 작업 목록은 없다. 이 페이지는 글만 다룬다.
  * 글 본문은 번역하지 않으므로 목록 자체는 ko/en이 동일하다.

@@ -38,7 +38,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const paired: MetadataRoute.Sitemap = (
     [
       ['', '/en', 1.0, 'weekly'],
-      ['/blog', '/en/blog', 0.9, 'daily'],
       ['/about', '/en/about', 0.8, 'monthly'],
     ] as const
   ).flatMap(([ko, en, priority, changeFrequency]) => {
@@ -51,6 +50,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       alternates: { languages },
     }))
   })
+
+  // 글은 한국어로만 쓴다 — /blog는 en 짝 없이 단독으로 올린다.
+  const blogIndex: MetadataRoute.Sitemap = [{
+    url: `${BASE_URL}/blog`,
+    lastModified: new Date(),
+    changeFrequency: 'daily' as const,
+    priority: 0.9,
+  }]
 
   // 프로젝트 상세는 ko/en 쌍으로 올린다 — 지원서에 개별 링크를 걸 수 있는 주소다.
   const workEntries: MetadataRoute.Sitemap = getProjects().flatMap((project) => {
@@ -65,5 +72,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   })
 
-  return [...paired, ...workEntries, ...optional, ...postEntries]
+  return [...paired, ...blogIndex, ...workEntries, ...optional, ...postEntries]
 }

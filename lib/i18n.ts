@@ -11,8 +11,10 @@ export function localeFromPath(pathname: string): Locale {
 }
 
 /** 블로그 인덱스 경로. 홈(/)은 포트폴리오이고 글 목록은 여기 산다. */
-export function blogBase(locale: Locale): string {
-  return locale === 'en' ? '/en/blog' : '/blog'
+export function blogBase(_locale: Locale): string {
+  // 글은 한국어로만 쓴다. 목록만 영어로 두면 글을 눌렀을 때 /en 밖으로 나가버려서
+  // 영문 화면에서도 한국어 /blog로 보낸다. 영어는 첫 화면·소개·프로젝트 상세까지다.
+  return '/blog'
 }
 
 /** ko 경로 ↔ en 경로 변환 (KO/EN 토글용). en에 없는 페이지는 호출부에서 제외한다. */

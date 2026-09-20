@@ -37,6 +37,6 @@ export default async function EnHomePage({
   searchParams: Record<string, string | string[] | undefined>
 }) {
   const qs = legacyBlogQuery(searchParams)
-  if (qs) redirect(`/en/blog?${qs}`)
+  if (qs) redirect(`/blog?${qs}`)
   return <PortfolioHome locale="en" />
 }

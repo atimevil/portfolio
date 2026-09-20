@@ -39,17 +39,19 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
   const pathname = usePathname() ?? '/'
   const isEn = locale === 'en'
 
-  // /en에는 블로그 목록과 소개만 있다. 갤러리·책·음악·지도는 한국어 전용이라
-  // 영문 화면에서 링크하면 한국어 페이지로 튕기므로 메뉴에서 뺀다.
+  // /en에는 소개와 프로젝트 상세만 있다. 글은 한국어로만 쓰므로 영문 메뉴의
+  // 글 링크도 한국어 /blog를 가리킨다. 갤러리·책·음악·지도는 한국어 전용이라 뺀다.
   const koLinks = isAdmin
     ? [...CORE_LINKS, ...TOGGLABLE_LINKS.filter((l) => navVisibility?.[l.key] ?? true), ...adminOnlyLinks]
     : [...CORE_LINKS, ...TOGGLABLE_LINKS.filter((l) => navVisibility?.[l.key] ?? true)]
 
-  const links = isEn ? CORE_LINKS.map((l) => ({ ...l, href: `/en${l.href}` })) : koLinks
+  const links = isEn
+    ? CORE_LINKS.map((l) => ({ ...l, href: l.href === '/blog' ? '/blog' : `/en${l.href}` }))
+    : koLinks
 
   // 반대 로케일로 가는 경로. /en에 짝이 없는 페이지(음악·글 상세 등)에서는 /en 첫 화면으로 보낸다.
   // /en에 짝이 있는 경로만 그대로 넘기고, 없는 페이지(음악·글 상세 등)는 /en 첫 화면으로 보낸다.
-  const EN_PAIRS = ['/', '/blog', '/about']
+  const EN_PAIRS = ['/', '/about']
   const otherLocaleHref = isEn
     ? pathname.replace(/^\/en(?=\/|$)/, '') || '/'
     : EN_PAIRS.includes(pathname)

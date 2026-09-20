@@ -15,6 +15,7 @@ const ItemSchema = z.object({
   metrics: z.string().optional(),
   skills: z.array(z.string()).optional(),
   github: z.string().optional(),
+  slug: z.string().optional(),
   paper: z.string().optional(),
   link: z.string().optional(),
   thumbnail: z.string().optional(),

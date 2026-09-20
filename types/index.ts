@@ -30,6 +30,8 @@ export interface PortfolioItem {
   description?: string
   skills?: string[]
   github?: string
+  /** 상세 페이지 주소(/work/<slug>). 비어 있으면 id를 쓴다. */
+  slug?: string
   /** 논문·발표 자료 링크. 연구 프로젝트는 결과물이 저장소가 아니라 논문이다. */
   paper?: string
   link?: string

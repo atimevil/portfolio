@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getProjects } from '@/lib/items'
+import { getProjects, projectSlug } from '@/lib/items'
 import { t, localized, type Locale } from '@/lib/i18n'
 
 /** 홈에 띄울 개수. 나머지는 /about에서 본다. */
@@ -36,7 +36,8 @@ export default function SelectedWork({ locale = 'ko' }: { locale?: Locale }) {
 
       <ul className="flex flex-col">
         {projects.map((project) => {
-          const href = project.github || project.link
+          // 예전엔 GitHub으로 바로 나갔다. 이제 상세 페이지가 있으니 사이트 안에 머문다.
+          const href = `${locale === 'en' ? '/en/work' : '/work'}/${projectSlug(project)}`
           const title = localized(project, 'title', locale)
           const skills = project.skills ?? []
 
@@ -44,18 +45,12 @@ export default function SelectedWork({ locale = 'ko' }: { locale?: Locale }) {
             <li key={project.id} className="border-b border-border py-3 last:border-b-0">
               <div className="flex items-baseline justify-between gap-3">
                 <h3 className="text-sm font-bold leading-snug text-text-primary">
-                  {href ? (
-                    <a
-                      href={href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded-sm transition-colors hover:text-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                    >
-                      {title}
-                    </a>
-                  ) : (
-                    title
-                  )}
+                  <Link
+                    href={href}
+                    className="rounded-sm transition-colors hover:text-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  >
+                    {title}
+                  </Link>
                 </h3>
                 {project.year && (
                   <span className="shrink-0 font-mono text-xs text-text-secondary">{project.year}</span>

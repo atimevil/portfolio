@@ -32,6 +32,16 @@ export function timeKey(value: string): number {
   return parseInt(m[1], 10) * 100 + (m[2] ? parseInt(m[2], 10) : 0)
 }
 
+/** 상세 페이지에서 쓰는 주소 조각. slug가 없으면 id로 폴백해 링크가 끊기지 않게 한다. */
+export function projectSlug(item: PortfolioItem): string {
+  return item.slug?.trim() || item.id
+}
+
+/** 상세 페이지용 단건 조회. slug와 id 양쪽으로 찾는다(예전 링크 보존). */
+export function getProjectBySlug(slug: string): PortfolioItem | undefined {
+  return read().find((i) => i.type === 'project' && (i.slug?.trim() === slug || i.id === slug))
+}
+
 /** 프로젝트만, order(없으면 시점 desc) 정렬 */
 export function getProjects(): PortfolioItem[] {
   return read()

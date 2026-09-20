@@ -33,9 +33,10 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
                   className={`group flex h-full flex-col rounded-xl border border-border bg-bg-secondary p-5 transition-colors ${href ? 'hover:border-accent focus-within:border-accent' : ''}`}
                 >
                   {project.thumbnail && (
+                    // 다이어그램·스크린샷은 잘리면 뜻이 사라진다. object-cover(사진용)가 아니라 contain.
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={project.thumbnail} alt={title} loading="lazy" decoding="async"
-                      className="w-full h-32 object-cover rounded-lg mb-3 bg-surface" />
+                      className="mb-3 w-full max-h-64 rounded-lg border border-border bg-bg object-contain" />
                   )}
                   <div className="flex items-baseline justify-between gap-2">
                     {/* 카드 전체를 <a>로 감싸면 안쪽 <details>(설명 펼치기)가 링크 안에 들어가

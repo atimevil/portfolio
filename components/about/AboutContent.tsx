@@ -11,7 +11,11 @@ import { projectLinks } from '@/lib/projectLinks'
 /** 한국어(/about) · 영문(/en/about)이 공유하는 소개 본문. */
 export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
   const { profile } = getSettings()
-  const projects = getProjects()
+  const all = getProjects()
+  // 케이스 스터디(문제·한 일·결과)가 채워진 것만 대표로 펼친다.
+  // 설명 한 줄뿐인 프로젝트에 256px 그림을 붙이면 그림이 본문보다 커진다.
+  const projects = all.filter(hasCaseStudy)
+  const rest = all.filter((p) => !hasCaseStudy(p))
   const timeline = getTimeline()
   const hasEvents = timeline.length > 0
 
@@ -19,7 +23,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
     <main id="main" tabIndex={-1} className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
       <ProfileHeader profile={profile} locale={locale} />
 
-      {projects.length > 0 && (
+      {all.length > 0 && (
         <section>
           <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-5">
             {t(locale, 'projects')}
@@ -62,11 +66,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
                       <span className="shrink-0 font-mono text-xs text-text-secondary">{project.year}</span>
                     )}
                   </div>
-                  {hasCaseStudy(project) ? (
-                    <CaseStudy project={project} locale={locale} />
-                  ) : (
-                    <ProjectDescription text={localized(project, 'description', locale)} locale={locale} />
-                  )}
+                  <CaseStudy project={project} locale={locale} />
                   <div className="flex flex-wrap gap-1.5 mt-auto">
                     {project.skills?.map((s) => (
                       <span key={s} className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent">{s}</span>
@@ -109,6 +109,55 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
               )
             })}
           </div>
+
+          {rest.length > 0 && (
+            <div className="mt-10">
+              <h3 className="mb-1 text-xs font-bold uppercase tracking-wider text-text-muted">
+                {t(locale, 'moreProjects')}
+              </h3>
+              <ul className="flex flex-col">
+                {rest.map((project) => {
+                  const links = projectLinks(project, locale)
+                  const title = localized(project, 'title', locale)
+                  return (
+                    <li key={project.id} className="border-b border-border py-4 last:border-b-0">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <h4 className="text-sm font-bold leading-snug text-text-primary">{title}</h4>
+                        {project.year && (
+                          <span className="shrink-0 font-mono text-xs text-text-secondary">{project.year}</span>
+                        )}
+                      </div>
+                      <p className="mt-1.5 text-sm leading-relaxed text-text-secondary">
+                        {localized(project, 'description', locale)}
+                      </p>
+                      <div className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+                        <span className="text-xs text-text-secondary">
+                          {(project.skills ?? []).join(' · ')}
+                        </span>
+                        <span className="flex flex-wrap gap-x-4">
+                          {links.map((l) => (
+                            <a
+                              key={l.href}
+                              href={l.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              aria-label={`${title} — ${l.label}`}
+                              className="inline-flex min-h-[24px] items-center gap-1 rounded-sm text-xs text-text-secondary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                            >
+                              {l.label}
+                              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M7 17 17 7M9 7h8v8" />
+                              </svg>
+                            </a>
+                          ))}
+                        </span>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          )}
         </section>
       )}
 

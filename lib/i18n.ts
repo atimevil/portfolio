@@ -42,6 +42,8 @@ const UI = {
   moreProjects: { ko: '그 외', en: 'More' },
   backToAbout: { ko: '← 소개', en: '← About' },
   viewDetail: { ko: '자세히 →', en: 'Details →' },
+  prevProject: { ko: '← 이전 프로젝트', en: '← Previous' },
+  nextProject: { ko: '다음 프로젝트 →', en: 'Next →' },
   selectedWork: { ko: '주요 작업', en: 'Selected Work' },
   viewAllWork: { ko: '전체 보기 →', en: 'View all →' },
   readMore: { ko: '자세히 보기', en: 'Read more' },

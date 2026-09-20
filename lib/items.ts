@@ -49,6 +49,18 @@ export function getProjects(): PortfolioItem[] {
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0) || timeKey(b.year) - timeKey(a.year))
 }
 
+/**
+ * /about과 상세의 이전·다음이 같은 차례를 쓰도록 한 곳에서 정한다.
+ * 케이스 스터디가 채워진 것이 앞(손으로 고른 order), 나머지는 최신순.
+ */
+export function getOrderedProjects(hasCase: (i: PortfolioItem) => boolean): PortfolioItem[] {
+  const all = getProjects()
+  return [
+    ...all.filter(hasCase),
+    ...all.filter((i) => !hasCase(i)).sort((a, b) => timeKey(b.year) - timeKey(a.year)),
+  ]
+}
+
 /** 전체 항목, 시점 desc 정렬 (타임라인용) */
 export function getTimeline(): PortfolioItem[] {
   return read().sort((a, b) => timeKey(b.year) - timeKey(a.year))

@@ -56,6 +56,13 @@ export default function SelectedWork({ locale = 'ko' }: { locale?: Locale }) {
                   <span className="shrink-0 font-mono text-xs text-text-secondary">{project.year}</span>
                 )}
               </div>
+              {/* 홈이 가장 많이 보이는 화면인데 주제와 기술만 있고 성과가 없었다.
+                  결과 한 줄을 넣어 "무엇을 이뤘나"가 먼저 읽히게 한다. */}
+              {(project.result?.trim() || localized(project, 'description', locale)) && (
+                <p className="mt-1 line-clamp-1 text-xs leading-relaxed text-text-secondary">
+                  {project.result?.trim() || localized(project, 'description', locale)}
+                </p>
+              )}
               {skills.length > 0 && (
                 <p className="mt-1 text-xs text-text-secondary">
                   {skills.slice(0, SKILL_COUNT).join(' · ')}

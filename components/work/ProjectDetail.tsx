@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { PortfolioItem } from '@/types'
+import { getOrderedProjects, projectSlug } from '@/lib/items'
 import { hasCaseStudy, parseMetrics } from '@/lib/caseStudy'
 import { projectLinks } from '@/lib/projectLinks'
 import { t, localized, type Locale } from '@/lib/i18n'
@@ -22,6 +23,12 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
     ] as const
   ).filter(([, body]) => body?.trim())
   const aboutHref = locale === 'en' ? '/en/about' : '/about'
+  const workBase = locale === 'en' ? '/en/work' : '/work'
+  // 하나 읽고 나면 뒤로 가는 것 말고 할 게 없었다. 이웃 프로젝트로 이어준다.
+  const ordered = getOrderedProjects(hasCaseStudy)
+  const here = ordered.findIndex((i) => i.id === project.id)
+  const prev = here > 0 ? ordered[here - 1] : undefined
+  const next = here >= 0 && here < ordered.length - 1 ? ordered[here + 1] : undefined
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
@@ -93,7 +100,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
       )}
 
       {links.length > 0 && (
-        <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-5">
+        <div className="mb-10 flex flex-wrap gap-x-5 gap-y-2 border-t border-border pt-5">
           {links.map((l) => (
             <a
               key={l.href}
@@ -110,6 +117,36 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
             </a>
           ))}
         </div>
+      )}
+      {(prev || next) && (
+        <nav className="grid grid-cols-2 gap-4 border-t border-border pt-6" aria-label={t(locale, 'projects')}>
+          {prev ? (
+            <Link
+              href={`${workBase}/${projectSlug(prev)}`}
+              className="group rounded-lg border border-border p-3 transition-colors hover:border-accent"
+            >
+              <span className="block text-xs text-text-muted">{t(locale, 'prevProject')}</span>
+              <span className="mt-1 block line-clamp-2 text-sm text-text-secondary transition-colors group-hover:text-text-primary">
+                {localized(prev, 'title', locale)}
+              </span>
+            </Link>
+          ) : (
+            <div />
+          )}
+          {next ? (
+            <Link
+              href={`${workBase}/${projectSlug(next)}`}
+              className="group rounded-lg border border-border p-3 text-right transition-colors hover:border-accent"
+            >
+              <span className="block text-xs text-text-muted">{t(locale, 'nextProject')}</span>
+              <span className="mt-1 block line-clamp-2 text-sm text-text-secondary transition-colors group-hover:text-text-primary">
+                {localized(next, 'title', locale)}
+              </span>
+            </Link>
+          ) : (
+            <div />
+          )}
+        </nav>
       )}
     </main>
   )

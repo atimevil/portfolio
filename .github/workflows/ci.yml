@@ -1,14 +1,47 @@
-name: CI
+name: CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
+  workflow_dispatch:
+
+# PR은 새 푸시가 오면 이전 실행을 취소하고, master는 취소하지 않고 줄 세운다.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
 
 jobs:
   ci:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    # 테스트가 실제 Postgres를 쓴다(lib/__tests__/helpers/resetDb.ts).
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: portfolio_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      # .env.test는 저장소에 없다(gitignore). vitest.config.ts의 dotenv는 이미 설정된 값을 덮지 않는다.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/portfolio_test
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: ci-secret-for-build
+      ADMIN_PASSWORD: ci-password
+
     steps:
       - uses: actions/checkout@v4
 
@@ -21,15 +54,63 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
+      - name: Prisma client & test DB schema
+        run: |
+          npx prisma generate
+          npx prisma migrate deploy
+
+      # lint는 ESLint 설정이 없어 `next lint`가 대화형 프롬프트에서 멈춘다. 설정을 추가한 뒤 되살릴 것.
 
       - name: Type check
         run: npm run typecheck
 
+      - name: Test
+        run: npm test
+
       - name: Build
         run: npm run build
+
+  deploy:
+    needs: ci
+    # master에 push된 경우에만 배포한다. PR(포크 포함)은 secret에 접근할 수 없고 여기도 오지 못한다.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    # 배포는 겹치지 않게 한 줄로 세운다(서버 스크립트도 flock으로 한 번 더 막는다).
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+
+    steps:
+      - name: Deploy over SSH
         env:
-          NEXTAUTH_URL: http://localhost:3000
-          NEXTAUTH_SECRET: ci-secret-for-build
-          ADMIN_PASSWORD: ci-password
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+
+          # 서버의 forced command가 이 SHA만 받아 배포한다. 빌드가 길어서 연결이 끊기지 않게 keepalive를 둔다.
+          ssh -i ~/.ssh/deploy_key \
+              -o IdentitiesOnly=yes \
+              -o StrictHostKeyChecking=yes \
+              -o BatchMode=yes \
+              -o ServerAliveInterval=30 \
+              -o ServerAliveCountMax=20 \
+              "$DEPLOY_USER@$DEPLOY_HOST" "$GITHUB_SHA"
+
+      - name: Cleanup key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
+
+      - name: Smoke test
+        run: |
+          for path in / /about /en /rss.xml; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://foxibu.is-a.dev${path}")
+            echo "${path} -> ${code}"
+            [ "$code" = "200" ] || { echo "::error::${path} returned ${code}"; exit 1; }
+          done

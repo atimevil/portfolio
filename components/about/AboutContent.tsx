@@ -1,9 +1,11 @@
+import type { PortfolioItem } from '@/types'
 import { getSettings } from '@/lib/settings'
 import { getProjects, getTimeline } from '@/lib/items'
 import ProfileHeader from '@/components/layout/ProfileHeader'
 import AwardsGantt from '@/components/about/AwardsGantt'
 import { t, localized, type Locale } from '@/lib/i18n'
 import { splitSummary } from '@/lib/summary'
+import { hasCaseStudy, parseMetrics } from '@/lib/caseStudy'
 
 /** 한국어(/about) · 영문(/en/about)이 공유하는 소개 본문. */
 export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
@@ -56,7 +58,11 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
                       <span className="shrink-0 font-mono text-xs text-text-secondary">{project.year}</span>
                     )}
                   </div>
-                  <ProjectDescription text={localized(project, 'description', locale)} locale={locale} />
+                  {hasCaseStudy(project) ? (
+                    <CaseStudy project={project} locale={locale} />
+                  ) : (
+                    <ProjectDescription text={localized(project, 'description', locale)} locale={locale} />
+                  )}
                   <div className="flex flex-wrap gap-1.5 mt-auto">
                     {project.skills?.map((s) => (
                       <span key={s} className="rounded-full bg-accent-soft px-2.5 py-0.5 text-xs font-medium text-accent">{s}</span>
@@ -111,6 +117,52 @@ function ProjectDescription({ text, locale }: { text: string; locale: Locale }) 
         </summary>
         <span className="block mt-1.5">{rest}</span>
       </details>
+    </div>
+  )
+}
+
+/**
+ * 케이스 스터디 — 문제 / 내가 한 것 / 결과 3분할 + 지표 줄.
+ *
+ * 성과 수치가 400자 산문 안에 묻히면 훑어보는 사람은 절대 못 찾는다.
+ * 채워진 칸만 그리므로 셋 중 둘만 써도 레이아웃이 깨지지 않는다.
+ */
+function CaseStudy({ project, locale }: { project: PortfolioItem; locale: Locale }) {
+  const columns = (
+    [
+      ['csProblem', project.problem],
+      ['csContribution', project.contribution],
+      ['csResult', project.result],
+    ] as const
+  ).filter(([, body]) => body?.trim())
+  const metrics = parseMetrics(project.metrics)
+
+  return (
+    <div className="mt-3 mb-4">
+      <dl
+        className="grid gap-x-5 gap-y-4 sm:grid-cols-[repeat(var(--cols),minmax(0,1fr))]"
+        style={{ ['--cols' as string]: String(columns.length) }}
+      >
+        {columns.map(([key, body]) => (
+          <div key={key}>
+            <dt className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-text-muted">
+              {t(locale, key)}
+            </dt>
+            <dd className="m-0 text-sm leading-relaxed text-text-secondary">{body}</dd>
+          </div>
+        ))}
+      </dl>
+
+      {metrics.length > 0 && (
+        <ul className="mt-4 flex flex-wrap gap-x-8 gap-y-3 rounded-lg border border-border bg-bg px-4 py-3">
+          {metrics.map((m) => (
+            <li key={m.value + m.label}>
+              <div className="font-mono text-lg text-accent">{m.value}</div>
+              {m.label && <div className="mt-0.5 text-xs text-text-secondary">{m.label}</div>}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

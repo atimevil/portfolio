@@ -8,6 +8,11 @@ const ItemSchema = z.object({
   year: z.string().min(1),
   title: z.string().min(1),
   description: z.string().optional(),
+  // 케이스 스터디 3분할 + 지표. 비우면 소개 페이지가 description 한 문단으로 폴백한다.
+  problem: z.string().optional(),
+  contribution: z.string().optional(),
+  result: z.string().optional(),
+  metrics: z.string().optional(),
   skills: z.array(z.string()).optional(),
   github: z.string().optional(),
   link: z.string().optional(),

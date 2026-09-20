@@ -20,6 +20,10 @@ const EMPTY_FORM = {
   year: '',
   title: '',
   description: '',
+  problem: '',
+  contribution: '',
+  result: '',
+  metrics: '',
   skills: '',
   github: '',
   link: '',
@@ -40,6 +44,10 @@ export default function AdminItemManager({ initialItems }: Props) {
       year: item.year,
       title: item.title,
       description: item.description ?? '',
+      problem: item.problem ?? '',
+      contribution: item.contribution ?? '',
+      result: item.result ?? '',
+      metrics: item.metrics ?? '',
       skills: (item.skills ?? []).join(', '),
       github: item.github ?? '',
       link: item.link ?? '',
@@ -63,6 +71,10 @@ export default function AdminItemManager({ initialItems }: Props) {
       year: form.year.trim(),
       title: form.title,
       description: form.description || undefined,
+      problem: isProject ? (form.problem || undefined) : undefined,
+      contribution: isProject ? (form.contribution || undefined) : undefined,
+      result: isProject ? (form.result || undefined) : undefined,
+      metrics: isProject ? (form.metrics || undefined) : undefined,
       skills: isProject ? form.skills.split(',').map((s) => s.trim()).filter(Boolean) : undefined,
       github: isProject ? (form.github || undefined) : undefined,
       link: isProject ? (form.link || undefined) : undefined,
@@ -178,6 +190,48 @@ export default function AdminItemManager({ initialItems }: Props) {
 
             {isProject && (
               <>
+                <div className="col-span-2 rounded-md border border-border p-3">
+                  <div className="mb-2 text-xs text-text-secondary">
+                    케이스 스터디 — 하나라도 채우면 소개 페이지가 설명 문단 대신 3분할로 그린다. 전부 비우면 위 설명을 그대로 쓴다.
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1">문제</label>
+                      <textarea
+                        value={form.problem} rows={3}
+                        onChange={(e) => setForm((f) => ({ ...f, problem: e.target.value }))}
+                        className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors resize-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1">내가 한 것</label>
+                      <textarea
+                        value={form.contribution} rows={3}
+                        onChange={(e) => setForm((f) => ({ ...f, contribution: e.target.value }))}
+                        className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors resize-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-text-muted mb-1">결과</label>
+                      <textarea
+                        value={form.result} rows={3}
+                        onChange={(e) => setForm((f) => ({ ...f, result: e.target.value }))}
+                        className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors resize-none"
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-3">
+                    <label className="block text-xs text-text-muted mb-1">
+                      지표 (한 줄에 하나, &quot;값 | 라벨&quot; · 최대 4개)
+                    </label>
+                    <textarea
+                      value={form.metrics} rows={3}
+                      placeholder={'0.84 → 0.87 | 금융 테스트셋 Macro-F1\n617,611 | 65만 건에서 정제한 리뷰'}
+                      onChange={(e) => setForm((f) => ({ ...f, metrics: e.target.value }))}
+                      className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors resize-none font-mono"
+                    />
+                  </div>
+                </div>
                 <div>
                   <label className="block text-xs text-text-muted mb-1">기술스택 (쉼표 구분)</label>
                   <input

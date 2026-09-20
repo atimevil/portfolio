@@ -32,11 +32,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }))
 
-  return [
-    { url: `${BASE_URL}/`, lastModified: new Date(), changeFrequency: 'weekly', priority: 1.0 },
-    { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.9 },
-    { url: `${BASE_URL}/about`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.7 },
-    ...optional,
-    ...postEntries,
-  ]
+  // ko/en 짝이 있는 페이지는 양쪽을 다 올리고 서로를 alternates로 가리킨다.
+  // /en/about은 이력서에 적힌 주소라 색인에서 빠지면 안 된다.
+  const paired: MetadataRoute.Sitemap = (
+    [
+      ['', '/en', 1.0, 'weekly'],
+      ['/blog', '/en/blog', 0.9, 'daily'],
+      ['/about', '/en/about', 0.8, 'monthly'],
+    ] as const
+  ).flatMap(([ko, en, priority, changeFrequency]) => {
+    const languages = { ko: `${BASE_URL}${ko || '/'}`, en: `${BASE_URL}${en}` }
+    return [ko, en].map((path) => ({
+      url: `${BASE_URL}${path || '/'}`,
+      lastModified: new Date(),
+      changeFrequency,
+      priority,
+      alternates: { languages },
+    }))
+  })
+
+  return [...paired, ...optional, ...postEntries]
 }

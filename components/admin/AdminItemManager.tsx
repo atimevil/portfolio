@@ -265,15 +265,23 @@ export default function AdminItemManager({ initialItems }: Props) {
                 <div>
                   <label className="block text-xs text-text-muted mb-1">논문 링크 URL</label>
                   <input
-                    type="text" value={form.paper} placeholder="https://github.com/..."
+                    type="text" value={form.paper} placeholder="https://www.dbpia.co.kr/..."
                     onChange={(e) => setForm((f) => ({ ...f, paper: e.target.value }))}
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-text-muted mb-1">그림 경로 (상세 페이지 상단 · 예: /figures/ctf-solver-mcp.svg)</label>
+                  <input
+                    type="text" value={form.thumbnail} placeholder="/figures/....svg"
+                    onChange={(e) => setForm((f) => ({ ...f, thumbnail: e.target.value }))}
                     className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>
                 <div>
                   <label className="block text-xs text-text-muted mb-1">상세 주소 슬러그 (예: finbert-vs-llm · 비우면 id 사용)</label>
                   <input
-                    type="text" value={form.slug} placeholder="https://github.com/..."
+                    type="text" value={form.slug} placeholder="finbert-vs-llm"
                     onChange={(e) => setForm((f) => ({ ...f, slug: e.target.value }))}
                     className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
                   />

@@ -5,6 +5,14 @@ import 'katex/dist/katex.min.css'
 import 'leaflet/dist/leaflet.css'
 import { getSettings } from '@/lib/settings'
 import { OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/site'
+import { IBM_Plex_Mono } from 'next/font/google'
+
+// 수치·날짜는 Plex Mono — 라틴 글자뿐이라 빌드 때 받아 자체 호스팅한다.
+// 본문 IBM Plex Sans KR은 아래 <link>로 Google Fonts에서 직접 받는다. 한글 글꼴은
+// next/font로 받으면 전 글자를 빌드 때 내려받다 시간 초과로 대체 글꼴로 조용히 넘어간다.
+// 브라우저가 받으면 페이지에 쓰인 글자 조각(unicode-range)만 내려받는다.
+const mono = IBM_Plex_Mono({ weight: ['400', '500'], subsets: ['latin'], variable: '--font-mono', display: 'swap' })
+const SANS_CSS = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap'
 
 export function generateMetadata(): Metadata {
   const { profile } = getSettings()
@@ -46,8 +54,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const locale = headers().get('x-locale') === 'en' ? 'en' : 'ko'
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} className={mono.variable} suppressHydrationWarning>
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link rel="stylesheet" href={SANS_CSS} />
         <script
           dangerouslySetInnerHTML={{
             __html: `

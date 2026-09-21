@@ -178,7 +178,6 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
               { key: 'github', label: 'GitHub URL', placeholder: 'https://github.com/...' },
               { key: 'linkedin', label: 'LinkedIn URL', placeholder: 'https://linkedin.com/...' },
               { key: 'email', label: '이메일 (프로필·푸터에 노출)', placeholder: 'you@example.com' },
-              { key: 'cover', label: '홈 대표 사진 URL (비우면 아바타)', placeholder: '/uploads/... 또는 https://...' },
             ].map(({ key, label, placeholder }) => (
               <div key={key}>
                 <label className="block text-xs text-text-muted mb-1">{label}</label>

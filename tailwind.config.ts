@@ -30,8 +30,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ['Maru Buri', 'Pretendard', 'system-ui', 'serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+        sans: ['"IBM Plex Sans KR"', 'system-ui', 'sans-serif'],
+        mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],
       },
       maxWidth: {
         content: '1280px',

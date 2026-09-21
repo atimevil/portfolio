@@ -45,7 +45,8 @@ export default function AwardsGantt({ items, locale = 'ko', showHeading = true }
   if (items.length === 0) return null
 
   return (
-    <section className={showHeading ? 'mt-12' : undefined}>
+    // 홈 등에서 #awards · #r-<id>로 바로 들어온다. 고정 헤더에 가리지 않게 scroll-mt.
+    <section id={showHeading ? 'awards' : undefined} className={showHeading ? 'mt-12 scroll-mt-24' : undefined}>
       {showHeading && (
         <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-5">{t(locale, 'awards')}</h2>
       )}
@@ -55,7 +56,7 @@ export default function AwardsGantt({ items, locale = 'ko', showHeading = true }
           const title = localized(it, 'title', locale).trim()
           const desc = localized(it, 'description', locale).trim()
           return (
-            <li key={it.id} className="flex items-baseline gap-4 py-3">
+            <li key={it.id} id={`r-${it.id}`} className="target-flash -mx-2 flex scroll-mt-24 items-baseline gap-4 rounded-md px-2 py-3">
               <span className="w-24 shrink-0 font-mono text-xs text-text-muted">{it.year.trim()}</span>
               <div className="min-w-0 flex-1">
                 {desc ? (

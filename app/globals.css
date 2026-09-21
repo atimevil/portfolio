@@ -434,3 +434,23 @@ code {
   -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent);
   mask-image: linear-gradient(to bottom, #000 30%, transparent);
 }
+
+/* 앵커 이동은 부드럽게 — 움직임 줄이기 설정이면 바로 이동 */
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+/* 딥링크로 도착한 항목을 잠깐 강조한다 (홈 → /about#r-<id>) */
+.target-flash:target,
+.target-flash.is-target {
+  animation: target-flash 2.4s ease-out;
+}
+@keyframes target-flash {
+  0%, 30% { background-color: var(--color-accent-soft); }
+  100% { background-color: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* 움직임 없이 강조만 남긴다 */
+  .target-flash:target,
+  .target-flash.is-target { animation: none; background-color: var(--color-accent-soft); }
+}

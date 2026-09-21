@@ -3,6 +3,7 @@ import { getSettings } from '@/lib/settings'
 import { getOrderedProjects, getTimeline, projectSlug } from '@/lib/items'
 import ProfileHeader from '@/components/layout/ProfileHeader'
 import AwardsGantt from '@/components/about/AwardsGantt'
+import OpenTargetDetails from '@/components/about/OpenTargetDetails'
 import { hasCaseStudy } from '@/lib/caseStudy'
 import { t, localized, type Locale } from '@/lib/i18n'
 
@@ -30,7 +31,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
       <ProfileHeader profile={profile} locale={locale} headingLevel={2} />
 
       {projects.length > 0 && (
-        <section>
+        <section id="projects" className="scroll-mt-24">
           <h2 className="mb-1 text-xs font-bold uppercase tracking-wider text-text-muted">
             {t(locale, 'projects')}
           </h2>
@@ -69,6 +70,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
       )}
 
       {events.length > 0 && <AwardsGantt items={events} locale={locale} />}
+      <OpenTargetDetails />
     </main>
   )
 }

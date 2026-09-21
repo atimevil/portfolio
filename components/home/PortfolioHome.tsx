@@ -7,6 +7,7 @@ import { hasCaseStudy, parseMetrics } from '@/lib/caseStudy'
 import { readFigure } from '@/lib/figure'
 import { cleanEmail } from '@/lib/email'
 import { t, localized, blogBase, type Locale, type UiKey } from '@/lib/i18n'
+import SectionNav from '@/components/home/SectionNav'
 
 /** 홈에 띄울 개수 — 나머지는 /about, /blog에서 본다. */
 const BUILT_COUNT = 4
@@ -18,7 +19,7 @@ const TEASER_COUNT = 3
 const INTRO: Record<Locale, { role: string; statement: string; summary: string }> = {
   ko: {
     role: 'AI Engineer · LLM Agents × Security',
-    statement: 'LLM 에이전트를 만들고, 어디서 틀리는지 잽니다.',
+    statement: 'LLM 에이전트를 만들고, 어디서 틀리는지 확인합니다.',
     summary:
       'Kali 보안 도구를 55종 넘게 다루는 MCP 에이전트 CTF-Solver를 만들었고, 금융 문장으로만 학습한 모델이 일반 리뷰에서 어떻게 틀리는지 연구해 KCC 2026에 실었습니다.',
   },
@@ -34,8 +35,8 @@ const INTRO: Record<Locale, { role: string; statement: string; summary: string }
  * 홈(/ · /en).
  *
  * 왼쪽은 고정: 누구이고 무엇을 하는지. 오른쪽은 그 근거를 두 갈래로 나눠 보여준다.
- *  - 만든 것: 돌아가는 시스템 → 구조도
- *  - 잰 것:   모델이 틀리는 지점을 확인한 연구·대회 → 숫자
+ *  - 프로젝트: 돌아가는 시스템 → 구조도
+ *  - 연구·경진대회: 모델이 틀리는 지점을 확인한 기록 → 숫자
  * 같은 "작업"이라도 증거의 모양이 달라서, 섞지 않고 나눈 것 자체가 포지션을 말한다.
  */
 export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
@@ -44,7 +45,7 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
   const projects = getOrderedProjects(hasCaseStudy)
   const built = projects.filter((p) => !p.measure)
   const timeline = getTimeline().filter((i) => i.type !== 'project')
-  // 잰 것은 종류와 무관하다 — 연구 프로젝트와 경진대회가 한곳에 모인다. 최신순.
+  // 연구·경진대회는 종류와 무관하다 — 연구 프로젝트와 경진대회가 한곳에 모인다. 최신순.
   const measured = [...projects, ...timeline].filter((i) => i.measure)
   const measuredIds = new Set(measured.map((i) => i.id))
   measured.sort((a, b) => timeKey(b.year) - timeKey(a.year))
@@ -55,9 +56,9 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
   const workBase = locale === 'en' ? '/en/work' : '/work'
 
   const sections: { id: string; label: UiKey }[] = [
-    { id: 'built', label: 'built' },
-    { id: 'measured', label: 'measured' },
-    { id: 'record', label: 'record' },
+    { id: 'projects', label: 'projects' },
+    { id: 'research', label: 'research' },
+    { id: 'awards', label: 'awards' },
     { id: 'writing', label: 'recentPosts' },
   ]
 
@@ -73,21 +74,10 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
           </h1>
           <p className="mt-5 max-w-md text-[15px] leading-relaxed text-text-secondary">{intro.summary}</p>
 
-          <nav aria-label={t(locale, 'about')} className="mt-10 hidden lg:block">
-            <ul className="flex flex-col gap-1">
-              {sections.map((s) => (
-                <li key={s.id}>
-                  <a
-                    href={`#${s.id}`}
-                    className="group inline-flex min-h-[28px] items-center gap-3 text-sm text-text-secondary transition-colors hover:text-text-primary"
-                  >
-                    <span aria-hidden="true" className="h-px w-6 bg-border transition-all group-hover:w-10 group-hover:bg-accent" />
-                    {t(locale, s.label)}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <SectionNav
+            label={locale === 'en' ? 'On this page' : '이 페이지에서'}
+            sections={sections.map((sec) => ({ id: sec.id, label: t(locale, sec.label) }))}
+          />
 
           <ul className="mt-10 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[13px] text-text-secondary [&_a]:inline-flex [&_a]:min-h-[24px] [&_a]:items-center [&_a]:transition-colors [&_a:hover]:text-accent">
             {mail && (
@@ -113,7 +103,7 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
 
         {/* 오른쪽: 근거 */}
         <div className="min-w-0">
-          <Section id="built" title="built" lede="builtLede" count={built.length} more={aboutHref} locale={locale}>
+          <Section id="projects" title="projects" lede="projectsLede" count={built.length} more={`${aboutHref}#projects`} locale={locale}>
             <ul className="flex flex-col gap-3">
               {built.slice(0, BUILT_COUNT).map((p) => (
                 <BuiltRow key={p.id} project={p} href={`${workBase}/${projectSlug(p)}`} locale={locale} />
@@ -122,13 +112,13 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
           </Section>
 
           {measured.length > 0 && (
-            <Section id="measured" title="measured" lede="measuredLede" locale={locale}>
+            <Section id="research" title="research" lede="researchLede" locale={locale}>
               <ul className="flex flex-col">
                 {measured.map((item) => (
                   <MeasuredRow
                     key={item.id}
                     item={item}
-                    href={item.type === 'project' ? `${workBase}/${projectSlug(item)}` : undefined}
+                    href={item.type === 'project' ? `${workBase}/${projectSlug(item)}` : `${aboutHref}#r-${item.id}`}
                     locale={locale}
                   />
                 ))}
@@ -137,18 +127,21 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
           )}
 
           {record.length > 0 && (
-            <Section id="record" title="record" count={timeline.length} more={aboutHref} locale={locale}>
+            <Section id="awards" title="awards" count={timeline.length} more={`${aboutHref}#awards`} locale={locale}>
               <ul>
                 {record.slice(0, RECORD_COUNT).map((item) => (
-                  <li
-                    key={item.id}
-                    className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-baseline gap-x-4 border-b border-border py-2.5 last:border-b-0"
-                  >
-                    <span className="font-mono text-xs text-text-muted">{item.year}</span>
-                    <span className="text-sm leading-snug text-text-primary">
-                      {item.type === 'award' && <span aria-hidden="true" className="mr-1.5 text-accent">★</span>}
-                      {localized(item, 'title', locale)}
-                    </span>
+                  <li key={item.id} className="border-b border-border last:border-b-0">
+                    {/* 소개의 그 항목으로 바로 간다 — 도착하면 설명이 펼쳐지고 잠깐 강조된다 */}
+                    <Link
+                      href={`${aboutHref}#r-${item.id}`}
+                      className="group grid grid-cols-[5.5rem_minmax(0,1fr)] items-baseline gap-x-4 py-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    >
+                      <span className="font-mono text-xs text-text-muted">{item.year}</span>
+                      <span className="text-sm leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
+                        {item.type === 'award' && <span aria-hidden="true" className="mr-1.5 text-accent">★</span>}
+                        {localized(item, 'title', locale)}
+                      </span>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -216,7 +209,7 @@ function Section({
   )
 }
 
-/** 만든 것 한 줄 — 왼쪽에 구조도, 오른쪽에 무엇·결과. 구조도는 알아보는 얼굴이라 읽히지 않아도 된다. */
+/** 프로젝트 한 줄 — 왼쪽에 구조도, 오른쪽에 무엇·결과. 구조도는 알아보는 얼굴이라 읽히지 않아도 된다. */
 function BuiltRow({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
   const figure = readFigure(project.thumbnail)
   const metric = parseMetrics(project.metrics)[0]
@@ -250,8 +243,8 @@ function BuiltRow({ project, href, locale }: { project: PortfolioItem; href: str
   )
 }
 
-/** 잰 것 한 줄 — 숫자가 먼저. 상세 페이지가 있는 것(연구 프로젝트)만 링크한다. */
-function MeasuredRow({ item, href, locale }: { item: PortfolioItem; href?: string; locale: Locale }) {
+/** 연구·경진대회 한 줄 — 숫자가 먼저. 연구 프로젝트는 상세로, 대회는 소개의 해당 항목으로 간다. */
+function MeasuredRow({ item, href, locale }: { item: PortfolioItem; href: string; locale: Locale }) {
   const metric = parseMetrics(item.metrics)[0]
   const summary = item.result?.trim() || localized(item, 'description', locale)
   const body = (
@@ -272,13 +265,9 @@ function MeasuredRow({ item, href, locale }: { item: PortfolioItem; href?: strin
   const cls = 'grid gap-x-4 gap-y-1 border-b border-border py-4 sm:grid-cols-[11rem_minmax(0,1fr)] sm:items-baseline'
   return (
     <li className="last:[&>*]:border-b-0">
-      {href ? (
-        <Link href={href} className={`group ${cls} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`}>
-          {body}
-        </Link>
-      ) : (
-        <div className={cls}>{body}</div>
-      )}
+      <Link href={href} className={`group ${cls} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`}>
+        {body}
+      </Link>
     </li>
   )
 }

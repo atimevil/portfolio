@@ -1,144 +1,284 @@
 import Link from 'next/link'
 import type { PortfolioItem } from '@/types'
-import HomeHero from '@/components/home/HomeHero'
-import SelectedWork from '@/components/home/SelectedWork'
 import { getAllPosts } from '@/lib/blog'
 import { getSettings } from '@/lib/settings'
-import { getOrderedProjects, getTimeline } from '@/lib/items'
-import { hasCaseStudy } from '@/lib/caseStudy'
+import { getOrderedProjects, getTimeline, projectSlug, timeKey } from '@/lib/items'
+import { hasCaseStudy, parseMetrics } from '@/lib/caseStudy'
+import { readFigure } from '@/lib/figure'
+import { cleanEmail } from '@/lib/email'
 import { t, localized, blogBase, type Locale, type UiKey } from '@/lib/i18n'
 
-/** 첫 화면 그림 다음으로 격자에 깔 작업 수. */
-const GRID_COUNT = 4
-/** 수상·활동 각 칸에 띄울 개수. */
-const RECORD_COUNT = 4
-/** 홈에 띄울 최근 글 개수. */
+/** 홈에 띄울 개수 — 나머지는 /about, /blog에서 본다. */
+const BUILT_COUNT = 4
+const RECORD_COUNT = 6
 const TEASER_COUNT = 3
+
+// 포지션 문구. 설정의 한 줄 소개(bio)는 검색 설명문을 겸해 짧게 두고,
+// 첫 화면에서 "무엇을 하는 사람인가"는 여기서 말한다.
+const INTRO: Record<Locale, { role: string; statement: string; summary: string }> = {
+  ko: {
+    role: 'AI Engineer · LLM Agents × Security',
+    statement: 'LLM 에이전트를 만들고, 어디서 틀리는지 잽니다.',
+    summary:
+      'Kali 보안 도구를 55종 넘게 다루는 MCP 에이전트 CTF-Solver를 만들었고, 금융 문장으로만 학습한 모델이 일반 리뷰에서 어떻게 틀리는지 연구해 KCC 2026에 실었습니다.',
+  },
+  en: {
+    role: 'AI Engineer · LLM Agents × Security',
+    statement: 'I build LLM agents and measure where they fail.',
+    summary:
+      'I built CTF-Solver, an MCP agent that drives more than 55 Kali security tools, and published a KCC 2026 paper on how a model trained only on financial text fails on general reviews.',
+  },
+}
 
 /**
  * 홈(/ · /en).
  *
- * 첫 화면: 이름 + 대표 작업의 실제 결과 그림 → 작업 격자 → 이력(수상 | 활동) → 최근 글.
- * 섹션 제목 옆 숫자는 전체 개수라, "전체 보기"로 넘어가면 몇 개가 더 있는지 미리 안다.
+ * 왼쪽은 고정: 누구이고 무엇을 하는지. 오른쪽은 그 근거를 두 갈래로 나눠 보여준다.
+ *  - 만든 것: 돌아가는 시스템 → 구조도
+ *  - 잰 것:   모델이 틀리는 지점을 확인한 연구·대회 → 숫자
+ * 같은 "작업"이라도 증거의 모양이 달라서, 섞지 않고 나눈 것 자체가 포지션을 말한다.
  */
 export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
   const { profile } = getSettings()
+  const intro = INTRO[locale]
   const projects = getOrderedProjects(hasCaseStudy)
-  const [featured, ...rest] = projects
+  const built = projects.filter((p) => !p.measure)
   const timeline = getTimeline().filter((i) => i.type !== 'project')
-  const awards = timeline.filter((i) => i.type === 'award')
-  const activities = timeline.filter((i) => i.type === 'activity')
-  const allPosts = await getAllPosts()
+  // 잰 것은 종류와 무관하다 — 연구 프로젝트와 경진대회가 한곳에 모인다. 최신순.
+  const measured = [...projects, ...timeline].filter((i) => i.measure)
+  const measuredIds = new Set(measured.map((i) => i.id))
+  measured.sort((a, b) => timeKey(b.year) - timeKey(a.year))
+  const record = timeline.filter((i) => !measuredIds.has(i.id))
+  const posts = await getAllPosts()
+  const mail = cleanEmail(profile.email)
   const aboutHref = locale === 'en' ? '/en/about' : '/about'
+  const workBase = locale === 'en' ? '/en/work' : '/work'
+
+  const sections: { id: string; label: UiKey }[] = [
+    { id: 'built', label: 'built' },
+    { id: 'measured', label: 'measured' },
+    { id: 'record', label: 'record' },
+    { id: 'writing', label: 'recentPosts' },
+  ]
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 w-full outline-none">
-      <HomeHero profile={profile} featured={featured} locale={locale} />
+      <div className="mx-auto grid max-w-6xl gap-12 px-4 py-12 md:px-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-16">
+        {/* 왼쪽: 스크롤해도 따라온다(넓은 화면만) */}
+        <aside className="lg:sticky lg:top-24 lg:self-start">
+          <p className="font-mono text-xs text-text-muted">{profile.name}</p>
+          <p className="mt-1 text-sm font-medium text-accent">{intro.role}</p>
+          <h1 className="mt-5 text-[2rem] font-bold leading-[1.25] tracking-tight text-text-primary md:text-[2.5rem]">
+            {intro.statement}
+          </h1>
+          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-text-secondary">{intro.summary}</p>
 
-      <div className="mx-auto max-w-6xl px-4 pb-8 md:px-8">
-        {rest.length > 0 && (
-          <Section title="projects" count={projects.length} more={aboutHref} locale={locale}>
-            <SelectedWork projects={rest.slice(0, GRID_COUNT)} locale={locale} />
-          </Section>
-        )}
-
-        {timeline.length > 0 && (
-          <Section title="record" count={timeline.length} more={aboutHref} locale={locale}>
-            <div className="grid gap-x-12 gap-y-8 md:grid-cols-2">
-              <RecordList label="awardsOnly" items={awards.slice(0, RECORD_COUNT)} locale={locale} star />
-              <RecordList label="activityOnly" items={activities.slice(0, RECORD_COUNT)} locale={locale} />
-            </div>
-          </Section>
-        )}
-
-        {allPosts.length > 0 && (
-          <Section title="recentPosts" count={allPosts.length} more={blogBase(locale)} locale={locale}>
-            <ul className="flex flex-col">
-              {allPosts.slice(0, TEASER_COUNT).map((post) => (
-                <li key={post.slug} className="border-b border-border last:border-b-0">
-                  <Link
-                    href={`/blog/${post.slug}`}
-                    className="group grid grid-cols-[6.5rem_minmax(0,1fr)] items-baseline gap-x-4 py-3.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:grid-cols-[6.5rem_minmax(0,1fr)_auto]"
+          <nav aria-label={t(locale, 'about')} className="mt-10 hidden lg:block">
+            <ul className="flex flex-col gap-1">
+              {sections.map((s) => (
+                <li key={s.id}>
+                  <a
+                    href={`#${s.id}`}
+                    className="group inline-flex min-h-[28px] items-center gap-3 text-sm text-text-secondary transition-colors hover:text-text-primary"
                   >
-                    <span className="font-mono text-xs text-text-muted">{post.date}</span>
-                    <span className="text-[15px] font-medium text-text-primary transition-colors group-hover:text-accent-hover">
-                      {post.title}
-                    </span>
-                    {post.category && (
-                      <span className="hidden text-xs text-text-muted sm:block">{post.category}</span>
-                    )}
-                  </Link>
+                    <span aria-hidden="true" className="h-px w-6 bg-border transition-all group-hover:w-10 group-hover:bg-accent" />
+                    {t(locale, s.label)}
+                  </a>
                 </li>
               ))}
             </ul>
+          </nav>
+
+          <ul className="mt-10 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[13px] text-text-secondary [&_a]:inline-flex [&_a]:min-h-[24px] [&_a]:items-center [&_a]:transition-colors [&_a:hover]:text-accent">
+            {mail && (
+              <li>
+                <a href={`mailto:${mail}`}>{mail}</a>
+              </li>
+            )}
+            {profile.github && (
+              <li>
+                <a href={profile.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+              </li>
+            )}
+            {profile.linkedin && (
+              <li>
+                <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+              </li>
+            )}
+            <li>
+              <Link href={aboutHref}>{t(locale, 'aboutArrow')}</Link>
+            </li>
+          </ul>
+        </aside>
+
+        {/* 오른쪽: 근거 */}
+        <div className="min-w-0">
+          <Section id="built" title="built" lede="builtLede" count={built.length} more={aboutHref} locale={locale}>
+            <ul className="flex flex-col gap-3">
+              {built.slice(0, BUILT_COUNT).map((p) => (
+                <BuiltRow key={p.id} project={p} href={`${workBase}/${projectSlug(p)}`} locale={locale} />
+              ))}
+            </ul>
           </Section>
-        )}
+
+          {measured.length > 0 && (
+            <Section id="measured" title="measured" lede="measuredLede" locale={locale}>
+              <ul className="flex flex-col">
+                {measured.map((item) => (
+                  <MeasuredRow
+                    key={item.id}
+                    item={item}
+                    href={item.type === 'project' ? `${workBase}/${projectSlug(item)}` : undefined}
+                    locale={locale}
+                  />
+                ))}
+              </ul>
+            </Section>
+          )}
+
+          {record.length > 0 && (
+            <Section id="record" title="record" count={timeline.length} more={aboutHref} locale={locale}>
+              <ul>
+                {record.slice(0, RECORD_COUNT).map((item) => (
+                  <li
+                    key={item.id}
+                    className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-baseline gap-x-4 border-b border-border py-2.5 last:border-b-0"
+                  >
+                    <span className="font-mono text-xs text-text-muted">{item.year}</span>
+                    <span className="text-sm leading-snug text-text-primary">
+                      {item.type === 'award' && <span aria-hidden="true" className="mr-1.5 text-accent">★</span>}
+                      {localized(item, 'title', locale)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
+
+          {posts.length > 0 && (
+            <Section id="writing" title="recentPosts" count={posts.length} more={blogBase(locale)} locale={locale}>
+              <ul>
+                {posts.slice(0, TEASER_COUNT).map((post) => (
+                  <li key={post.slug} className="border-b border-border last:border-b-0">
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="group grid grid-cols-[5.5rem_minmax(0,1fr)] items-baseline gap-x-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    >
+                      <span className="font-mono text-xs text-text-muted">{post.date}</span>
+                      <span className="text-[15px] text-text-primary transition-colors group-hover:text-accent-hover">
+                        {post.title}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Section>
+          )}
+        </div>
       </div>
     </main>
   )
 }
 
 function Section({
+  id,
   title,
+  lede,
   count,
   more,
   locale,
   children,
 }: {
+  id: string
   title: UiKey
-  count: number
-  more: string
+  lede?: UiKey
+  count?: number
+  more?: string
   locale: Locale
   children: React.ReactNode
 }) {
   return (
-    <section className="mt-14">
-      <div className="mb-5 flex items-baseline justify-between gap-4 border-b border-border pb-3">
+    <section id={id} className="scroll-mt-24 pb-14">
+      <div className="mb-5 flex items-baseline justify-between gap-4">
         <h2 className="text-lg font-semibold tracking-tight text-text-primary">
           {t(locale, title)}
-          <span className="ml-2 font-mono text-sm font-normal text-text-muted">{count}</span>
+          {count !== undefined && <span className="ml-2 font-mono text-sm font-normal text-text-muted">{count}</span>}
         </h2>
-        <Link
-          href={more}
-          className="inline-flex min-h-[24px] items-center text-sm text-text-secondary transition-colors hover:text-accent"
-        >
-          {t(locale, 'viewAllWork')}
-        </Link>
+        {more && (
+          <Link href={more} className="inline-flex min-h-[24px] items-center text-sm text-text-secondary transition-colors hover:text-accent">
+            {t(locale, 'viewAllWork')}
+          </Link>
+        )}
       </div>
+      {lede && <p className="-mt-3 mb-5 text-sm text-text-muted">{t(locale, lede)}</p>}
       {children}
     </section>
   )
 }
 
-function RecordList({
-  label,
-  items,
-  locale,
-  star = false,
-}: {
-  label: UiKey
-  items: PortfolioItem[]
-  locale: Locale
-  star?: boolean
-}) {
-  if (items.length === 0) return null
+/** 만든 것 한 줄 — 왼쪽에 구조도, 오른쪽에 무엇·결과. 구조도는 알아보는 얼굴이라 읽히지 않아도 된다. */
+function BuiltRow({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
+  const figure = readFigure(project.thumbnail)
+  const metric = parseMetrics(project.metrics)[0]
+  const summary = project.result?.trim() || localized(project, 'description', locale)
   return (
-    <div>
-      <h3 className="mb-2 font-mono text-xs uppercase tracking-wider text-text-muted">{t(locale, label)}</h3>
-      <ul>
-        {items.map((item) => (
-          <li
-            key={item.id}
-            className="grid grid-cols-[5.5rem_minmax(0,1fr)] items-baseline gap-x-4 border-b border-border py-2.5 last:border-b-0"
-          >
-            <span className="font-mono text-xs text-text-muted">{item.year}</span>
-            <span className="text-sm leading-snug text-text-primary">
-              {star && <span aria-hidden="true" className="mr-1.5 text-accent">★</span>}
-              {localized(item, 'title', locale)}
-            </span>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <li>
+      <Link
+        href={href}
+        className="group grid gap-4 rounded-xl border border-transparent p-3 -mx-3 transition-colors hover:border-border hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:grid-cols-[11rem_minmax(0,1fr)]"
+      >
+        <div
+          aria-hidden="true"
+          className="fig fig-fill aspect-[16/8] overflow-hidden rounded-lg border border-border bg-bg-secondary p-2"
+          dangerouslySetInnerHTML={figure ? { __html: figure } : undefined}
+        />
+        <div className="min-w-0">
+          <p className="font-mono text-xs text-text-muted">{project.year}</p>
+          <h3 className="mt-0.5 font-semibold leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
+            {localized(project, 'title', locale)}
+          </h3>
+          {summary && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-text-secondary">{summary}</p>}
+          {metric && (
+            <p className="mt-2 font-mono text-xs text-text-muted">
+              <span className="text-accent">{metric.value}</span>
+              {metric.label && ` · ${metric.label}`}
+            </p>
+          )}
+        </div>
+      </Link>
+    </li>
+  )
+}
+
+/** 잰 것 한 줄 — 숫자가 먼저. 상세 페이지가 있는 것(연구 프로젝트)만 링크한다. */
+function MeasuredRow({ item, href, locale }: { item: PortfolioItem; href?: string; locale: Locale }) {
+  const metric = parseMetrics(item.metrics)[0]
+  const summary = item.result?.trim() || localized(item, 'description', locale)
+  const body = (
+    <>
+      <div className="whitespace-nowrap font-mono text-2xl font-medium tracking-tight text-accent">{metric?.value ?? '—'}</div>
+      <div className="min-w-0">
+        <p className="font-mono text-xs text-text-muted">
+          {item.year}
+          {metric?.label && ` · ${metric.label}`}
+        </p>
+        <h3 className="mt-0.5 font-semibold leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
+          {localized(item, 'title', locale)}
+        </h3>
+        {summary && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-text-secondary">{summary}</p>}
+      </div>
+    </>
+  )
+  const cls = 'grid gap-x-4 gap-y-1 border-b border-border py-4 sm:grid-cols-[11rem_minmax(0,1fr)] sm:items-baseline'
+  return (
+    <li className="last:[&>*]:border-b-0">
+      {href ? (
+        <Link href={href} className={`group ${cls} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`}>
+          {body}
+        </Link>
+      ) : (
+        <div className={cls}>{body}</div>
+      )}
+    </li>
   )
 }

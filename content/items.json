@@ -21,7 +21,8 @@
     "metrics": "0.84 → 0.87 | 금융 테스트셋 Macro-F1\n617,611 | 65만 건에서 정제한 리뷰\n90~96% | FinBERT가 중립으로 흘린 비율",
     "thumbnail": "/figures/finbert-ssl-distribution.svg",
     "paper": "https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE12929843",
-    "slug": "finbert-vs-llm"
+    "slug": "finbert-vs-llm",
+    "measure": true
   },
   {
     "id": "p9",
@@ -178,7 +179,9 @@
     "type": "activity",
     "year": "2026.07",
     "title": "2026 AI·SW중심대학 디지털 경진대회 AI부문 28위 / 269팀",
-    "description": "AI 에이전트의 다음 행동을 14개 클래스로 예측. 추론 10분·1GB·오프라인 제약 아래 269팀 중 28위(팀 HUE, Macro-F1 0.79334). 계속 혼동되던 4개 클래스를 모델 성능이 아니라 라벨 모호성으로 진단하고, 입력 37.6%가 잘려나가던 것과 실패한 앙상블의 원인이 보정되지 않은 logit임을 찾아냈다."
+    "description": "AI 에이전트의 다음 행동을 14개 클래스로 예측. 추론 10분·1GB·오프라인 제약 아래 269팀 중 28위(팀 HUE, Macro-F1 0.79334). 계속 혼동되던 4개 클래스를 모델 성능이 아니라 라벨 모호성으로 진단하고, 입력 37.6%가 잘려나가던 것과 실패한 앙상블의 원인이 보정되지 않은 logit임을 찾아냈다.",
+    "measure": true,
+    "metrics": "28 / 269 | 팀 중 순위 · Macro-F1 0.79334"
   },
   {
     "id": "a2",
@@ -234,7 +237,9 @@
     "type": "award",
     "year": "2025.10~11",
     "title": "2025년 조선대학교 SW중심대학 AI 챌린지 최우수상",
-    "description": "리더보드 5위였으나 상위 3팀이 500M MACs 제한을 초과해 실격, 30팀 중 최종 2위. 파라미터 5.01M / MACs 499.5M.\nhttps://www.kaggle.com/competitions/2025-csu-sw-ai-challenge"
+    "description": "리더보드 5위였으나 상위 3팀이 500M MACs 제한을 초과해 실격, 30팀 중 최종 2위. 파라미터 5.01M / MACs 499.5M.\nhttps://www.kaggle.com/competitions/2025-csu-sw-ai-challenge",
+    "measure": true,
+    "metrics": "2 / 30 | 최종 순위 · MACs 499.5M (제한 500M)"
   },
   {
     "id": "a10",

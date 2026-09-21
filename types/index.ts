@@ -49,6 +49,8 @@ export interface PortfolioItem {
   result?: string
   /** 지표 줄. 한 줄에 하나, "값 | 라벨" 형식. */
   metrics?: string
+  /** 무언가를 재고 평가한 작업(연구·경진대회). 홈의 '잰 것'에 모인다. 종류(type)와 무관하다. */
+  measure?: boolean
 }
 
 export interface SiteSettings {

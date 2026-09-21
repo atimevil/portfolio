@@ -66,7 +66,7 @@ export default function HomeHero({ profile, locale = 'ko' }: { profile: SiteSett
       </section>
 
       {line && (
-        <p className="mx-auto max-w-6xl px-4 pt-10 text-xl font-bold leading-snug tracking-tight break-keep text-text-primary md:px-8 md:text-2xl">
+        <p className="mx-auto max-w-6xl px-4 pt-10 text-xl font-bold leading-snug tracking-tight text-text-primary md:px-8 md:text-2xl">
           {line}
           <span aria-hidden="true" className="caret ml-1 font-normal text-accent">|</span>
         </p>

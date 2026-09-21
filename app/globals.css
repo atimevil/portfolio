@@ -65,6 +65,10 @@ body {
   font-family: 'Maru Buri', 'Pretendard', system-ui, serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.2s, color 0.2s;
+  /* 한글은 어절 단위로 줄을 바꾼다("리뷰 도|메인" 방지). 긴 URL처럼 어절 하나가
+     칸보다 길 때만 overflow-wrap이 중간에서 끊는다. */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 
 /* 코드 블록 */

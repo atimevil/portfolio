@@ -37,8 +37,8 @@ function GridCard({ post }: { post: BlogPost }) {
         <h3 className="mt-1 line-clamp-2 font-bold leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
           {post.title}
         </h3>
-        <p className="mt-2 line-clamp-2 flex-1 text-xs leading-relaxed text-text-secondary">{post.excerpt}</p>
-        <div className="mt-4 text-xs text-text-muted">
+        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-text-secondary">{post.excerpt}</p>
+        <div className="mt-auto pt-4 text-xs text-text-muted">
           {post.date} · {post.readingTime}분
         </div>
       </div>
@@ -104,7 +104,7 @@ export default function BlogViews({ posts, locale = 'ko' }: { posts: BlogPost[];
       )}
 
       {view === 'grid' && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
             <GridCard key={post.slug} post={post} />
           ))}
@@ -112,7 +112,7 @@ export default function BlogViews({ posts, locale = 'ko' }: { posts: BlogPost[];
       )}
 
       {view === 'image' && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post) => (
             <ImageCard key={post.slug} post={post} />
           ))}

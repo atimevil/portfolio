@@ -16,7 +16,7 @@ export default function BlogListItem({ post }: BlogListItemProps) {
         <h2 className="mt-1 text-lg font-bold tracking-tight text-text-primary transition-colors group-hover:text-accent-hover">
           {post.title}
         </h2>
-        <p className="mt-2 text-sm leading-relaxed text-text-secondary line-clamp-2">
+        <p className="mt-2 max-w-[68ch] text-sm leading-relaxed text-text-secondary line-clamp-2">
           {post.excerpt}
         </p>
         <div className="mt-3 flex items-center gap-2 text-xs text-text-muted">

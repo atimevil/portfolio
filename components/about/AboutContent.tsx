@@ -22,7 +22,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
   const events = getTimeline().filter((i) => i.type !== 'project')
 
   return (
-    <main id="main" tabIndex={-1} className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
+    <main id="main" tabIndex={-1} className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
       <header className="mb-6">
         <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">{t(locale, 'about')}</h1>
       </header>
@@ -34,7 +34,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
           <h2 className="mb-1 text-xs font-bold uppercase tracking-wider text-text-muted">
             {t(locale, 'projects')}
           </h2>
-          <ul className="mt-3 grid gap-4 sm:grid-cols-2">
+          <ul className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {projects.map((project) => {
               const title = localized(project, 'title', locale)
               const skills = project.skills ?? []
@@ -53,11 +53,11 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
                           <span className="shrink-0 font-mono text-xs text-text-secondary">{project.year}</span>
                         )}
                       </div>
-                      <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-text-secondary">
+                      <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-text-secondary">
                         {project.result?.trim() || localized(project, 'description', locale)}
                       </p>
                       {skills.length > 0 && (
-                        <p className="mt-3 text-xs text-text-secondary">{skills.slice(0, 4).join(' · ')}</p>
+                        <p className="mt-auto pt-3 text-xs text-text-secondary">{skills.slice(0, 4).join(' · ')}</p>
                       )}
                     </div>
                   </Link>

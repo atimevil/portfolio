@@ -56,6 +56,8 @@ export interface PortfolioItem {
   metrics_en?: string
   /** 무언가를 재고 평가한 작업(연구·경진대회). 홈의 '연구 · 경진대회'에 모인다. 종류(type)와 무관하다. */
   measure?: boolean
+  /** 홈 '프로젝트'에 띄울 대표 작업. 홈은 이것만 날짜순으로 보여주고, 전체는 /about에 있다. */
+  featured?: boolean
 }
 
 export interface SiteSettings {

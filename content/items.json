@@ -56,7 +56,8 @@
     "problem_en": "Commercial vocabulary books are written for an 'average learner' who doesn't exist. The words you would actually use get left out, and the example sentences are textbook ones that have nothing to do with daily life.",
     "contribution_en": "I was the only developer on a two-person team. The idea and planning came from my teammate. To turn the preliminary-round skill into a web service, I called Solar Pro 4 directly, passed the source text, persona, and learning history into the prompt, and connected a database that catches duplicate words and tracks the learner profile.",
     "result_en": "It picks vocabulary from a source text based on the learner's history and profile, then gives each word an importance score, \"expressions to use today,\" and a CSV word list. Team Bulldog (No.45) reached the MABC 2026 finals.",
-    "metrics_en": "20 | Words selected per text (max)\n3 | \"Expressions to use today\" per word\n6 days | From first meeting to testing"
+    "metrics_en": "20 | Words selected per text (max)\n3 | \"Expressions to use today\" per word\n6 days | From first meeting to testing",
+    "featured": true
   },
   {
     "id": "p2",
@@ -84,7 +85,8 @@
     "description_en": "A hybrid RAG chatbot that answers questions about academic affairs at Chosun University. It sends each question, by intent, to a structured answer, vector search, or a search of the university's official website. Dense retrieval (ChromaDB) and sparse retrieval (BM25) are merged with RRF (Reciprocal Rank Fusion), and live search over the official domain runs on its own path. I developed and improved the RAG engine on a five-person industry-academia project team.",
     "problem_en": "Academic information mixes structured, unstructured, and real-time data, so no single retrieval method could answer every question.",
     "contribution_en": "Developed and improved the RAG engine on a five-person industry-academia team. Also designed the three-way routing by question intent.",
-    "result_en": "Merged dense (ChromaDB) and sparse (BM25) retrieval with RRF, and moved live search of the university's official domain to its own path."
+    "result_en": "Merged dense (ChromaDB) and sparse (BM25) retrieval with RRF, and moved live search of the university's official domain to its own path.",
+    "featured": true
   },
   {
     "id": "p3",
@@ -112,7 +114,8 @@
     "problem_en": "The MCP-Kali-Server it was built on had about 10 tools and could only run one command at a time.",
     "contribution_en": "Extended it to more than 55 Kali Linux security tools and built multi-step workflows.",
     "result_en": "A follow-up to the Whitehat School final project that I kept working on alone after the presentation.",
-    "metrics_en": "★ 53 | GitHub stars\n55+ | Security tools wrapped"
+    "metrics_en": "★ 53 | GitHub stars\n55+ | Security tools wrapped",
+    "featured": true
   },
   {
     "id": "p4",

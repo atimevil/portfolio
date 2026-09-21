@@ -9,7 +9,7 @@ import { cleanEmail } from '@/lib/email'
 import { t, localized, blogBase, type Locale, type UiKey } from '@/lib/i18n'
 import SectionNav from '@/components/home/SectionNav'
 
-/** 홈에 띄울 개수 — 나머지는 /about, /blog에서 본다. */
+/** 홈에 띄울 개수 — 나머지는 /about, /blog에서 본다. 대표 작업을 하나도 안 골랐을 때만 쓴다. */
 const BUILT_COUNT = 4
 const RECORD_COUNT = 6
 const TEASER_COUNT = 3
@@ -45,6 +45,10 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
   const intro = INTRO[locale]
   const projects = getOrderedProjects()
   const built = projects.filter((p) => !p.measure)
+  // 날짜순이면 반응이 가장 좋았던 CTF-Solver(2025.09)가 밀리고 작은 도구가 올라온다.
+  // 홈에는 직접 고른 대표 작업만, 날짜순으로 둔다.
+  const picked = built.filter((p) => p.featured)
+  const shown = picked.length > 0 ? picked : built.slice(0, BUILT_COUNT)
   const timeline = getTimeline().filter((i) => i.type !== 'project')
   // 연구·경진대회는 종류와 무관하다 — 연구 프로젝트와 경진대회가 한곳에 모인다. 최신순.
   const measured = [...projects, ...timeline].filter((i) => i.measure)
@@ -106,7 +110,7 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
         <div className="min-w-0">
           <Section id="projects" title="projects" lede="projectsLede" count={projects.length} more={`${aboutHref}#projects`} locale={locale}>
             <ul className="flex flex-col gap-3">
-              {built.slice(0, BUILT_COUNT).map((p) => (
+              {shown.map((p) => (
                 <BuiltRow key={p.id} project={p} href={`${workBase}/${projectSlug(p)}`} locale={locale} />
               ))}
             </ul>

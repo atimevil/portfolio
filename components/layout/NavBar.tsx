@@ -81,7 +81,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
       >
         {isEn ? 'Skip to content' : '본문으로 건너뛰기'}
       </a>
-      <nav className="max-w-6xl mx-auto flex items-center justify-between h-14 px-4 md:px-8">
+      <nav aria-label={isEn ? 'Main' : '주 메뉴'} className="max-w-6xl mx-auto flex items-center justify-between h-14 px-4 md:px-8">
         <Link
           href={isEn ? '/en' : '/'}
           className="inline-flex h-11 items-center gap-2 rounded-sm font-semibold text-[15px] tracking-tight text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"

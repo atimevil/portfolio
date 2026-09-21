@@ -122,7 +122,7 @@ export default function MusicList({ tracks }: Props) {
           <table className="w-full text-sm min-w-[520px]">
             <thead>
               <tr className="border-b border-border">
-                <th className="w-12 px-3 py-2"></th>
+                <th className="w-12 px-3 py-2"><span className="sr-only">표지</span></th>
                 <th className="text-left px-3 py-2">
                   <SortHeader label="제목" sortKeyName="title" />
                 </th>
@@ -132,7 +132,7 @@ export default function MusicList({ tracks }: Props) {
                 <th className="text-left px-3 py-2">
                   <SortHeader label="장르" sortKeyName="genre" />
                 </th>
-                <th className="w-12 px-3 py-2"></th>
+                <th className="w-12 px-3 py-2"><span className="sr-only">링크</span></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

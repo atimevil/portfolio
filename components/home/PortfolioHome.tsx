@@ -141,9 +141,9 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
                     {/* 소개의 그 항목으로 바로 간다 — 도착하면 설명이 펼쳐지고 잠깐 강조된다 */}
                     <Link
                       href={`${aboutHref}#r-${item.id}`}
-                      className="group grid grid-cols-[5.5rem_minmax(0,1fr)] items-baseline gap-x-4 py-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      className="group grid grid-cols-[7rem_minmax(0,1fr)] items-baseline gap-x-4 py-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                     >
-                      <span className="font-mono text-xs text-text-muted">{item.year}</span>
+                      <span className="whitespace-nowrap font-mono text-xs text-text-muted">{item.year}</span>
                       <span className="text-sm leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
                         {item.type === 'award' && <span aria-hidden="true" className="mr-1.5 text-accent">★</span>}
                         {localized(item, 'title', locale)}

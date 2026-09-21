@@ -57,7 +57,7 @@ export default function AwardsGantt({ items, locale = 'ko', showHeading = true }
           const desc = localized(it, 'description', locale).trim()
           return (
             <li key={it.id} id={`r-${it.id}`} className="target-flash -mx-2 flex scroll-mt-24 items-baseline gap-4 rounded-md px-2 py-3">
-              <span className="w-24 shrink-0 font-mono text-xs text-text-muted">{it.year.trim()}</span>
+              <span className="w-28 shrink-0 whitespace-nowrap font-mono text-xs text-text-muted">{it.year.trim()}</span>
               <div className="min-w-0 flex-1">
                 {desc ? (
                   <details className="group">

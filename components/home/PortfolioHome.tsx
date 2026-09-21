@@ -17,14 +17,15 @@ const TEASER_COUNT = 3
 // 포지션 문구. 설정의 한 줄 소개(bio)는 검색 설명문을 겸해 짧게 두고,
 // 첫 화면에서 "무엇을 하는 사람인가"는 여기서 말한다.
 const INTRO: Record<Locale, { role: string; statement: string; summary: string }> = {
+  // 학생이라 직함 대신 하는 일을 적는다. 보안은 교육과정 한 번이라 내세우지 않는다.
   ko: {
-    role: 'AI Engineer · LLM Agents × Security',
+    role: '학생 · LLM 에이전트 · 모델 평가',
     statement: 'LLM 에이전트를 만들고, 어디서 틀리는지 확인합니다.',
     summary:
       'Kali 보안 도구를 55종 넘게 다루는 MCP 에이전트 CTF-Solver를 만들었고, 금융 문장으로만 학습한 모델이 일반 리뷰에서 어떻게 틀리는지 연구해 KCC 2026에 실었습니다.',
   },
   en: {
-    role: 'AI Engineer · LLM Agents × Security',
+    role: 'Student · LLM agents · Model evaluation',
     statement: 'I build LLM agents and measure where they fail.',
     summary:
       'I built CTF-Solver, an MCP agent that drives more than 55 Kali security tools, and published a KCC 2026 paper on how a model trained only on financial text fails on general reviews.',
@@ -217,8 +218,8 @@ function Section({
 /** 프로젝트 한 줄 — 왼쪽에 구조도, 오른쪽에 무엇·결과. 구조도는 알아보는 얼굴이라 읽히지 않아도 된다. */
 function BuiltRow({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
   const figure = readFigure(project.thumbnail)
-  const metric = parseMetrics(project.metrics)[0]
-  const summary = project.result?.trim() || localized(project, 'description', locale)
+  const metric = parseMetrics(localized(project, 'metrics', locale))[0]
+  const summary = localized(project, 'result', locale).trim() || localized(project, 'description', locale)
   return (
     <li>
       <Link
@@ -250,8 +251,8 @@ function BuiltRow({ project, href, locale }: { project: PortfolioItem; href: str
 
 /** 연구·경진대회 한 줄 — 숫자가 먼저. 연구 프로젝트는 상세로, 대회는 소개의 해당 항목으로 간다. */
 function MeasuredRow({ item, href, locale }: { item: PortfolioItem; href: string; locale: Locale }) {
-  const metric = parseMetrics(item.metrics)[0]
-  const summary = item.result?.trim() || localized(item, 'description', locale)
+  const metric = parseMetrics(localized(item, 'metrics', locale))[0]
+  const summary = localized(item, 'result', locale).trim() || localized(item, 'description', locale)
   const body = (
     <>
       <div className="whitespace-nowrap font-mono text-2xl font-medium tracking-tight text-accent">{metric?.value ?? '—'}</div>

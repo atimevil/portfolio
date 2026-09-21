@@ -20,9 +20,9 @@ const INTRO: Record<Locale, { role: string; statement: string; summary: string }
   // 학생이라 직함 대신 하는 일을 적는다. 보안은 교육과정 한 번이라 내세우지 않는다.
   ko: {
     role: '학생 · LLM 에이전트 · 모델 평가',
-    statement: 'LLM 에이전트를 만들고, 어디서 틀리는지 확인합니다.',
+    statement: 'LLM 에이전트를 만들고 어디서 틀리는지 확인합니다.',
     summary:
-      'Kali 보안 도구를 55종 넘게 다루는 MCP 에이전트 CTF-Solver를 만들었고, 금융 문장으로만 학습한 모델이 일반 리뷰에서 어떻게 틀리는지 연구해 KCC 2026에 실었습니다.',
+      'Kali 보안 도구를 55종 넘게 다루는 MCP 에이전트 CTF-Solver를 만들었습니다. 금융 문장으로만 학습한 모델이 일반 리뷰에서 어떻게 틀리는지 연구해 KCC 2026에 실었습니다.',
   },
   en: {
     role: 'Student · LLM agents · Model evaluation',

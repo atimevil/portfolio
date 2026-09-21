@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" width="880" height="300" role="img" aria-label="VOCAB CURATOR flow: given a learner profile and a source text, Solar Pro 4 selects vocabulary, a learning-history database filters out words already picked, and the result is word cards and a CSV word list.">
+  <style>
+
+    
+    .box{fill:var(--panel);stroke:var(--line);stroke-width:1}
+    .acc{fill:var(--soft);stroke:var(--accent);stroke-width:1}
+    .t{fill:var(--ink);font:600 13px 'Helvetica Neue',Arial,sans-serif}
+    .s{fill:var(--dim);font:400 11px 'Helvetica Neue',Arial,sans-serif}
+    .c{fill:var(--faint);font:400 10px 'Helvetica Neue',Arial,sans-serif}
+    .lb{fill:var(--accent);font:600 10px 'Helvetica Neue',Arial,sans-serif;letter-spacing:.08em}
+    .ar{stroke:var(--line);stroke-width:1.5;fill:none}
+    .rule{stroke:var(--line);stroke-width:1}
+  </style>
+  <defs><marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="var(--line)"/></marker></defs>
+
+  <text class="t" x="16" y="24">Only the words this learner needs, not an average learner's</text>
+  <line class="rule" x1="16" y1="40" x2="864" y2="40"/>
+
+  <!-- 입력 -->
+  <rect class="box" x="16" y="72" width="168" height="48" rx="8"/>
+  <text class="t" x="32" y="93">Learner profile</text>
+  <text class="s" x="32" y="109">Context · level · goals</text>
+
+  <rect class="box" x="16" y="136" width="168" height="48" rx="8"/>
+  <text class="t" x="32" y="157">Source text</text>
+  <text class="s" x="32" y="173">Text · PDF upload</text>
+
+  <path class="ar" d="M184 96 H224 V122 H262" marker-end="url(#a)"/>
+  <path class="ar" d="M184 160 H224 V138 H262" marker-end="url(#a)"/>
+
+  <!-- 선별 -->
+  <rect class="acc" x="266" y="96" width="186" height="68" rx="8"/>
+  <text class="lb" x="359" y="118" text-anchor="middle">SOLAR PRO 4</text>
+  <text class="t" x="359" y="138" text-anchor="middle">Select vocabulary</text>
+  <text class="s" x="359" y="154" text-anchor="middle">Importance · examples</text>
+
+  <!-- 학습 이력 -->
+  <rect class="box" x="266" y="196" width="186" height="46" rx="8"/>
+  <text class="t" x="359" y="217" text-anchor="middle">Learning history DB</text>
+  <text class="s" x="359" y="233" text-anchor="middle">Skips words already picked</text>
+  <path class="ar" d="M359 196 V172" marker-end="url(#a)"/>
+
+  <path class="ar" d="M452 130 H492" marker-end="url(#a)"/>
+
+  <!-- 출력 -->
+  <rect class="box" x="496" y="72" width="186" height="52" rx="8"/>
+  <text class="t" x="512" y="94">Word cards</text>
+  <text class="s" x="512" y="111">Meaning · example · importance</text>
+
+  <rect class="box" x="496" y="136" width="186" height="52" rx="8"/>
+  <text class="t" x="512" y="158">Use-today phrases</text>
+  <text class="s" x="512" y="175">3 per word</text>
+
+  <rect class="box" x="496" y="200" width="186" height="46" rx="8"/>
+  <text class="t" x="512" y="228">CSV word list</text>
+
+  <path class="ar" d="M682 98 H720 V158 H756" marker-end="url(#a)"/>
+  <path class="ar" d="M682 162 H756" marker-end="url(#a)"/>
+  <path class="ar" d="M682 223 H720 V178 H756" marker-end="url(#a)"/>
+
+  <rect class="acc" x="760" y="134" width="104" height="52" rx="8"/>
+  <text class="t" x="812" y="165" text-anchor="middle">Learner</text>
+
+  <text class="c" x="16" y="278">Up to 20 words per text · Node.js · Express.js · PDF.js</text>
+</svg>

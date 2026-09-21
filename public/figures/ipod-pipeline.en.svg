@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 230" width="880" height="230" role="img" aria-label="iPod Classic ithmb conversion pipeline: read the ithmb file, parse its header, decode the pixels, upscale with Real-ESRGAN, and save it as an image file.">
+  <style>
+
+    
+    .box{fill:var(--panel);stroke:var(--line);stroke-width:1}
+    .acc{fill:var(--soft);stroke:var(--accent);stroke-width:1}
+    .dash{fill:none;stroke:var(--line);stroke-width:1;stroke-dasharray:4 3}
+    .t{fill:var(--ink);font:600 13px "Helvetica Neue",Arial,sans-serif}
+    .s{fill:var(--dim);font:400 11px "Helvetica Neue",Arial,sans-serif}
+    .c{fill:var(--faint);font:400 10px "Helvetica Neue",Arial,sans-serif}
+    .lb{fill:var(--accent);font:600 10px "Helvetica Neue",Arial,sans-serif;letter-spacing:.08em}
+    .ar{stroke:var(--line);stroke-width:1.5;fill:none}
+    .rule{stroke:var(--line);stroke-width:1}
+  </style>
+  <defs><marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="var(--line)"/></marker></defs>
+  <text class="t" x="16" y="24">Photo recovery pipeline: from a proprietary format to images</text>
+  <line class="rule" x1="16" y1="40" x2="864" y2="40"/>
+
+  <rect class="box" x="16" y="74" width="140" height="58" rx="8"/>
+  <text class="t" x="86" y="98" text-anchor="middle">.ithmb</text>
+  <text class="s" x="86" y="115" text-anchor="middle">iPod proprietary format</text>
+
+  <path class="ar" d="M156 103 H190" marker-end="url(#a)"/>
+  <rect class="box" x="194" y="74" width="150" height="58" rx="8"/>
+  <text class="t" x="269" y="98" text-anchor="middle">Parse header</text>
+  <text class="s" x="269" y="115" text-anchor="middle">Resolution · offset</text>
+
+  <path class="ar" d="M344 103 H378" marker-end="url(#a)"/>
+  <rect class="box" x="382" y="74" width="150" height="58" rx="8"/>
+  <text class="t" x="457" y="98" text-anchor="middle">Decode pixels</text>
+  <text class="s" x="457" y="115" text-anchor="middle">RGB565 → RGB</text>
+
+  <path class="ar" d="M532 103 H566" marker-end="url(#a)"/>
+  <rect class="acc" x="570" y="74" width="160" height="58" rx="8"/>
+  <text class="lb" x="650" y="96" text-anchor="middle">OPTIONAL</text>
+  <text class="t" x="650" y="115" text-anchor="middle">Real-ESRGAN upscale</text>
+
+  <path class="ar" d="M730 103 H764" marker-end="url(#a)"/>
+  <rect class="box" x="768" y="74" width="96" height="58" rx="8"/>
+  <text class="t" x="816" y="107" text-anchor="middle">PNG</text>
+
+  <text class="c" x="16" y="172">GPU inference via ONNX · DirectML · Python GUI</text>
+  <text class="c" x="16" y="192">Built as a free alternative to paid converters · 2026.03</text>
+</svg>

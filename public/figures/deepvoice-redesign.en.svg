@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" width="880" height="300" role="img" aria-label="Deepfake voice detection backend redesign. Before, the model was reloaded on every request; after, it loads once at startup and requests go through an async job queue.">
+  <style>
+
+    
+    .box{fill:var(--panel);stroke:var(--line);stroke-width:1}
+    .acc{fill:var(--soft);stroke:var(--accent);stroke-width:1}
+    .bad{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1}
+    .good{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1}
+    .t{fill:var(--ink);font:600 13px 'Helvetica Neue',Arial,sans-serif}
+    .s{fill:var(--dim);font:400 11px 'Helvetica Neue',Arial,sans-serif}
+    .c{fill:var(--faint);font:400 10px 'Helvetica Neue',Arial,sans-serif}
+    .lb{fill:var(--accent);font:600 10px 'Helvetica Neue',Arial,sans-serif;letter-spacing:.08em}
+    .lw{fill:var(--warn);font:600 10px 'Helvetica Neue',Arial,sans-serif;letter-spacing:.08em}
+    .lo{fill:var(--ok);font:600 10px 'Helvetica Neue',Arial,sans-serif;letter-spacing:.08em}
+    .ar{stroke:var(--line);stroke-width:1.5;fill:none}
+    .rule{stroke:var(--line);stroke-width:1}
+  </style>
+  <defs><marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L8 4 L0 8 z" fill="var(--line)"/></marker></defs>
+  <text class="t" x="16" y="24">Backend redesign: take model loading off the request path</text>
+  <line class="rule" x1="16" y1="40" x2="864" y2="40"/>
+
+  <text class="lw" x="16" y="66">BEFORE</text>
+  <rect class="box" x="16" y="78" width="96" height="44" rx="7"/>
+  <text class="s" x="64" y="105" text-anchor="middle">Request</text>
+  <path class="ar" d="M112 100 H146" marker-end="url(#a)"/>
+  <rect class="bad" x="150" y="78" width="150" height="44" rx="7"/>
+  <text class="t" x="225" y="99" text-anchor="middle">Load model</text>
+  <text class="s" x="225" y="114" text-anchor="middle">on every request</text>
+  <path class="ar" d="M300 100 H334" marker-end="url(#a)"/>
+  <rect class="box" x="338" y="78" width="110" height="44" rx="7"/>
+  <text class="s" x="393" y="105" text-anchor="middle">Inference</text>
+  <path class="ar" d="M448 100 H482" marker-end="url(#a)"/>
+  <rect class="box" x="486" y="78" width="96" height="44" rx="7"/>
+  <text class="s" x="534" y="105" text-anchor="middle">Response</text>
+  <text class="c" x="600" y="105">Under load, model loads pile up</text>
+
+  <line class="rule" x1="16" y1="150" x2="864" y2="150"/>
+
+  <text class="lo" x="16" y="176">AFTER</text>
+  <rect class="good" x="16" y="188" width="150" height="44" rx="7"/>
+  <text class="t" x="91" y="209" text-anchor="middle">Load once at startup</text>
+  <text class="s" x="91" y="224" text-anchor="middle">Stays in memory</text>
+  <path class="ar" d="M91 232 V262 H581 V236" marker-end="url(#a)"/>
+  <text class="c" x="300" y="277">Workers reuse the resident model</text>
+
+  <rect class="box" x="204" y="188" width="96" height="44" rx="7"/>
+  <text class="s" x="252" y="215" text-anchor="middle">Request</text>
+  <path class="ar" d="M300 210 H334" marker-end="url(#a)"/>
+  <rect class="acc" x="338" y="188" width="150" height="44" rx="7"/>
+  <text class="t" x="413" y="209" text-anchor="middle">Async job queue</text>
+  <text class="s" x="413" y="224" text-anchor="middle">Accept now · run in order</text>
+  <path class="ar" d="M488 210 H522" marker-end="url(#a)"/>
+  <rect class="box" x="526" y="188" width="110" height="44" rx="7"/>
+  <text class="s" x="581" y="215" text-anchor="middle">Inference worker</text>
+  <path class="ar" d="M636 210 H670" marker-end="url(#a)"/>
+  <rect class="box" x="674" y="188" width="96" height="44" rx="7"/>
+  <text class="s" x="722" y="215" text-anchor="middle">Response</text>
+
+  <text class="c" x="16" y="277">Oracle Cloud ARM64 · Docker</text>
+</svg>

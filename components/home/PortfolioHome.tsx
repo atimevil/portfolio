@@ -217,7 +217,7 @@ function Section({
 
 /** 프로젝트 한 줄 — 왼쪽에 구조도, 오른쪽에 무엇·결과. 구조도는 알아보는 얼굴이라 읽히지 않아도 된다. */
 function BuiltRow({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
-  const figure = readFigure(project.thumbnail)
+  const figure = readFigure(project.thumbnail, locale)
   const metric = parseMetrics(localized(project, 'metrics', locale))[0]
   const summary = localized(project, 'result', locale).trim() || localized(project, 'description', locale)
   return (

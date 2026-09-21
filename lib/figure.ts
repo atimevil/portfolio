@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import type { Locale } from '@/lib/i18n'
 
 const DIR = path.join(process.cwd(), 'public/figures')
 
@@ -13,19 +14,25 @@ const DIR = path.join(process.cwd(), 'public/figures')
  * thumbnail은 관리자 화면에서 들어오는 문자열이라 경로를 신뢰하지 않는다.
  * /figures/<이름>.svg 형태만 받고, 그 외(업로드한 PNG 등)는 null을 돌려
  * 호출부가 <img>로 처리하게 둔다.
+ *
+ * 영문 페이지는 옆의 <이름>.en.svg가 있으면 그걸 쓰고, 없으면 원본으로 폴백한다.
  */
-export function readFigure(src: string | undefined): string | null {
+export function readFigure(src: string | undefined, locale: Locale = 'ko'): string | null {
   if (!src) return null
   const name = /^\/figures\/([a-z0-9-]+)\.svg$/.exec(src)?.[1]
   if (!name) return null
-  const file = path.join(DIR, `${name}.svg`)
-  // 이름에 . 이나 / 가 못 들어가므로 이미 막혀 있지만, DIR 밖이면 한 번 더 거른다.
-  if (!file.startsWith(DIR + path.sep)) return null
-  try {
-    return scopeFigure(fs.readFileSync(file, 'utf-8'), `fig-${name}`)
-  } catch {
-    return null
+  const candidates = locale === 'en' ? [`${name}.en.svg`, `${name}.svg`] : [`${name}.svg`]
+  for (const f of candidates) {
+    const file = path.join(DIR, f)
+    // 이름에 . 이나 / 가 못 들어가므로 이미 막혀 있지만, DIR 밖이면 한 번 더 거른다.
+    if (!file.startsWith(DIR + path.sep)) return null
+    try {
+      return scopeFigure(fs.readFileSync(file, 'utf-8'), `fig-${name}`)
+    } catch {
+      // 영문판이 없으면 다음 후보(원본)로
+    }
   }
+  return null
 }
 
 /**

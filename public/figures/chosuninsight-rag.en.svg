@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" width="880" height="300" role="img" aria-label="ChosunInsight hybrid RAG pipeline: each question is routed by intent to a structured answer, hybrid vector + BM25 search, or live search of the official domain, and then an answer is generated.">
+  <style>
+    .box { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
+    .box-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1; }
+    .t { fill: var(--ink); font: 600 13px 'Helvetica Neue', Arial, sans-serif; }
+    .s { fill: var(--ink-dim); font: 400 11px 'Helvetica Neue', Arial, sans-serif; }
+    .lbl { fill: var(--accent); font: 600 10px 'Helvetica Neue', Arial, sans-serif; letter-spacing: .08em; }
+    .arrow { stroke: var(--line); stroke-width: 1.5; fill: none; }
+  </style>
+
+  <defs>
+    <marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L8 4 L0 8 z" fill="var(--line)" />
+    </marker>
+  </defs>
+
+  <!-- 질문 -->
+  <rect class="box" x="8" y="126" width="112" height="48" rx="8" />
+  <text class="t" x="64" y="147" text-anchor="middle">Question</text>
+  <text class="s" x="64" y="163" text-anchor="middle">Academic query</text>
+
+  <!-- 라우터 -->
+  <path class="arrow" d="M120 150 H168" marker-end="url(#a)" />
+  <rect class="box-accent" x="172" y="120" width="128" height="60" rx="8" />
+  <text class="lbl" x="236" y="140" text-anchor="middle">ROUTER</text>
+  <text class="t" x="236" y="158" text-anchor="middle">Classify intent</text>
+  <text class="s" x="236" y="172" text-anchor="middle">3-way</text>
+
+  <!-- 분기 -->
+  <path class="arrow" d="M300 150 H328 V48 H352" marker-end="url(#a)" />
+  <path class="arrow" d="M300 150 H352" marker-end="url(#a)" />
+  <path class="arrow" d="M300 150 H328 V252 H352" marker-end="url(#a)" />
+
+  <!-- 1. 정형 -->
+  <rect class="box" x="356" y="24" width="196" height="48" rx="8" />
+  <text class="t" x="372" y="45">Structured answer</text>
+  <text class="s" x="372" y="61">Rule-based · calendar, etc.</text>
+
+  <!-- 2. 하이브리드 검색 -->
+  <rect class="box" x="356" y="108" width="196" height="84" rx="8" />
+  <text class="t" x="372" y="130">Hybrid search</text>
+  <rect class="box" x="372" y="141" width="76" height="24" rx="5" />
+  <text class="s" x="410" y="157" text-anchor="middle">ChromaDB</text>
+  <rect class="box" x="456" y="141" width="76" height="24" rx="5" />
+  <text class="s" x="494" y="157" text-anchor="middle">BM25</text>
+  <text class="s" x="372" y="182">Dense + sparse → RRF</text>
+
+  <!-- 3. 실시간 -->
+  <rect class="box" x="356" y="228" width="196" height="48" rx="8" />
+  <text class="t" x="372" y="249">Official site, live</text>
+  <text class="s" x="372" y="265">Separate path · always current</text>
+
+  <!-- 합류 -->
+  <path class="arrow" d="M552 48 H592 V150 H620" marker-end="url(#a)" />
+  <path class="arrow" d="M552 150 H620" marker-end="url(#a)" />
+  <path class="arrow" d="M552 252 H592 V150 H620" marker-end="url(#a)" />
+
+  <!-- 답변 -->
+  <rect class="box-accent" x="624" y="120" width="128" height="60" rx="8" />
+  <text class="lbl" x="688" y="140" text-anchor="middle">LLM</text>
+  <text class="t" x="688" y="158" text-anchor="middle">Generate answer</text>
+  <text class="s" x="688" y="172" text-anchor="middle">With source docs</text>
+
+  <path class="arrow" d="M752 150 H800" marker-end="url(#a)" />
+  <rect class="box" x="804" y="126" width="68" height="48" rx="8" />
+  <text class="t" x="838" y="154" text-anchor="middle">Response</text>
+</svg>

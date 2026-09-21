@@ -40,12 +40,16 @@ describe('readFigure', () => {
   })
 
   describe('한 페이지에 여러 장 인라인해도 서로 간섭하지 않는다', () => {
-    const names = fs.readdirSync('public/figures').filter((f) => f.endsWith('.svg'))
-    const svgs = names.map((f) => readFigure(`/figures/${f}`)!)
+    // 원본만 센다(영문판 x.en.svg는 x.svg를 요청할 때 locale로 고른다). 영문판도 같은 규칙을 지켜야 한다.
+    const names = fs.readdirSync('public/figures').filter((f) => f.endsWith('.svg') && !f.endsWith('.en.svg'))
+    const svgs = [
+      ...names.map((f) => readFigure(`/figures/${f}`)!),
+      ...names.map((f) => readFigure(`/figures/${f}`, 'en')!),
+    ]
 
     it('모든 CSS 규칙이 자기 그림 id로 시작한다', () => {
       svgs.forEach((svg, i) => {
-        const root = `fig-${names[i].replace('.svg', '')}`
+        const root = `fig-${names[i % names.length].replace('.svg', '')}`
         const css = /<style>([\s\S]*?)<\/style>/.exec(svg)?.[1] ?? ''
         const selectors = Array.from(css.matchAll(/([^{}]+)\{/g)).flatMap((m) => m[1].split(',').map((s: string) => s.trim()))
         expect(selectors.length).toBeGreaterThan(0)
@@ -53,9 +57,11 @@ describe('readFigure', () => {
       })
     })
 
-    it('id가 페이지 전체에서 겹치지 않는다', () => {
-      const ids = svgs.flatMap((svg) => Array.from(svg.matchAll(/\bid="([^"]+)"/g)).map((m) => m[1]))
-      expect(new Set(ids).size).toBe(ids.length)
+    it('id가 페이지 전체에서 겹치지 않는다 (한 페이지엔 한 언어만 올라간다)', () => {
+      for (const set of [svgs.slice(0, names.length), svgs.slice(names.length)]) {
+        const ids = set.flatMap((svg) => Array.from(svg.matchAll(/\bid="([^"]+)"/g)).map((m) => m[1]))
+        expect(new Set(ids).size).toBe(ids.length)
+      }
     })
 
     it('마커 참조가 같은 그림 안의 id를 가리킨다', () => {
@@ -64,6 +70,31 @@ describe('readFigure', () => {
         for (const m of Array.from(svg.matchAll(/url\(#([^)]+)\)|href="#([^"]+)"/g))) {
           expect(ids.has(m[1] ?? m[2])).toBe(true)
         }
+      }
+    })
+  })
+
+  describe('영문판', () => {
+    const names = fs.readdirSync('public/figures').filter((f) => f.endsWith('.svg') && !f.endsWith('.en.svg'))
+
+    it('모든 그림에 영문판이 있고, 보이는 글자에 한글이 없다', () => {
+      for (const f of names) {
+        const en = readFigure(`/figures/${f}`, 'en')!
+        const texts = Array.from(en.matchAll(/<text\b[^>]*>([\s\S]*?)<\/text>/g)).map((m) => m[1])
+        expect(texts.filter((t) => /[가-힣]/.test(t)), f).toEqual([])
+        expect(/aria-label="[^"]*[가-힣]/.test(en), `${f} aria-label`).toBe(false)
+      }
+    })
+
+    it('한국어 페이지는 원본, 영문판이 없으면 원본으로 폴백', () => {
+      expect(readFigure('/figures/pallow-architecture.svg', 'ko')).toMatch(/[가-힣]/)
+      expect(readFigure('/figures/nope.svg', 'en')).toBeNull()
+    })
+
+    it('영문판도 글자 개수와 순서가 원본과 같다 (자리만 바꿔 끼움)', () => {
+      for (const f of names) {
+        const count = (svg: string) => (svg.match(/<text\b/g) ?? []).length
+        expect(count(readFigure(`/figures/${f}`, 'en')!), f).toBe(count(readFigure(`/figures/${f}`)!))
       }
     })
   })

@@ -16,7 +16,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
   const title = localized(project, 'title', locale)
   const links = projectLinks(project, locale)
   const metrics = parseMetrics(localized(project, 'metrics', locale))
-  const figure = readFigure(project.thumbnail)
+  const figure = readFigure(project.thumbnail, locale)
   const columns = (
     [
       ['csProblem', localized(project, 'problem', locale)],

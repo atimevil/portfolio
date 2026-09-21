@@ -10,8 +10,8 @@ export function generateMetadata() {
   const name = profile.name?.trim() || 'Portfolio'
   return buildPageMetadata({
     path: '/en',
-    title: `${name} — AI/ML · LLM Agents · Security`,
-    description: 'AI/ML · LLM Agents · Security — portfolio and blog',
+    title: `${name} — AI/ML · LLM Agents`,
+    description: 'I build LLM agents and check where models go wrong. Portfolio of a student working on ML and LLM agents.',
     absoluteTitle: true,
     languages: { ko: '/', en: '/en' },
   })

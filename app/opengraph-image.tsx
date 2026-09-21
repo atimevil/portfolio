@@ -1,11 +1,18 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'foxibu — Developer Portfolio'
+export const alt = 'foxibu — I build LLM agents and check where models go wrong.'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
-// Brand/Latin-only card → renders reliably with the built-in font (no Hangul,
-// so no external font fetch needed). Localized text lives in og:description.
+// 이력서 링크를 메신저·링크드인에 붙이면 가장 먼저 보이는 카드다. 홈 첫 화면과 같은
+// 말(역할 줄 + 한 문장)을 쓰고, 색은 사이트 다크 팔레트(globals.css)에 맞춘다.
+// 라틴 글자만 써서 내장 글꼴로 그린다(한글 글꼴을 따로 받지 않는다). 한국어 설명은 og:description에.
+const BG = '#131317'
+const INK = '#d6d4de'
+const DIM = '#93919f'
+const ACCENT = '#6a4dbd'
+const ACCENT_TEXT = '#b9abe6'
+
 export default function OpengraphImage() {
   return new ImageResponse(
     (
@@ -15,32 +22,37 @@ export default function OpengraphImage() {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
-          padding: '80px',
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 55%, #312e81 100%)',
-          color: '#ffffff',
+          padding: '72px 80px',
+          background: BG,
+          color: INK,
           fontFamily: 'sans-serif',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 96,
-            height: 96,
-            borderRadius: 22,
-            background: '#4f46e5',
-            fontSize: 60,
-            fontWeight: 800,
-            marginBottom: 40,
-          }}
-        >
-          f
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: 64,
+              height: 64,
+              borderRadius: 14,
+              background: ACCENT,
+              color: '#ffffff',
+              fontSize: 40,
+              fontWeight: 800,
+            }}
+          >
+            f
+          </div>
+          <div style={{ marginLeft: 20, fontSize: 36, fontWeight: 700 }}>foxibu</div>
         </div>
-        <div style={{ fontSize: 84, fontWeight: 800, letterSpacing: -2 }}>foxibu</div>
-        <div style={{ fontSize: 38, color: '#c7d2fe', marginTop: 12 }}>Developer Portfolio</div>
-        <div style={{ fontSize: 28, color: '#94a3b8', marginTop: 'auto' }}>foxibu.is-a.dev</div>
+
+        <div style={{ marginTop: 'auto', fontSize: 28, color: ACCENT_TEXT }}>Student · LLM agents · Model evaluation</div>
+        <div style={{ marginTop: 16, fontSize: 64, fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.15, maxWidth: 980 }}>
+          I build LLM agents and check where models go wrong.
+        </div>
+        <div style={{ marginTop: 40, fontSize: 26, color: DIM }}>foxibu.is-a.dev</div>
       </div>
     ),
     size,

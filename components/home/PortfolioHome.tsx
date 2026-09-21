@@ -16,17 +16,19 @@ const TEASER_COUNT = 3
 
 // 포지션 문구. 설정의 한 줄 소개(bio)는 검색 설명문을 겸해 짧게 두고,
 // 첫 화면에서 "무엇을 하는 사람인가"는 여기서 말한다.
+// '에이전트를 만들고 그 에이전트를 평가한다'로 읽히지 않게 주어를 나눈다 —
+// 만든 것(CTF-Solver 등)과 잰 것(FinBERT·경진대회)은 서로 다른 작업이다.
 const INTRO: Record<Locale, { role: string; statement: string; summary: string }> = {
   // 학생이라 직함 대신 하는 일을 적는다. 보안은 교육과정 한 번이라 내세우지 않는다.
   ko: {
     role: '학생 · LLM 에이전트 · 모델 평가',
-    statement: 'LLM 에이전트를 만들고 어디서 틀리는지 확인합니다.',
+    statement: 'LLM 에이전트를 만들고 모델이 어디서 틀리는지 확인합니다.',
     summary:
       'Kali 보안 도구를 55종 넘게 다루는 MCP 에이전트 CTF-Solver를 만들었습니다. 금융 문장으로만 학습한 모델이 일반 리뷰에서 어떻게 틀리는지 연구해 KCC 2026에 실었습니다.',
   },
   en: {
     role: 'Student · LLM agents · Model evaluation',
-    statement: 'I build LLM agents and measure where they fail.',
+    statement: 'I build LLM agents and check where models go wrong.',
     summary:
       'I built CTF-Solver, an MCP agent that drives more than 55 Kali security tools. I also published a KCC 2026 paper on how a model trained only on financial text gets general reviews wrong.',
   },

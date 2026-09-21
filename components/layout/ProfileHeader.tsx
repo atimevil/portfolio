@@ -1,14 +1,11 @@
-import Link from 'next/link'
 import type { SiteSettings } from '@/types'
 import { cleanEmail } from '@/lib/email'
-import { t, type Locale } from '@/lib/i18n'
+import type { Locale } from '@/lib/i18n'
 
 interface Props {
   profile: SiteSettings['profile']
   /** 페이지에 별도 h1이 있으면 2로 낮춘다 (h1은 한 페이지에 하나). */
   headingLevel?: 1 | 2
-  /** 홈에서만 "소개 →" 링크를 노출 */
-  showAboutLink?: boolean
   locale?: Locale
 }
 
@@ -17,7 +14,7 @@ interface Props {
 const TAGLINE_EN = 'AI/ML · LLM Agents'
 
 // 홈과 소개 페이지가 동일하게 쓰는 프로필 헤더 (이름 + 설명 + 스킬 + 링크)
-export default function ProfileHeader({ profile, showAboutLink = false, locale = 'ko', headingLevel = 1 }: Props) {
+export default function ProfileHeader({ profile, locale = 'ko', headingLevel = 1 }: Props) {
   const NameHeading = headingLevel === 1 ? 'h1' : 'h2'
   const avatarSrc =
     profile.avatar ||
@@ -63,9 +60,6 @@ export default function ProfileHeader({ profile, showAboutLink = false, locale =
           {profile.linkedin && (
             <a href={profile.linkedin} target="_blank" rel="noopener noreferrer"
               className="hover:text-accent transition-colors">LinkedIn</a>
-          )}
-          {showAboutLink && (
-            <Link href={locale === 'en' ? '/en/about' : '/about'} className="hover:text-accent transition-colors">{t(locale, 'aboutArrow')}</Link>
           )}
         </div>
       </div>

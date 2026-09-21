@@ -424,16 +424,6 @@ code {
   height: 100%;
 }
 
-/* 홈 첫 화면 뒤의 모눈 — 실험 노트 느낌. 아래로 갈수록 흐려져 본문과 이어진다 */
-.grid-paper {
-  background-image:
-    linear-gradient(var(--color-border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--color-border) 1px, transparent 1px);
-  background-size: 32px 32px;
-  background-position: -1px -1px;
-  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent);
-  mask-image: linear-gradient(to bottom, #000 30%, transparent);
-}
 
 /* 앵커 이동은 부드럽게 — 움직임 줄이기 설정이면 바로 이동 */
 @media (prefers-reduced-motion: no-preference) {

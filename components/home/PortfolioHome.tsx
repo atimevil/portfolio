@@ -103,7 +103,7 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
 
         {/* 오른쪽: 근거 */}
         <div className="min-w-0">
-          <Section id="projects" title="projects" lede="projectsLede" count={built.length} more={`${aboutHref}#projects`} locale={locale}>
+          <Section id="projects" title="projects" lede="projectsLede" count={projects.length} more={`${aboutHref}#projects`} locale={locale}>
             <ul className="flex flex-col gap-3">
               {built.slice(0, BUILT_COUNT).map((p) => (
                 <BuiltRow key={p.id} project={p} href={`${workBase}/${projectSlug(p)}`} locale={locale} />
@@ -198,7 +198,12 @@ function Section({
           {count !== undefined && <span className="ml-2 font-mono text-sm font-normal text-text-muted">{count}</span>}
         </h2>
         {more && (
-          <Link href={more} className="inline-flex min-h-[24px] items-center text-sm text-text-secondary transition-colors hover:text-accent">
+          <Link
+            href={more}
+            // 보이는 글자는 셋 다 "전체 보기"라, 스크린리더 링크 목록에서 구별되게 섹션 이름을 붙인다
+            aria-label={locale === 'en' ? `View all ${t(locale, title).toLowerCase()}` : `${t(locale, title)} 전체 보기`}
+            className="inline-flex min-h-[24px] items-center text-sm text-text-secondary transition-colors hover:text-accent"
+          >
             {t(locale, 'viewAllWork')}
           </Link>
         )}

@@ -136,7 +136,7 @@
     "id": "p5",
     "type": "project",
     "order": 5,
-    "year": "2025",
+    "year": "2025.04",
     "title": "딥보이스 탐지 서비스 — 정보보안 공모전 우수상 (2025.04)",
     "description": "통화 음성의 합성 여부를 판별하는 서비스의 백엔드 담당. 요청마다 모델을 재로드하던 구조를 기동 시 1회 로드 + 비동기 작업 큐로 재설계하고, Oracle Cloud ARM64에 배포했다. 「미래와소프트웨어」 정보보안 공모전 우수상.",
     "skills": [
@@ -258,7 +258,7 @@
   {
     "id": "a6",
     "type": "award",
-    "year": "2026.09",
+    "year": "2026.09.17",
     "title": "AI Pilot Top Gun Challenge 2026 장려상 (KAI 사장상)",
     "description": "2026.09.17 수상.",
     "title_en": "AI Pilot Top Gun Challenge 2026 — Honorable Mention (KAI President's Award)",
@@ -267,7 +267,7 @@
   {
     "id": "a7",
     "type": "award",
-    "year": "2026.07",
+    "year": "2026.07.30~31",
     "title": "호남 IS 해커톤 장려상",
     "description": "",
     "title_en": "Honam IS Hackathon — Honorable Mention"
@@ -313,7 +313,7 @@
   {
     "id": "a12",
     "type": "activity",
-    "year": "2026.09",
+    "year": "2026.09.19",
     "title": "Making AI Beneficial Challenge 2026 (MABC) 결선 진출",
     "description": "2026.09.19 결선 진출. Upstage 주최. 학습자 프로필과 원문에서 지금 필요한 어휘만 골라 단어 카드로 만드는 서비스로 진출했다. [mabc-vocab-curator](https://github.com/atimevil/mabc-vocab-curator)",
     "title_en": "Making AI Beneficial Challenge 2026 (MABC) — Finalist",

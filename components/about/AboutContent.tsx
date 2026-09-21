@@ -4,7 +4,6 @@ import { getOrderedProjects, getTimeline, projectSlug } from '@/lib/items'
 import ProfileHeader from '@/components/layout/ProfileHeader'
 import AwardsGantt from '@/components/about/AwardsGantt'
 import OpenTargetDetails from '@/components/about/OpenTargetDetails'
-import { hasCaseStudy } from '@/lib/caseStudy'
 import { t, localized, type Locale } from '@/lib/i18n'
 
 /**
@@ -19,7 +18,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
   const workBase = locale === 'en' ? '/en/work' : '/work'
 
   // 상세의 이전/다음도 같은 함수를 쓴다 — 목록 순서와 어긋나면 안 된다.
-  const projects = getOrderedProjects(hasCaseStudy)
+  const projects = getOrderedProjects()
   const events = getTimeline().filter((i) => i.type !== 'project')
 
   return (

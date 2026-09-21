@@ -25,11 +25,16 @@ export function getItems(): PortfolioItem[] {
   return read().sort((a, b) => timeKey(b.year) - timeKey(a.year))
 }
 
-/** "2025" 또는 "2025.03"/"2025-3" 형태의 시점을 정렬용 숫자(연*100+월)로 변환. 월 없으면 0 */
+/**
+ * 시점 문자열을 정렬용 숫자(연·월·일 → YYYYMMDD)로 바꾼다. 빠진 월·일은 0.
+ * "2025", "2025.03", "2026.09.17", "2026.07.30~31"(기간이면 시작일) 모두 받는다.
+ * 일까지 보는 이유: 같은 달에 여러 건이면 월만으로는 순서가 정해지지 않는다.
+ */
 export function timeKey(value: string): number {
-  const m = value.match(/(\d{4})(?:[.\-/]\s*(\d{1,2}))?/)
+  const m = value.match(/(\d{4})(?:[.\-/]\s*(\d{1,2})(?:[.\-/]\s*(\d{1,2}))?)?/)
   if (!m) return 0
-  return parseInt(m[1], 10) * 100 + (m[2] ? parseInt(m[2], 10) : 0)
+  const [, y, mo, d] = m
+  return parseInt(y, 10) * 10000 + (mo ? parseInt(mo, 10) : 0) * 100 + (d ? parseInt(d, 10) : 0)
 }
 
 /** 상세 페이지에서 쓰는 주소 조각. slug가 없으면 id로 폴백해 링크가 끊기지 않게 한다. */
@@ -50,15 +55,11 @@ export function getProjects(): PortfolioItem[] {
 }
 
 /**
- * /about과 상세의 이전·다음이 같은 차례를 쓰도록 한 곳에서 정한다.
- * 케이스 스터디가 채워진 것이 앞(손으로 고른 order), 나머지는 최신순.
+ * /about·홈·상세의 이전/다음이 같은 차례를 쓰도록 한 곳에서 정한다. 최신순.
+ * 같은 시점이면 order로 가른다.
  */
-export function getOrderedProjects(hasCase: (i: PortfolioItem) => boolean): PortfolioItem[] {
-  const all = getProjects()
-  return [
-    ...all.filter(hasCase),
-    ...all.filter((i) => !hasCase(i)).sort((a, b) => timeKey(b.year) - timeKey(a.year)),
-  ]
+export function getOrderedProjects(): PortfolioItem[] {
+  return getProjects().sort((a, b) => timeKey(b.year) - timeKey(a.year) || (a.order ?? 0) - (b.order ?? 0))
 }
 
 /** 전체 항목, 시점 desc 정렬 (타임라인용) */

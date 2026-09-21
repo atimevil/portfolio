@@ -3,7 +3,7 @@ import type { PortfolioItem } from '@/types'
 import { getAllPosts } from '@/lib/blog'
 import { getSettings } from '@/lib/settings'
 import { getOrderedProjects, getTimeline, projectSlug, timeKey } from '@/lib/items'
-import { hasCaseStudy, parseMetrics } from '@/lib/caseStudy'
+import { parseMetrics } from '@/lib/caseStudy'
 import { readFigure } from '@/lib/figure'
 import { cleanEmail } from '@/lib/email'
 import { t, localized, blogBase, type Locale, type UiKey } from '@/lib/i18n'
@@ -43,7 +43,7 @@ const INTRO: Record<Locale, { role: string; statement: string; summary: string }
 export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
   const { profile } = getSettings()
   const intro = INTRO[locale]
-  const projects = getOrderedProjects(hasCaseStudy)
+  const projects = getOrderedProjects()
   const built = projects.filter((p) => !p.measure)
   const timeline = getTimeline().filter((i) => i.type !== 'project')
   // 연구·경진대회는 종류와 무관하다 — 연구 프로젝트와 경진대회가 한곳에 모인다. 최신순.

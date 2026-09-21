@@ -27,7 +27,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
   const aboutHref = locale === 'en' ? '/en/about' : '/about'
   const workBase = locale === 'en' ? '/en/work' : '/work'
   // 하나 읽고 나면 뒤로 가는 것 말고 할 게 없었다. 이웃 프로젝트로 이어준다.
-  const ordered = getOrderedProjects(hasCaseStudy)
+  const ordered = getOrderedProjects()
   const here = ordered.findIndex((i) => i.id === project.id)
   const prev = here > 0 ? ordered[here - 1] : undefined
   const next = here >= 0 && here < ordered.length - 1 ? ordered[here + 1] : undefined

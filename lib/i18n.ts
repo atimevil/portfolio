@@ -50,7 +50,7 @@ const UI = {
   // 홈 섹션 이름은 "전체 보기"로 도착하는 /about의 섹션 이름과 같게 둔다.
   research: { ko: '연구 · 경진대회', en: 'Research & Competitions' },
   projectsLede: { ko: '직접 만들어 돌려본 시스템입니다.', en: 'Systems I built and ran.' },
-  researchLede: { ko: '모델이 틀리는 지점을 숫자로 짚어 봤습니다.', en: 'Where models fail, checked in numbers.' },
+  researchLede: { ko: '모델이 틀리는 지점을 숫자로 짚어 봤습니다.', en: 'I checked, with numbers, where models go wrong.' },
   viewAllWork: { ko: '전체 보기 →', en: 'View all →' },
   readMore: { ko: '자세히 보기', en: 'Read more' },
   collapse: { ko: '접기', en: 'Collapse' },

@@ -28,7 +28,7 @@ const INTRO: Record<Locale, { role: string; statement: string; summary: string }
     role: 'Student · LLM agents · Model evaluation',
     statement: 'I build LLM agents and measure where they fail.',
     summary:
-      'I built CTF-Solver, an MCP agent that drives more than 55 Kali security tools, and published a KCC 2026 paper on how a model trained only on financial text fails on general reviews.',
+      'I built CTF-Solver, an MCP agent that drives more than 55 Kali security tools. I also published a KCC 2026 paper on how a model trained only on financial text gets general reviews wrong.',
   },
 }
 
@@ -70,7 +70,7 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
         <aside className="lg:sticky lg:top-24 lg:self-start">
           <p className="font-mono text-xs text-text-muted">{profile.name}</p>
           <p className="mt-1 text-sm font-medium text-accent">{intro.role}</p>
-          <h1 className="mt-5 text-[2rem] font-bold leading-[1.25] tracking-tight text-text-primary md:text-[2.5rem]">
+          <h1 className="mt-5 text-[2rem] font-bold leading-[1.25] tracking-tight text-text-primary [text-wrap:balance] md:text-[2.5rem]">
             {intro.statement}
           </h1>
           <p className="mt-5 max-w-md text-[15px] leading-relaxed text-text-secondary">{intro.summary}</p>

@@ -22,7 +22,13 @@
     "thumbnail": "/figures/finbert-ssl-distribution.svg",
     "paper": "https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE12929843",
     "slug": "finbert-vs-llm",
-    "measure": true
+    "measure": true,
+    "title_en": "UCSD Qualcomm Institute — FinBERT vs. LLM Sentiment Classification Research",
+    "description_en": "A 37-day AI research intensive at UC San Diego's Qualcomm Institute (one of five students selected from my university; deputy cohort lead). On a five-person team drawn from two universities, I wrote and ran the BERT and FinBERT baselines and owned the data pipeline: filtering 650K Yelp reviews down to 617,611 with a Gemini quality filter and labeling them through the OpenAI Batch API and the Gemini API. FinBERT trained only on FPB classified 90–96% of reviews rated 3 or higher as neutral, while zero-shot Gemini labeled 98.7% of 1-star reviews negative and 97.6% of 5-star reviews positive, demonstrating negative transfer. I kept working with the advisor after the program ended, and the work was published at KCC 2026 (second author of six). In a follow-up, semi-supervised self-training on a pool of 124,381 reviews where FinBERT and Gemini agreed raised financial test-set Macro-F1 from 0.84–0.85 to 0.87. The follow-up is unpublished (presented only at the final hackathon).",
+    "problem_en": "Nobody had checked what happens when FinBERT, trained only on a financial corpus (FPB), is applied as-is to general reviews.",
+    "contribution_en": "Wrote and ran the BERT and FinBERT baselines, and owned the data pipeline that filtered 650K Yelp reviews with a Gemini quality filter.",
+    "result_en": "Demonstrated negative transfer in numbers and published it at KCC 2026 (second author of six). Follow-up semi-supervised self-training improved performance on the financial test set.",
+    "metrics_en": "0.84 → 0.87 | Financial test-set Macro-F1\n617,611 | Reviews kept out of 650K\n90–96% | Share FinBERT labeled neutral"
   },
   {
     "id": "p9",
@@ -44,7 +50,13 @@
     ],
     "github": "https://github.com/atimevil/mabc-vocab-curator",
     "slug": "vocab-curator",
-    "thumbnail": "/figures/vocab-curator-flow.svg"
+    "thumbnail": "/figures/vocab-curator-flow.svg",
+    "title_en": "VOCAB CURATOR — Personalized Vocabulary Curation",
+    "description_en": "Finalist at MABC 2026 (Upstage × Timely). On a two-person team (Bulldog), I handled development and turned the preliminary-round skill vocab-curator into a web service.",
+    "problem_en": "Commercial vocabulary books are written for an 'average learner' who doesn't exist, so the words you would actually use are missing and only textbook example sentences unrelated to daily life remain.",
+    "contribution_en": "Sole developer on a two-person team; the idea and planning came from my teammate. Porting the preliminary-round skill to a web service, I implemented direct Solar Pro 4 calls, passed the source text, persona, and learning history into the prompt, and connected a database for duplicate-word detection and learner-profile tracking.",
+    "result_en": "Selects vocabulary from a source text using the learner's history and profile, then outputs per-word importance, \"expressions to use today,\" and a CSV word list. MABC 2026 finalist (Team Bulldog, No.45).",
+    "metrics_en": "20 | Words selected per text (max)\n3 | \"Expressions to use today\" per word\n6 days | From first meeting to testing"
   },
   {
     "id": "p2",
@@ -67,7 +79,12 @@
     "contribution": "산학 5인 팀에서 RAG 엔진 개발과 고도화를 담당하고, 질문 의도에 따른 3-way 라우팅을 설계했다.",
     "result": "밀집 검색(ChromaDB)과 희소 검색(BM25)을 RRF로 결합하고, 학사 공식 도메인 실시간 검색을 별도 경로로 분리했다.",
     "thumbnail": "/figures/chosuninsight-rag.svg",
-    "slug": "chosun-insight"
+    "slug": "chosun-insight",
+    "title_en": "ChosunInsight — Hybrid RAG Chatbot",
+    "description_en": "A hybrid RAG chatbot for Chosun University's academic information. It routes each question by intent to a structured answer, vector search, or official web search. Dense retrieval (ChromaDB) and sparse retrieval (BM25) are combined with RRF (Reciprocal Rank Fusion), and real-time search over the university's official domain runs as a separate path. I developed and improved the RAG engine on a five-person industry–academia project team.",
+    "problem_en": "Academic information mixes structured, unstructured, and real-time data, so no single retrieval method could answer the questions.",
+    "contribution_en": "Developed and improved the RAG engine on a five-person industry–academia team and designed three-way routing by question intent.",
+    "result_en": "Combined dense (ChromaDB) and sparse (BM25) retrieval with RRF, and split real-time search of the university's official domain into a separate path."
   },
   {
     "id": "p3",
@@ -89,7 +106,13 @@
     "result": "화이트햇 스쿨 최종 프로젝트의 후속으로 발표 이후 혼자 이어서 확장했다.",
     "metrics": "★ 53 | GitHub 스타\n55+ | 감싼 보안도구",
     "thumbnail": "/figures/ctf-solver-mcp.svg",
-    "slug": "ctf-solver"
+    "slug": "ctf-solver",
+    "title_en": "CTF-Solver — MCP Server for Security Automation",
+    "description_en": "Starting from the MIT-licensed Wh0am123/MCP-Kali-Server (about 10 tools), I extended it to more than 55 Kali Linux security tools and designed multi-step workflows. It follows on from Not-Yet, the Whitehat School final project (team project; I handled development), and I continued it on my own after the presentation.",
+    "problem_en": "The MCP-Kali-Server it was built on had about 10 tools and could only run one command at a time.",
+    "contribution_en": "Extended it to more than 55 Kali Linux security tools and designed multi-step workflows.",
+    "result_en": "A follow-up to the Whitehat School final project that I continued on my own after the presentation.",
+    "metrics_en": "★ 53 | GitHub stars\n55+ | Security tools wrapped"
   },
   {
     "id": "p4",
@@ -105,7 +128,9 @@
     ],
     "github": "https://github.com/alphateam-mcp/Not-Yet",
     "thumbnail": "/figures/notyet-mcp.svg",
-    "slug": "not-yet"
+    "slug": "not-yet",
+    "title_en": "Not-Yet — Security MCP Server",
+    "description_en": "Final project of Whitehat School cohort 3 (team project; I handled development). An MCP server that combines Kali Linux penetration-testing tools with Perplexity AI search. → Extended into CTF-Solver after the presentation."
   },
   {
     "id": "p5",
@@ -121,7 +146,9 @@
       "Docker"
     ],
     "thumbnail": "/figures/deepvoice-redesign.svg",
-    "slug": "deepvoice-detector"
+    "slug": "deepvoice-detector",
+    "title_en": "Deepfake Voice Detection Service — Excellence Award, Information Security Contest (2025.04)",
+    "description_en": "I handled the backend of a service that detects whether call audio is synthesized. I redesigned it from reloading the model on every request to loading it once at startup with an async job queue, and deployed it on Oracle Cloud ARM64. Excellence Award at the Future & Software (미래와소프트웨어) information security contest."
   },
   {
     "id": "p6",
@@ -138,7 +165,9 @@
     ],
     "github": "https://github.com/atimevil/portfolio",
     "thumbnail": "/figures/portfolio-stack.svg",
-    "slug": "portfolio-site"
+    "slug": "portfolio-site",
+    "title_en": "Personal Portfolio & Blog",
+    "description_en": "A portfolio and blog built with Next.js: MDX blog, gallery, admin CMS, and dark mode, self-hosted over HTTPS with Docker and Nginx."
   },
   {
     "id": "p7",
@@ -154,7 +183,9 @@
     ],
     "github": "https://github.com/atimevil/Ithmb-Converter",
     "thumbnail": "/figures/ipod-pipeline.svg",
-    "slug": "ithmb-converter"
+    "slug": "ithmb-converter",
+    "title_en": "iPod Classic ithmb Converter",
+    "description_en": "A Python GUI tool that recovers photos from an iPod Classic. Existing ithmb converters were paid, so I built a free alternative. Supports Real-ESRGAN AI upscaling."
   },
   {
     "id": "p8",
@@ -172,7 +203,9 @@
     ],
     "github": "https://github.com/pallows",
     "thumbnail": "/figures/pallow-architecture.svg",
-    "slug": "pallow"
+    "slug": "pallow",
+    "title_en": "PALLOW — Friend Recommendations by Region and MBTI",
+    "description_en": "A location-based social meetup platform with algorithmic friend recommendations, group management, real-time chat, and interest communities. As leader of a five-person team, I designed a Java/Spring main server and a separate cosine-similarity recommendation server in Flask, and deployed both to Oracle Cloud with Docker."
   },
   {
     "id": "a1",
@@ -181,56 +214,72 @@
     "title": "2026 AI·SW중심대학 디지털 경진대회 AI부문 28위 / 269팀",
     "description": "AI 에이전트의 다음 행동을 14개 클래스로 예측. 추론 10분·1GB·오프라인 제약 아래 269팀 중 28위(팀 HUE, Macro-F1 0.79334). 계속 혼동되던 4개 클래스를 모델 성능이 아니라 라벨 모호성으로 진단하고, 입력 37.6%가 잘려나가던 것과 실패한 앙상블의 원인이 보정되지 않은 logit임을 찾아냈다.",
     "measure": true,
-    "metrics": "28 / 269 | 팀 중 순위 · Macro-F1 0.79334"
+    "metrics": "28 / 269 | 팀 중 순위 · Macro-F1 0.79334",
+    "title_en": "2026 AI·SW-Centered University Digital Competition, AI Track — 28th of 269 Teams",
+    "description_en": "Predicting an AI agent's next action across 14 classes under a 10-minute, 1 GB, offline inference limit; placed 28th of 269 teams (Team HUE, Macro-F1 0.79334). I traced four classes that kept getting confused to ambiguous labels rather than model performance, and found that 37.6% of inputs were being truncated and that the failed ensemble came from uncalibrated logits.",
+    "metrics_en": "28 / 269 | Team rank · Macro-F1 0.79334"
   },
   {
     "id": "a2",
     "type": "award",
     "year": "2026.07",
     "title": "호남권 SW중심대학 LLM 해커톤 경진대회 우수상",
-    "description": "1박 2일 해커톤."
+    "description": "1박 2일 해커톤.",
+    "title_en": "Honam SW-Centered University LLM Hackathon — Excellence Award",
+    "description_en": "A 1-night, 2-day hackathon."
   },
   {
     "id": "a3",
     "type": "activity",
     "year": "2026.06",
     "title": "KCC 2026 논문 게재 — FinBERT와 LLM 성능 비교",
-    "description": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」, 한국정보과학회 학술발표논문집 2026.06. 6인 중 2저자 (교신저자 조석헌, UCSD)."
+    "description": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」, 한국정보과학회 학술발표논문집 2026.06. 6인 중 2저자 (교신저자 조석헌, UCSD).",
+    "title_en": "KCC 2026 Paper — FinBERT vs. LLM Performance Comparison",
+    "description_en": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」 (\"Sentiment Classification of U.S. Yelp Reviews: FinBERT vs. LLMs\"), Proceedings of KIISE (Korean Institute of Information Scientists and Engineers), June 2026. Second author of six (corresponding author: 조석헌, UCSD)."
   },
   {
     "id": "a4",
     "type": "activity",
     "year": "2026.04~06",
     "title": "인공지능 중급과정(AWS 클라우드 아키텍처) 160시간 이수",
-    "description": "과학기술정보통신부·NIPA / 호남 ICT 이노베이션스퀘어."
+    "description": "과학기술정보통신부·NIPA / 호남 ICT 이노베이션스퀘어.",
+    "title_en": "AI Intermediate Course (AWS Cloud Architecture) — 160 Hours Completed",
+    "description_en": "Ministry of Science and ICT · NIPA / Honam ICT Innovation Square."
   },
   {
     "id": "a5",
     "type": "activity",
     "year": "2026.01~02",
     "title": "2026년 동계 해외교육연수(QI AI 연구 집중형 프로젝트) 프로그램 수료",
-    "description": "16기 부기수장, 미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교 논문 작성"
+    "description": "16기 부기수장, 미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교 논문 작성",
+    "title_en": "2026 Winter Overseas Program (QI AI Research Intensive) — Completed",
+    "description_en": "Deputy leader of cohort 16; wrote the paper 「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」 (\"Sentiment Classification of U.S. Yelp Reviews: FinBERT vs. LLMs\")."
   },
   {
     "id": "a6",
     "type": "award",
     "year": "2026.09",
     "title": "AI Pilot Top Gun Challenge 2026 장려상 (KAI 사장상)",
-    "description": "2026.09.17 수상."
+    "description": "2026.09.17 수상.",
+    "title_en": "AI Pilot Top Gun Challenge 2026 — Honorable Mention (KAI President's Award)",
+    "description_en": "Awarded September 17, 2026."
   },
   {
     "id": "a7",
     "type": "award",
     "year": "2026.07",
     "title": "호남 IS 해커톤 장려상",
-    "description": ""
+    "description": "",
+    "title_en": "Honam IS Hackathon — Honorable Mention"
   },
   {
     "id": "a8",
     "type": "activity",
     "year": "2025.11",
     "title": "2025 LLM Safety Challenge 참가",
-    "description": "https://app.notion.com/p/2025-LLM-Safety-Challnge-2b96b6b36a168003ab50f3019c7d286d?source=copy_link\n문제는 다 풀었지만 아쉽게 예선 탈락,,,"
+    "description": "https://app.notion.com/p/2025-LLM-Safety-Challnge-2b96b6b36a168003ab50f3019c7d286d?source=copy_link\n문제는 다 풀었지만 아쉽게 예선 탈락,,,",
+    "title_en": "2025 LLM Safety Challenge — Participant",
+    "description_en": "https://app.notion.com/p/2025-LLM-Safety-Challnge-2b96b6b36a168003ab50f3019c7d286d?source=copy_link\nSolved every problem but did not advance past the preliminary round."
   },
   {
     "id": "a9",
@@ -239,27 +288,35 @@
     "title": "2025년 조선대학교 SW중심대학 AI 챌린지 최우수상",
     "description": "리더보드 5위였으나 상위 3팀이 500M MACs 제한을 초과해 실격, 30팀 중 최종 2위. 파라미터 5.01M / MACs 499.5M.\nhttps://www.kaggle.com/competitions/2025-csu-sw-ai-challenge",
     "measure": true,
-    "metrics": "2 / 30 | 최종 순위 · MACs 499.5M (제한 500M)"
+    "metrics": "2 / 30 | 최종 순위 · MACs 499.5M (제한 500M)",
+    "title_en": "2025 Chosun University SW-Centered University AI Challenge — Top Excellence Award",
+    "description_en": "Ranked 5th on the leaderboard, but the top three teams were disqualified for exceeding the 500M MACs limit, so we finished 2nd of 30 teams. 5.01M parameters / 499.5M MACs.\nhttps://www.kaggle.com/competitions/2025-csu-sw-ai-challenge",
+    "metrics_en": "2 / 30 | Final rank · 499.5M MACs (limit 500M)"
   },
   {
     "id": "a10",
     "type": "award",
     "year": "2025.04",
     "title": "제5회 미래와 소프트웨어 공모전 우수상",
-    "description": "재단법인 미래와소프트웨어 주최 정보보안 SW 웹·앱 개발 공모전 (전국 98개 대학 204팀)"
+    "description": "재단법인 미래와소프트웨어 주최 정보보안 SW 웹·앱 개발 공모전 (전국 98개 대학 204팀)",
+    "title_en": "5th Future & Software Contest — Excellence Award",
+    "description_en": "An information security web/app development contest hosted by the Future & Software Foundation (재단법인 미래와소프트웨어), with 204 teams from 98 universities nationwide."
   },
   {
     "id": "a11",
     "type": "activity",
     "year": "2025.03~09",
     "title": "Whitehat School 3기 수료",
-    "description": ""
+    "description": "",
+    "title_en": "Whitehat School Cohort 3 — Completed"
   },
   {
     "id": "a12",
     "type": "activity",
     "year": "2026.09",
     "title": "Making AI Beneficial Challenge 2026 (MABC) 결선 진출",
-    "description": "2026.09.19 결선 진출. Upstage 주최. 학습자 프로필과 원문에서 지금 필요한 어휘만 골라 단어 카드로 만드는 서비스로 진출했다. [mabc-vocab-curator](https://github.com/atimevil/mabc-vocab-curator)"
+    "description": "2026.09.19 결선 진출. Upstage 주최. 학습자 프로필과 원문에서 지금 필요한 어휘만 골라 단어 카드로 만드는 서비스로 진출했다. [mabc-vocab-curator](https://github.com/atimevil/mabc-vocab-curator)",
+    "title_en": "Making AI Beneficial Challenge 2026 (MABC) — Finalist",
+    "description_en": "Reached the finals on September 19, 2026. Hosted by Upstage. Entered with a service that picks only the vocabulary a learner needs right now from their profile and a source text, and turns it into word cards. [mabc-vocab-curator](https://github.com/atimevil/mabc-vocab-curator)"
   }
 ]

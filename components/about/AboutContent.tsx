@@ -55,7 +55,7 @@ export default function AboutContent({ locale = 'ko' }: { locale?: Locale }) {
                         )}
                       </div>
                       <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-text-secondary">
-                        {project.result?.trim() || localized(project, 'description', locale)}
+                        {localized(project, 'result', locale).trim() || localized(project, 'description', locale)}
                       </p>
                       {skills.length > 0 && (
                         <p className="mt-auto pt-3 text-xs text-text-secondary">{skills.slice(0, 4).join(' · ')}</p>

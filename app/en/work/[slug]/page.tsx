@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import ProjectDetail from '@/components/work/ProjectDetail'
 import { getProjectBySlug, projectSlug } from '@/lib/items'
 import { buildPageMetadata } from '@/lib/site'
+import { localized } from '@/lib/i18n'
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
   const project = getProjectBySlug(params.slug)
@@ -11,8 +12,9 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   const slug = projectSlug(project)
   return buildPageMetadata({
     path: `/en/work/${slug}`,
-    title: project.title_en?.trim() || project.title,
-    description: project.result?.trim() || project.description?.trim() || project.title,
+    title: localized(project, 'title', 'en'),
+    description:
+      localized(project, 'result', 'en').trim() || localized(project, 'description', 'en').trim() || localized(project, 'title', 'en'),
     languages: { ko: `/work/${slug}`, en: `/en/work/${slug}` },
   })
 }

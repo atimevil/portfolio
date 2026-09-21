@@ -97,14 +97,12 @@ export function categoryLabel(locale: Locale, name: string): string {
  * 항목의 로케일별 필드를 고른다. 영문 필드가 비어 있으면 한국어로 폴백해
  * 화면에 빈칸이 노출되지 않게 한다.
  */
-export function localized(
-  item: PortfolioItem,
-  field: 'title' | 'description',
-  locale: Locale
-): string {
+export type LocalizedField = 'title' | 'description' | 'problem' | 'contribution' | 'result' | 'metrics'
+
+export function localized(item: PortfolioItem, field: LocalizedField, locale: Locale): string {
   if (locale === 'en') {
-    const en = field === 'title' ? item.title_en : item.description_en
+    const en = item[`${field}_en`]
     if (en?.trim()) return en
   }
-  return (field === 'title' ? item.title : item.description) ?? ''
+  return item[field] ?? ''
 }

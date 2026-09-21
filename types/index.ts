@@ -49,6 +49,11 @@ export interface PortfolioItem {
   result?: string
   /** 지표 줄. 한 줄에 하나, "값 | 라벨" 형식. */
   metrics?: string
+  /** 위 네 칸의 영문. 지표는 줄 수·값을 한국어판과 같게 두고 라벨만 옮긴다. */
+  problem_en?: string
+  contribution_en?: string
+  result_en?: string
+  metrics_en?: string
   /** 무언가를 재고 평가한 작업(연구·경진대회). 홈의 '연구 · 경진대회'에 모인다. 종류(type)와 무관하다. */
   measure?: boolean
 }

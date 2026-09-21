@@ -15,13 +15,13 @@ import { t, localized, type Locale } from '@/lib/i18n'
 export default function ProjectDetail({ project, locale = 'ko' }: { project: PortfolioItem; locale?: Locale }) {
   const title = localized(project, 'title', locale)
   const links = projectLinks(project, locale)
-  const metrics = parseMetrics(project.metrics)
+  const metrics = parseMetrics(localized(project, 'metrics', locale))
   const figure = readFigure(project.thumbnail)
   const columns = (
     [
-      ['csProblem', project.problem],
-      ['csContribution', project.contribution],
-      ['csResult', project.result],
+      ['csProblem', localized(project, 'problem', locale)],
+      ['csContribution', localized(project, 'contribution', locale)],
+      ['csResult', localized(project, 'result', locale)],
     ] as const
   ).filter(([, body]) => body?.trim())
   const aboutHref = locale === 'en' ? '/en/about' : '/about'

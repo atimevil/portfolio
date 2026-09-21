@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest'
+import fs from 'fs'
 import { readFigure } from '@/lib/figure'
 
 describe('readFigure', () => {
@@ -36,5 +37,34 @@ describe('readFigure', () => {
     expect(readFigure('/uploads/cover.png')).toBeNull()
     expect(readFigure(undefined)).toBeNull()
     expect(readFigure('')).toBeNull()
+  })
+
+  describe('한 페이지에 여러 장 인라인해도 서로 간섭하지 않는다', () => {
+    const names = fs.readdirSync('public/figures').filter((f) => f.endsWith('.svg'))
+    const svgs = names.map((f) => readFigure(`/figures/${f}`)!)
+
+    it('모든 CSS 규칙이 자기 그림 id로 시작한다', () => {
+      svgs.forEach((svg, i) => {
+        const root = `fig-${names[i].replace('.svg', '')}`
+        const css = /<style>([\s\S]*?)<\/style>/.exec(svg)?.[1] ?? ''
+        const selectors = Array.from(css.matchAll(/([^{}]+)\{/g)).flatMap((m) => m[1].split(',').map((s: string) => s.trim()))
+        expect(selectors.length).toBeGreaterThan(0)
+        for (const sel of selectors) expect(sel.startsWith(`#${root} `)).toBe(true)
+      })
+    })
+
+    it('id가 페이지 전체에서 겹치지 않는다', () => {
+      const ids = svgs.flatMap((svg) => Array.from(svg.matchAll(/\bid="([^"]+)"/g)).map((m) => m[1]))
+      expect(new Set(ids).size).toBe(ids.length)
+    })
+
+    it('마커 참조가 같은 그림 안의 id를 가리킨다', () => {
+      for (const svg of svgs) {
+        const ids = new Set(Array.from(svg.matchAll(/\bid="([^"]+)"/g)).map((m) => m[1]))
+        for (const m of Array.from(svg.matchAll(/url\(#([^)]+)\)|href="#([^"]+)"/g))) {
+          expect(ids.has(m[1] ?? m[2])).toBe(true)
+        }
+      }
+    })
   })
 })

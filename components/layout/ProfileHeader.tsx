@@ -13,7 +13,7 @@ interface Props {
 }
 
 // 영문 태그라인 — 이력서와 같은 문구를 쓴다.
-const TAGLINE_EN = 'AI/ML · LLM Agents · Security'
+export const TAGLINE_EN = 'AI/ML · LLM Agents · Security'
 
 // 홈과 소개 페이지가 동일하게 쓰는 프로필 헤더 (이름 + 설명 + 스킬 + 링크)
 export default function ProfileHeader({ profile, showAboutLink = false, locale = 'ko', headingLevel = 1 }: Props) {

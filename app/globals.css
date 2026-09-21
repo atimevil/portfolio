@@ -416,3 +416,19 @@ code {
   width: 100%;
   height: auto;
 }
+
+/* 카드처럼 높이가 정해진 칸에서는 그림을 칸 안에 맞춘다 (가로세로비 유지, 가운데) */
+.fig.fig-fill > svg {
+  height: 100%;
+}
+
+/* 홈 한 줄 소개 끝의 깜빡이는 커서 */
+.caret {
+  animation: caret-blink 1.1s steps(1) infinite;
+}
+@keyframes caret-blink {
+  50% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .caret { animation: none; }
+}

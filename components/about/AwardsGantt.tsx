@@ -5,6 +5,8 @@ import { t, localized, type Locale } from '@/lib/i18n'
 interface Props {
   items: PortfolioItem[]
   locale?: Locale
+  /** 홈처럼 바깥에서 섹션 제목을 따로 달 때는 끈다. */
+  showHeading?: boolean
 }
 
 // 설명 안의 링크를 클릭 가능하게 렌더:
@@ -39,12 +41,14 @@ function renderWithLinks(text: string) {
 }
 
 // 활동 & 수상 — 간결한 목록. 연도 + 제목, 수상은 ★.
-export default function AwardsGantt({ items, locale = 'ko' }: Props) {
+export default function AwardsGantt({ items, locale = 'ko', showHeading = true }: Props) {
   if (items.length === 0) return null
 
   return (
-    <section className="mt-12">
-      <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-5">{t(locale, 'awards')}</h2>
+    <section className={showHeading ? 'mt-12' : undefined}>
+      {showHeading && (
+        <h2 className="text-xs font-bold uppercase tracking-wider text-text-muted mb-5">{t(locale, 'awards')}</h2>
+      )}
       <ul className="flex flex-col divide-y divide-border">
         {items.map((it) => {
           const isAward = it.type === 'award'

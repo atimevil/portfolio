@@ -1,9 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 300" width="880" height="300" role="img" aria-label="ChosunInsight 하이브리드 RAG 파이프라인: 질문을 의도에 따라 정형 답변, 벡터+BM25 하이브리드 검색, 공식 도메인 실시간 검색 세 갈래로 라우팅하고 답변을 생성한다">
   <style>
-    /* 페이지가 아니라 이 그림 자체가 테마를 따른다 (img로 불러도 동작).
-       사이트의 수동 다크 토글까지는 못 따라가므로 OS 설정 기준이다. */
-
-    
     .box { fill: var(--panel); stroke: var(--line); stroke-width: 1; }
     .box-accent { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 1; }
     .t { fill: var(--ink); font: 600 13px 'Helvetica Neue', Arial, sans-serif; }

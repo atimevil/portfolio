@@ -20,6 +20,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
     linkedin: '',
     email: '',
     aboutText: '소개 텍스트를 입력하세요.',
+    cover: '',
   },
 }
 

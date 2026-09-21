@@ -6,11 +6,11 @@ export default function Footer({ email, github, name }: { email?: string; github
   const handle = name?.trim() || 'admin'
 
   return (
-    <footer className="border-t border-border mt-12 py-4">
+    <footer className="border-t border-border mt-12 py-8">
       {/* 좁은 화면에선 항목이 4개까지 늘어 한 줄에 안 들어가므로 줄바꿈을 허용한다 */}
-      <div className="max-w-3xl mx-auto px-4 md:px-8 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-xs text-text-muted [&_a]:inline-flex [&_a]:min-h-[24px] [&_a]:items-center">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 flex flex-col items-center gap-2 text-xs text-text-muted [&_a]:inline-flex [&_a]:min-h-[24px] [&_a]:items-center">
         <span>© {new Date().getFullYear()} Built with Next.js</span>
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
           {mail && (
             <a href={`mailto:${mail}`} className="hover:text-accent transition-colors">
               {mail}

@@ -1,78 +1,49 @@
 import Link from 'next/link'
 import { getProjects, projectSlug } from '@/lib/items'
-import { t, localized, type Locale } from '@/lib/i18n'
+import { readFigure } from '@/lib/figure'
+import { localized, type Locale } from '@/lib/i18n'
 
 /** 홈에 띄울 개수. 나머지는 /about에서 본다. */
 const HOME_COUNT = 3
-/** 한 줄에 늘어놓을 스킬 개수. 넘치면 "+N"으로 접는다. */
-const SKILL_COUNT = 3
 
 /**
- * 홈 상단의 주요 작업 3개.
+ * 홈의 주요 작업 카드 3장 — 위에 제목, 아래에 그림.
  *
- * 방문자가 처음 보는 화면이 알고리즘 문제풀이 목록이면 무엇을 하는 사람인지 알 수 없다.
- * 다만 여기서 설명까지 읽히려 들면 블로그 목록이 첫 화면 밖으로 밀려나므로,
- * "무엇을 / 언제 / 무엇으로"만 남기고 자세한 건 /about으로 보낸다.
+ * 카드 크기에서 다이어그램 글씨는 읽히지 않는다. 여기서 그림은 무엇인지 알아보는
+ * 얼굴 역할이고, 읽는 건 상세 페이지에서 한다. 그래서 스크린리더에서는 숨긴다
+ * (카드 링크 이름에 긴 그림 설명이 통째로 붙지 않게).
  */
 export default function SelectedWork({ locale = 'ko' }: { locale?: Locale }) {
   const projects = getProjects().slice(0, HOME_COUNT)
   if (projects.length === 0) return null
-
-  const aboutHref = locale === 'en' ? '/en/about' : '/about'
+  const workBase = locale === 'en' ? '/en/work' : '/work'
 
   return (
-    <section className="mb-8">
-      <div className="mb-1 flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="text-xs font-semibold uppercase tracking-wider text-text-muted">
-          {t(locale, 'selectedWork')}
-        </h2>
-        <Link
-          href={aboutHref}
-          className="inline-flex min-h-[24px] items-center text-xs text-text-secondary transition-colors hover:text-accent"
-        >
-          {t(locale, 'viewAllWork')}
-        </Link>
-      </div>
-
-      <ul className="flex flex-col">
-        {projects.map((project) => {
-          // 예전엔 GitHub으로 바로 나갔다. 이제 상세 페이지가 있으니 사이트 안에 머문다.
-          const href = `${locale === 'en' ? '/en/work' : '/work'}/${projectSlug(project)}`
-          const title = localized(project, 'title', locale)
-          const skills = project.skills ?? []
-
-          return (
-            <li key={project.id} className="border-b border-border py-3 last:border-b-0">
-              <div className="flex items-baseline justify-between gap-3">
-                <h3 className="text-sm font-bold leading-snug text-text-primary">
-                  <Link
-                    href={href}
-                    className="rounded-sm transition-colors hover:text-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                  >
-                    {title}
-                  </Link>
+    <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {projects.map((project) => {
+        const figure = readFigure(project.thumbnail)
+        const meta = [project.year, ...(project.skills ?? []).slice(0, 2)].filter(Boolean).join(' · ')
+        return (
+          <li key={project.id}>
+            <Link
+              href={`${workBase}/${projectSlug(project)}`}
+              className="group flex h-full flex-col overflow-hidden rounded-xl border border-border bg-bg transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <div className="p-4">
+                <h3 className="line-clamp-2 text-[15px] font-semibold leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
+                  {localized(project, 'title', locale)}
                 </h3>
-                {project.year && (
-                  <span className="shrink-0 font-mono text-xs text-text-secondary">{project.year}</span>
-                )}
+                {meta && <p className="mt-1 text-xs text-text-secondary">{meta}</p>}
               </div>
-              {/* 홈이 가장 많이 보이는 화면인데 주제와 기술만 있고 성과가 없었다.
-                  결과 한 줄을 넣어 "무엇을 이뤘나"가 먼저 읽히게 한다. */}
-              {(project.result?.trim() || localized(project, 'description', locale)) && (
-                <p className="mt-1 line-clamp-1 text-xs leading-relaxed text-text-secondary">
-                  {project.result?.trim() || localized(project, 'description', locale)}
-                </p>
-              )}
-              {skills.length > 0 && (
-                <p className="mt-1 text-xs text-text-secondary">
-                  {skills.slice(0, SKILL_COUNT).join(' · ')}
-                  {skills.length > SKILL_COUNT && ` +${skills.length - SKILL_COUNT}`}
-                </p>
-              )}
-            </li>
-          )
-        })}
-      </ul>
-    </section>
+              <div
+                aria-hidden="true"
+                className="fig fig-fill mt-auto aspect-[16/10] border-t border-border bg-bg-secondary p-3"
+                dangerouslySetInnerHTML={figure ? { __html: figure } : undefined}
+              />
+            </Link>
+          </li>
+        )
+      })}
+    </ul>
   )
 }

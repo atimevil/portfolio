@@ -67,5 +67,7 @@ export interface SiteSettings {
     linkedin: string
     email: string
     aboutText: string
+    /** 홈 맨 위 대표 사진. 비우면 아바타로 대신한다. */
+    cover?: string
   }
 }

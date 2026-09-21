@@ -15,7 +15,14 @@ import { useEffect } from 'react'
 export default function OpenTargetDetails() {
   useEffect(() => {
     const open = () => {
-      const id = decodeURIComponent(window.location.hash.slice(1))
+      const raw = window.location.hash.slice(1)
+      // 누가 손으로 고친 링크처럼 %가 깨져 있으면 decodeURIComponent가 던져 페이지가 통째로 사라진다
+      let id = raw
+      try {
+        id = decodeURIComponent(raw)
+      } catch {
+        // 그대로 raw로 찾는다
+      }
       if (!id) return
       const el = document.getElementById(id)
       if (!el) return

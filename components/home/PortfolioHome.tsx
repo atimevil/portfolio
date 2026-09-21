@@ -62,12 +62,15 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
   const aboutHref = locale === 'en' ? '/en/about' : '/about'
   const workBase = locale === 'en' ? '/en/work' : '/work'
 
-  const sections: { id: string; label: UiKey }[] = [
-    { id: 'projects', label: 'projects' },
-    { id: 'research', label: 'research' },
-    { id: 'awards', label: 'awards' },
-    { id: 'writing', label: 'recentPosts' },
-  ]
+  // 목차는 실제로 그려지는 섹션만 — 빈 섹션은 아래에서 렌더하지 않으므로 링크가 허공을 가리킨다
+  const sections = (
+    [
+      { id: 'projects', label: 'projects', on: true }, // 이 섹션은 항상 그린다
+      { id: 'research', label: 'research', on: measured.length > 0 },
+      { id: 'awards', label: 'awards', on: record.length > 0 },
+      { id: 'writing', label: 'recentPosts', on: posts.length > 0 },
+    ] satisfies { id: string; label: UiKey; on: boolean }[]
+  ).filter((s) => s.on)
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 w-full outline-none">

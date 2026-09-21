@@ -74,7 +74,7 @@
     "type": "project",
     "order": 3,
     "year": "2025.09~11",
-    "title": "CTF-Solver — 보안 자동화 MCP 서버 (⭐53)",
+    "title": "CTF-Solver — 보안 자동화 MCP 서버",
     "description": "MIT 라이선스로 공개된 Wh0am123/MCP-Kali-Server(도구 약 10종)를 기반으로 Kali Linux 보안도구 55종 이상까지 확장하고, 멀티스텝 워크플로를 설계했다. 화이트햇 스쿨 최종 프로젝트 Not-Yet(팀 프로젝트, 개발 담당)의 후속으로, 발표 이후 혼자 이어서 확장했다.",
     "skills": [
       "Python",
@@ -221,7 +221,7 @@
   {
     "id": "a7",
     "type": "award",
-    "year": "2026",
+    "year": "2026.07",
     "title": "호남 IS 해커톤 장려상",
     "description": ""
   },

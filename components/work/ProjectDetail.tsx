@@ -3,6 +3,7 @@ import type { PortfolioItem } from '@/types'
 import { getOrderedProjects, projectSlug } from '@/lib/items'
 import { hasCaseStudy, parseMetrics } from '@/lib/caseStudy'
 import { projectLinks } from '@/lib/projectLinks'
+import { applyGithubStats } from '@/lib/githubStats'
 import { readFigure } from '@/lib/figure'
 import { t, localized, type Locale } from '@/lib/i18n'
 
@@ -15,7 +16,7 @@ import { t, localized, type Locale } from '@/lib/i18n'
 export default function ProjectDetail({ project, locale = 'ko' }: { project: PortfolioItem; locale?: Locale }) {
   const title = localized(project, 'title', locale)
   const links = projectLinks(project, locale)
-  const metrics = parseMetrics(localized(project, 'metrics', locale))
+  const metrics = parseMetrics(applyGithubStats(localized(project, 'metrics', locale), project.github))
   const figure = readFigure(project.thumbnail, locale)
   const columns = (
     [

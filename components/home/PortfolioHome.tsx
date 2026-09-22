@@ -5,6 +5,7 @@ import { getSettings } from '@/lib/settings'
 import { getOrderedProjects, getTimeline, projectSlug, timeKey } from '@/lib/items'
 import { parseMetrics } from '@/lib/caseStudy'
 import { readFigure } from '@/lib/figure'
+import { applyGithubStats } from '@/lib/githubStats'
 import { cleanEmail } from '@/lib/email'
 import { t, localized, blogBase, type Locale, type UiKey } from '@/lib/i18n'
 import SectionNav from '@/components/home/SectionNav'
@@ -227,7 +228,7 @@ function Section({
 /** 프로젝트 한 줄 — 왼쪽에 구조도, 오른쪽에 무엇·결과. 구조도는 알아보는 얼굴이라 읽히지 않아도 된다. */
 function BuiltRow({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
   const figure = readFigure(project.thumbnail, locale)
-  const metric = parseMetrics(localized(project, 'metrics', locale))[0]
+  const metric = parseMetrics(applyGithubStats(localized(project, 'metrics', locale), project.github))[0]
   const summary = localized(project, 'result', locale).trim() || localized(project, 'description', locale)
   return (
     <li>
@@ -260,7 +261,7 @@ function BuiltRow({ project, href, locale }: { project: PortfolioItem; href: str
 
 /** 연구·경진대회 한 줄 — 숫자가 먼저. 연구 프로젝트는 상세로, 대회는 소개의 해당 항목으로 간다. */
 function MeasuredRow({ item, href, locale }: { item: PortfolioItem; href: string; locale: Locale }) {
-  const metric = parseMetrics(localized(item, 'metrics', locale))[0]
+  const metric = parseMetrics(applyGithubStats(localized(item, 'metrics', locale), item.github))[0]
   const summary = localized(item, 'result', locale).trim() || localized(item, 'description', locale)
   const body = (
     <>

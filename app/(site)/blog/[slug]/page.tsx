@@ -10,6 +10,7 @@ import remarkMath from 'remark-math'
 import rehypeKatex from 'rehype-katex'
 import rehypePrettyCode from 'rehype-pretty-code'
 import rehypeCollapsibleCode from '@/lib/mdx/rehypeCollapsibleCode'
+import rehypeUnwrapBoldParagraphs from '@/lib/mdx/rehypeUnwrapBoldParagraphs'
 import { renderBlogHtml } from '@/lib/renderBlogHtml'
 import ViewIncrementer from '@/components/blog/ViewIncrementer'
 import TagBadges from '@/components/blog/TagBadges'
@@ -89,7 +90,7 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
               options={{
                 mdxOptions: {
                   remarkPlugins: [remarkGfm, remarkMath],
-                  rehypePlugins: [rehypeKatex, rehypeCollapsibleCode, [rehypePrettyCode, { theme: 'material-theme-palenight', keepBackground: false }]],
+                  rehypePlugins: [rehypeUnwrapBoldParagraphs, rehypeKatex, rehypeCollapsibleCode, [rehypePrettyCode, { theme: 'material-theme-palenight', keepBackground: false }]],
                 },
               }}
             />

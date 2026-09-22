@@ -227,9 +227,7 @@
     "type": "award",
     "year": "2026.08.27~29",
     "title": "호남권 SW중심대학 LLM 해커톤 경진대회 우수상",
-    "description": "1박 2일 해커톤.",
-    "title_en": "Honam SW-Centered University LLM Hackathon: Excellence Award",
-    "description_en": "A two-day overnight hackathon."
+    "title_en": "Honam SW-Centered University LLM Hackathon: Excellence Award"
   },
   {
     "id": "a3",
@@ -272,8 +270,9 @@
     "type": "award",
     "year": "2026.07.30~31",
     "title": "호남 IS 해커톤 장려상",
-    "description": "",
-    "title_en": "Honam IS Hackathon: Honorable Mention"
+    "description": "제주에서 1박 2일로 열린 해커톤.",
+    "title_en": "Honam IS Hackathon: Honorable Mention",
+    "description_en": "A two-day overnight hackathon held in Jeju."
   },
   {
     "id": "a8",

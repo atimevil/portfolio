@@ -309,9 +309,9 @@
     "type": "award",
     "year": "2026.07.30~31",
     "title": "호남 IS 해커톤 장려상",
-    "description": "제주에서 1박 2일로 열린 해커톤.",
+    "description": "제주에서 1박 2일로 열린 해커톤. AI 스마트팜 사전 설계 서비스 [안스마트팜](/work/ansmartfarm)으로 참가했다(팀 조대조).",
     "title_en": "Honam IS Hackathon: Honorable Mention",
-    "description_en": "A two-day overnight hackathon held in Jeju."
+    "description_en": "A two-day overnight hackathon in Jeju. I took part with An-SmartFarm, an AI smart-farm pre-design service (Team Jodaejo)."
   },
   {
     "id": "a8",
@@ -460,6 +460,32 @@
     ],
     "github": "https://github.com/atimevil/dari",
     "order": 9,
+    "visible": true,
+    "featured": false
+  },
+  {
+    "id": "p14",
+    "type": "project",
+    "year": "2026.07.30~31",
+    "slug": "ansmartfarm",
+    "title": "안스마트팜 — AI 스마트팜 사전 설계",
+    "title_en": "An-SmartFarm: AI smart-farm pre-design service",
+    "description": "지도에 부지를 그리고 작물·예산·자동화 수준을 고르면, 실제 단가 자료로 배치안과 구축비·운영수지·보조사업 시나리오를 내고 그 위에 LLM이 설명 리포트를 실시간으로 쓴다. 호남 IS 해커톤 출품작(팀 조대조).",
+    "description_en": "You draw a plot on a map and pick the crop, budget, and automation level; it produces a layout, construction cost, operating balance, and subsidy scenarios from real price data, and an LLM writes an explanation report over that in real time. Entry for the Honam IS Hackathon (Team Jodaejo).",
+    "problem": "스마트팜을 지으려면 온실 단가·장비·작물 소득·부지 시세·보조사업이 흩어져 있어 사전에 비용과 수지를 가늠하기 어렵다. LLM에 맡기면 금액을 지어내는 환각이 문제다.",
+    "problem_en": "Planning a smart farm means greenhouse costs, equipment, crop income, land prices, and subsidies are scattered, so it is hard to estimate cost and balance in advance. Handing it to an LLM risks hallucinated figures.",
+    "contribution": "계산은 코드가, 설명만 LLM이 하는 TAG 방식으로 설계했다. 모든 금액은 공공데이터 기반 CSV 8종(온실 단가·ICT 장비·작물 소득·부지 실거래·보조사업 등) 조회이고 코드에 하드코딩한 단가가 없다. 모든 행에 출처URL·신뢰도를 붙였고, 시스템 프롬프트로 수치 재계산·환각을 막고 AI 호출이 실패하면 템플릿 리포트로 폴백해 그 사실을 화면에 밝힌다.",
+    "contribution_en": "Designed it TAG-style: code does the math, the LLM only explains. Every figure is a lookup into 8 public-data CSVs (greenhouse costs, ICT equipment, crop income, land transactions, subsidies, and more) with no hardcoded prices. Each row carries a source URL and confidence, the system prompt forbids recomputing numbers or hallucinating, and if the AI call fails it falls back to a template report and says so on screen.",
+    "result": "부지 배치안과 구축비·운영수지·보조사업 시나리오를 내고, 화면의 숫자마다 공공데이터 출처를 댈 수 있다. 호남 IS 해커톤 장려상.",
+    "result_en": "Produces a plot layout with construction cost, operating balance, and subsidy scenarios, and can cite a public-data source for every number on screen. Encouragement Award at the Honam IS Hackathon.",
+    "skills": [
+      "JavaScript",
+      "Node.js",
+      "Claude API",
+      "Docker"
+    ],
+    "github": "https://github.com/atimevil/ansmartfarm",
+    "order": 13,
     "visible": true,
     "featured": false
   }

@@ -48,7 +48,7 @@ export default function OpengraphImage() {
           <div style={{ marginLeft: 20, fontSize: 36, fontWeight: 700 }}>foxibu</div>
         </div>
 
-        <div style={{ marginTop: 'auto', fontSize: 28, color: ACCENT_TEXT }}>Student · LLM agents · Model evaluation</div>
+        <div style={{ marginTop: 'auto', fontSize: 28, color: ACCENT_TEXT }}>LLM agents · Model evaluation</div>
         <div style={{ marginTop: 16, fontSize: 64, fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.15, maxWidth: 980 }}>
           I build LLM agents and check where models go wrong.
         </div>

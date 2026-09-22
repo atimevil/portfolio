@@ -11,7 +11,7 @@ export function generateMetadata() {
   return buildPageMetadata({
     path: '/en',
     title: `${name} — AI/ML · LLM Agents`,
-    description: 'I build LLM agents and check where models go wrong. Portfolio of a student working on ML and LLM agents.',
+    description: 'I build LLM agents and check where models go wrong. Projects, research, and competition results.',
     absoluteTitle: true,
     languages: { ko: '/', en: '/en' },
   })

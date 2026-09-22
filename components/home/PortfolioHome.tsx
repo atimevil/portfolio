@@ -19,15 +19,16 @@ const TEASER_COUNT = 3
 // '에이전트를 만들고 그 에이전트를 평가한다'로 읽히지 않게 주어를 나눈다 —
 // 만든 것(CTF-Solver 등)과 잰 것(FinBERT·경진대회)은 서로 다른 작업이다.
 const INTRO: Record<Locale, { role: string; statement: string; summary: string }> = {
-  // 학생이라 직함 대신 하는 일을 적는다. 보안은 교육과정 한 번이라 내세우지 않는다.
+  // 직함 자리는 비우고 하는 분야만 적는다('학생'을 직함처럼 두면 정보 없이 낮아 보인다).
+  // 학교·전공·학년은 구체적인 사실로 따로 넣는다. 보안은 교육과정 한 번이라 내세우지 않는다.
   ko: {
-    role: '학생 · LLM 에이전트 · 모델 평가',
+    role: 'LLM 에이전트 · 모델 평가',
     statement: 'LLM 에이전트를 만들고 모델이 어디서 틀리는지 확인합니다.',
     summary:
       'Kali 보안 도구를 55종 넘게 다루는 MCP 에이전트 CTF-Solver를 만들었습니다. 금융 문장으로만 학습한 모델이 일반 리뷰에서 어떻게 틀리는지 연구해 KCC 2026에 실었습니다.',
   },
   en: {
-    role: 'Student · LLM agents · Model evaluation',
+    role: 'LLM agents · Model evaluation',
     statement: 'I build LLM agents and check where models go wrong.',
     summary:
       'I built CTF-Solver, an MCP agent that drives more than 55 Kali security tools. I also published a KCC 2026 paper on how a model trained only on financial text gets general reviews wrong.',

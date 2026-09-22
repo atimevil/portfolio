@@ -273,9 +273,9 @@
     "type": "activity",
     "year": "2026.06",
     "title": "KCC 2026 논문 게재 — FinBERT와 LLM 성능 비교",
-    "description": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」, 한국정보과학회 학술발표논문집 2026.06. 6인 중 2저자 (교신저자 조석헌, UCSD). 논문에 실린 실험을 돌리고 영문 초록을 썼다. UCSD 프로그램이 끝난 뒤에도 이어서 원고 교정과 제출까지 맡았다.",
+    "description": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」, 한국정보과학회 학술발표논문집 2026.06. 6인 중 2저자 (교신저자 조석헌(Seokheon Cho), UCSD). 논문에 실린 실험을 돌리고 영문 초록을 썼다. UCSD 프로그램이 끝난 뒤에도 이어서 원고 교정과 제출까지 맡았다.",
     "title_en": "KCC 2026 paper: FinBERT vs. LLM performance comparison",
-    "description_en": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」 (\"Sentiment Classification of U.S. Yelp Reviews: FinBERT vs. LLMs\"), Proceedings of KIISE (Korean Institute of Information Scientists and Engineers), June 2026. Second author of six (corresponding author: 조석헌, UCSD). I ran the experiments the paper reports, wrote its English abstract, and proofread and submitted the manuscript after the UCSD program ended."
+    "description_en": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」 (\"Sentiment Classification of U.S. Yelp Reviews: FinBERT vs. LLMs\"), Korea Computer Congress (KCC) 2026, Korean Institute of Information Scientists and Engineers (KIISE), June 2026. Second author of six (corresponding author: Seokheon Cho, UCSD). I ran the experiments the paper reports, wrote its English abstract, and proofread and submitted the manuscript after the UCSD program ended."
   },
   {
     "id": "a4",

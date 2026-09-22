@@ -273,6 +273,7 @@ function MeasuredRow({ item, href, locale }: { item: PortfolioItem; href: string
         </p>
         <h3 className="mt-0.5 font-semibold leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
           {localized(item, 'title', locale)}
+          <span aria-hidden="true" className="ml-1 inline-block text-text-muted opacity-0 transition-opacity group-hover:opacity-100 group-hover:text-accent">→</span>
         </h3>
         {summary && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-text-secondary">{summary}</p>}
       </div>

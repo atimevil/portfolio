@@ -26,6 +26,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
     ] as const
   ).filter(([, body]) => body?.trim())
   const aboutHref = locale === 'en' ? '/en/about' : '/about'
+  const homeHref = locale === 'en' ? '/en' : '/'
   const workBase = locale === 'en' ? '/en/work' : '/work'
   // 하나 읽고 나면 뒤로 가는 것 말고 할 게 없었다. 이웃 프로젝트로 이어준다.
   const ordered = getOrderedProjects()
@@ -35,12 +36,18 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
-      <Link
-        href={aboutHref}
-        className="inline-flex min-h-[24px] items-center text-sm text-text-secondary transition-colors hover:text-accent"
-      >
-        {t(locale, 'backToAbout')}
-      </Link>
+      {/* 홈에서 왔든 소개에서 왔든 돌아갈 곳을 둘 다 보여준다(← 소개 하나로는 홈에서 온 방문자가 막혔다) */}
+      <nav aria-label={t(locale, 'projects')} className="flex flex-wrap items-center gap-2 text-sm text-text-secondary">
+        <Link href={homeHref} className="min-h-[24px] inline-flex items-center transition-colors hover:text-accent">
+          {t(locale, 'home')}
+        </Link>
+        <span aria-hidden="true" className="text-text-muted">/</span>
+        <Link href={aboutHref} className="min-h-[24px] inline-flex items-center transition-colors hover:text-accent">
+          {t(locale, 'projects')}
+        </Link>
+        <span aria-hidden="true" className="text-text-muted">/</span>
+        <span className="text-text-muted truncate">{title}</span>
+      </nav>
 
       <header className="mt-4 mb-7 border-b border-border pb-6">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">

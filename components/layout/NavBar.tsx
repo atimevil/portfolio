@@ -58,6 +58,17 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
       ? pathForLocale(pathname, 'en')
       : '/en'
 
+  // 글은 한국어로만 쓴다. 영어 화면에서 '글' 링크를 누르면 한국어 페이지로 가므로 미리 알린다.
+  const linkLabel = (link: { href: string; labelKey: UiKey }) =>
+    isEn && link.href === '/blog' ? (
+      <>
+        {t(locale, link.labelKey)}
+        <span className="ml-1 text-[10px] uppercase tracking-wide text-text-muted">KO</span>
+      </>
+    ) : (
+      t(locale, link.labelKey)
+    )
+
   const linkClass = (href: string) =>
     isActive(pathname, href)
       ? 'text-sm font-semibold text-accent'
@@ -94,7 +105,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
         <div className="hidden md:flex items-center gap-6">
           {links.map((link) => (
             <Link key={link.href} href={link.href} className={linkClass(link.href)}>
-              {t(locale, link.labelKey)}
+              {linkLabel(link)}
             </Link>
           ))}
           {localeToggle}
@@ -135,7 +146,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
             className={`flex min-h-[44px] items-center ${linkClass(link.href)}`}
             onClick={() => setMenuOpen(false)}
           >
-            {t(locale, link.labelKey)}
+            {linkLabel(link)}
           </Link>
         ))}
         <div className="flex min-h-[44px] items-center gap-4">

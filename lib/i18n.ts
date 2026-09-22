@@ -39,6 +39,7 @@ const UI = {
   linkPaper: { ko: '논문', en: 'Paper' },
   linkSite: { ko: '사이트', en: 'Website' },
   backToAbout: { ko: '← 소개', en: '← About' },
+  home: { ko: '홈', en: 'Home' },
   prevProject: { ko: '← 이전 프로젝트', en: '← Previous' },
   nextProject: { ko: '다음 프로젝트 →', en: 'Next →' },
   // 홈 섹션 이름은 "전체 보기"로 도착하는 /about의 섹션 이름과 같게 둔다.

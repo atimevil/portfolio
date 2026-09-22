@@ -5,7 +5,7 @@
     "order": 0,
     "year": "2026.01~02",
     "title": "UCSD Qualcomm Institute — FinBERT vs LLM 감성분류 연구",
-    "description": "UC 샌디에이고 퀄컴연구소 37일 AI 연구 집중형 프로그램(교내 선발 5명, 부기수장). 두 학교에서 모인 5인 팀에서 BERT·FinBERT 베이스라인을 작성해 돌렸다. 데이터 파이프라인도 맡아 Yelp 리뷰 65만 건을 Gemini 품질 필터로 617,611건까지 정제하고 OpenAI 배치·Gemini API로 라벨링했다. FPB만 학습한 FinBERT가 평점 3 이상 리뷰의 90~96%를 중립으로 분류한 반면 제로샷 Gemini는 1점 리뷰의 98.7%를 부정, 5점 리뷰의 97.6%를 긍정으로 분류해 부정적 전이(negative transfer)를 실증했다. 프로그램 종료 후에도 지도교수와 연구를 이어가 KCC 2026에 게재했다(6인 중 2저자). 후속으로 FinBERT·Gemini 합의 124,381건을 풀로 삼은 준지도 자기학습으로 금융 테스트셋 Macro-F1을 0.84~0.85에서 0.87로 올렸다. 이 후속 연구는 미출판 상태다(최종 해커톤 발표만).",
+    "description": "UC 샌디에이고 퀄컴연구소 37일 AI 연구 집중형 프로그램(교내 선발 5명, 부기수장). 강의·면담·중간 발표·최종 해커톤 발표가 모두 영어로 진행됐다. 두 학교에서 모인 5인 팀에서 BERT·FinBERT 베이스라인을 작성해 돌렸다. 데이터 파이프라인도 맡아 Yelp 리뷰 65만 건을 Gemini 품질 필터로 617,611건까지 정제하고 OpenAI 배치·Gemini API로 라벨링했다. FPB만 학습한 FinBERT가 평점 3 이상 리뷰의 90~96%를 중립으로 분류한 반면 제로샷 Gemini는 1점 리뷰의 98.7%를 부정, 5점 리뷰의 97.6%를 긍정으로 분류해 부정적 전이(negative transfer)를 실증했다. 프로그램 종료 후에도 지도교수와 연구를 이어가 KCC 2026에 게재했다(6인 중 2저자). 후속으로 FinBERT·Gemini 합의 124,381건을 풀로 삼은 준지도 자기학습으로 금융 테스트셋 Macro-F1을 0.84~0.85에서 0.87로 올렸다. 이 후속 연구는 미출판 상태다(최종 해커톤 발표만).",
     "skills": [
       "Python",
       "PyTorch",
@@ -24,7 +24,7 @@
     "slug": "finbert-vs-llm",
     "measure": true,
     "title_en": "UCSD Qualcomm Institute: FinBERT vs. LLM sentiment classification research",
-    "description_en": "A 37-day AI research intensive at UC San Diego's Qualcomm Institute. I was one of five students selected from my university and served as deputy cohort lead. Our five-person team came from two universities. I wrote and ran the BERT and FinBERT baselines and owned the data pipeline, which filtered 650K Yelp reviews down to 617,611 with a Gemini quality filter and labeled them through the OpenAI Batch API and the Gemini API. FinBERT, trained only on FPB, classified 90 to 96% of reviews rated 3 or higher as neutral. Zero-shot Gemini labeled 98.7% of 1-star reviews negative and 97.6% of 5-star reviews positive. The gap showed negative transfer. I kept working with the advisor after the program, and the paper was published at KCC 2026 (second author of six). A follow-up used semi-supervised self-training on 124,381 reviews where FinBERT and Gemini agreed, and raised financial test-set Macro-F1 to 0.87, up from 0.84 and 0.85. The follow-up is unpublished and was only presented at the final hackathon.",
+    "description_en": "A 37-day AI research intensive at UC San Diego's Qualcomm Institute. I was one of five students selected from my university and served as deputy cohort lead. Lectures, office hours, progress presentations, and the closing hackathon presentation were all in English. Our five-person team came from two universities. I wrote and ran the BERT and FinBERT baselines and owned the data pipeline, which filtered 650K Yelp reviews down to 617,611 with a Gemini quality filter and labeled them through the OpenAI Batch API and the Gemini API. FinBERT, trained only on FPB, classified 90 to 96% of reviews rated 3 or higher as neutral. Zero-shot Gemini labeled 98.7% of 1-star reviews negative and 97.6% of 5-star reviews positive. The gap showed negative transfer. I kept working with the advisor after the program, and the paper was published at KCC 2026 (second author of six). A follow-up used semi-supervised self-training on 124,381 reviews where FinBERT and Gemini agreed, and raised financial test-set Macro-F1 to 0.87, up from 0.84 and 0.85. The follow-up is unpublished and was only presented at the final hackathon.",
     "problem_en": "Nobody had checked what happens when FinBERT, trained only on a financial corpus (FPB), is applied as-is to general reviews.",
     "contribution_en": "Wrote and ran the BERT and FinBERT baselines. Also owned the data pipeline that filtered 650K Yelp reviews with a Gemini quality filter.",
     "result_en": "Showed negative transfer with numbers and published it at KCC 2026 as second author of six. A follow-up with semi-supervised self-training improved scores on the financial test set.",
@@ -63,9 +63,9 @@
     "id": "p2",
     "type": "project",
     "order": 2,
-    "year": "2026",
+    "year": "2026.03~06",
     "title": "ChosunInsight — 하이브리드 RAG 챗봇",
-    "description": "조선대 학사 정보를 안내하는 하이브리드 RAG 챗봇. 질문 의도에 따라 정형 답변·벡터 검색·공식 웹 검색으로 라우팅한다. 밀집 검색(ChromaDB)과 희소 검색(BM25)을 RRF(Reciprocal Rank Fusion)로 결합했고 학사 공식 도메인 실시간 검색은 별도 경로로 두었다. 산학프로젝트 5인 팀에서 RAG 엔진 개발·고도화 담당.",
+    "description": "조선대 학사 정보를 안내하는 하이브리드 RAG 챗봇. 이어지는 질문은 독립된 질문으로 다시 쓴 뒤, 의도에 따라 정형 답변·벡터 검색·공식 웹 검색으로 라우팅한다. 밀집 검색(ChromaDB)과 희소 검색(BM25)을 RRF(Reciprocal Rank Fusion)로 결합해 찾은 근거를 GPT-4o-mini에 넘긴다. 표 구조를 살리는 마크다운 정규화, 메타데이터 보강, 무중단 Chroma 재색인까지 수집·색인 파이프라인도 맡았고, 범위 밖 질문에는 지어내지 않고 답을 거절하게 했다. 산학프로젝트 5인 팀에서 RAG 엔진 개발·고도화 담당.",
     "skills": [
       "Python",
       "FastAPI",
@@ -77,15 +77,15 @@
     ],
     "github": "https://github.com/chosuninsight/chosuninsight",
     "problem": "학사 정보는 정형·비정형·실시간이 섞여 있어 단일 검색 방식으로는 답이 나오지 않았다.",
-    "contribution": "산학 5인 팀에서 RAG 엔진 개발과 고도화를 담당했다. 질문 의도에 따른 3-way 라우팅도 설계했다.",
-    "result": "밀집 검색(ChromaDB)과 희소 검색(BM25)을 RRF로 결합하고 학사 공식 도메인 실시간 검색은 별도 경로로 분리했다.",
+    "contribution": "산학 5인 팀에서 RAG 엔진 개발과 고도화를 담당했다. 질문 의도에 따른 3-way 라우팅과 수집·색인 파이프라인도 맡았다.",
+    "result": "밀집 검색(ChromaDB)과 희소 검색(BM25)을 RRF로 결합했고 학사 공식 도메인 실시간 검색은 별도 경로로 분리했다. 범위 밖 질문은 지어내지 않고 거절한다.",
     "thumbnail": "/figures/chosuninsight-rag.svg",
     "slug": "chosun-insight",
     "title_en": "ChosunInsight: Hybrid RAG chatbot",
-    "description_en": "A hybrid RAG chatbot that answers questions about academic affairs at Chosun University. It sends each question, by intent, to a structured answer, vector search, or a search of the university's official website. Dense retrieval (ChromaDB) and sparse retrieval (BM25) are merged with RRF (Reciprocal Rank Fusion), and live search over the official domain runs on its own path. I developed and improved the RAG engine on a five-person industry-academia project team.",
+    "description_en": "A hybrid RAG assistant for Chosun University's academic records. It rewrites a follow-up into a standalone question, then routes it by intent to a structured answer, vector search, or live search of the official website. Dense retrieval (ChromaDB) and sparse retrieval (BM25) are fused with RRF (Reciprocal Rank Fusion), and the retrieved context goes to GPT-4o-mini. I also wrote the ingestion and index pipeline (markdown normalization that keeps table structure, metadata enrichment, zero-downtime Chroma rebuilds) and made the assistant decline out-of-scope questions instead of making up an answer. I owned the RAG engine on a five-person industry-academia project team.",
     "problem_en": "Academic information mixes structured, unstructured, and real-time data, so no single retrieval method could answer every question.",
-    "contribution_en": "Developed and improved the RAG engine on a five-person industry-academia team. Also designed the three-way routing by question intent.",
-    "result_en": "Merged dense (ChromaDB) and sparse (BM25) retrieval with RRF, and moved live search of the university's official domain to its own path.",
+    "contribution_en": "Owned the RAG engine on a five-person industry-academia team, including three-way routing by question intent and the ingestion and index pipeline.",
+    "result_en": "Fused dense (ChromaDB) and sparse (BM25) retrieval with RRF and moved live search of the university's official domain to its own path. Out-of-scope questions get declined instead of a made-up answer.",
     "featured": true
   },
   {
@@ -94,7 +94,7 @@
     "order": 3,
     "year": "2025.09~11",
     "title": "CTF-Solver — 보안 자동화 MCP 서버",
-    "description": "MIT 라이선스로 공개된 Wh0am123/MCP-Kali-Server(도구 약 10종)를 기반으로 Kali Linux 보안도구 55종 이상까지 확장하고 멀티스텝 워크플로를 설계했다. 화이트햇 스쿨 최종 프로젝트 Not-Yet(팀 프로젝트, 개발 담당)의 후속으로, 발표 이후 혼자 이어서 확장했다.",
+    "description": "MIT 라이선스로 공개된 Wh0am123/MCP-Kali-Server(도구 약 10종)를 기반으로 Kali Linux 보안도구 55종 이상까지 확장하고, 포렌식·암호·클라우드 멀티스텝 워크플로와 Docker 패키징을 더했다. 오용을 줄이려고 범위를 자동 침투 테스트에서 CTF 문제 풀이로 좁혔고, Smithery 레지스트리에 공개해 운영하는 동안 월 600회 안팎의 도구 호출이 있었다. 화이트햇 스쿨 최종 프로젝트 Not-Yet(팀 프로젝트, 개발 담당)의 후속으로, 발표 이후 혼자 이어서 확장했다.",
     "skills": [
       "Python",
       "MCP",
@@ -105,16 +105,16 @@
     "github": "https://github.com/foxibu/CTF-Solver",
     "problem": "기반이 된 MCP-Kali-Server는 도구가 약 10종이고 단발 실행만 가능했다.",
     "contribution": "Kali Linux 보안도구를 55종 이상으로 늘리고 멀티스텝 워크플로를 짰다.",
-    "result": "화이트햇 스쿨 최종 프로젝트 발표 이후 후속 작업으로 혼자 이어서 확장했다.",
-    "metrics": "★ 53 | GitHub 스타\n55+ | 감싼 보안도구",
+    "result": "Smithery 레지스트리에 공개해 운영하는 동안 월 600회 안팎 호출됐다. GitHub 스타 53개, 포크 7개. 화이트햇 스쿨 최종 프로젝트 발표 이후 혼자 이어서 확장했다.",
+    "metrics": "★ 53 | GitHub 스타\n55+ | 감싼 보안도구\n~600 | 월 도구 호출(Smithery 공개 당시)",
     "thumbnail": "/figures/ctf-solver-mcp.svg",
     "slug": "ctf-solver",
     "title_en": "CTF-Solver: MCP server for security automation",
-    "description_en": "I started from the MIT-licensed Wh0am123/MCP-Kali-Server, which had about 10 tools, extended it to more than 55 Kali Linux security tools, and designed multi-step workflows. It grew out of Not-Yet, our Whitehat School final project (a team project where I handled development), and I kept working on it alone after the presentation.",
+    "description_en": "Starting from the MIT-licensed Wh0am123/MCP-Kali-Server, which had about 10 tools, I extended it to more than 55 Kali Linux security tools with multi-step forensics, cryptography, and cloud workflows and Docker packaging. To limit misuse I re-scoped it from automated penetration testing to CTF problem-solving. I published it to the Smithery registry, where it drew about 600 tool calls a month while it was live. It grew out of Not-Yet, our Whitehat School final project (a team project where I handled development), and I kept working on it alone after the presentation.",
     "problem_en": "The MCP-Kali-Server it was built on had about 10 tools and could only run one command at a time.",
     "contribution_en": "Extended it to more than 55 Kali Linux security tools and built multi-step workflows.",
-    "result_en": "A follow-up to the Whitehat School final project that I kept working on alone after the presentation.",
-    "metrics_en": "★ 53 | GitHub stars\n55+ | Security tools wrapped",
+    "result_en": "Published to the Smithery registry, where it drew about 600 tool calls a month while it was live. 53 GitHub stars, 7 forks. I kept extending it alone after the Whitehat School final presentation.",
+    "metrics_en": "★ 53 | GitHub stars\n55+ | Security tools wrapped\n~600 | Tool calls per month (while on Smithery)",
     "featured": true
   },
   {
@@ -123,7 +123,7 @@
     "order": 4,
     "year": "2025.07",
     "title": "Not-Yet — 보안 MCP 서버",
-    "description": "화이트햇 스쿨 3기 최종 프로젝트(팀 프로젝트, 개발 담당). Kali Linux 침투 테스트 도구와 Perplexity AI 검색을 통합한 MCP 서버. → 발표 이후 CTF-Solver로 이어서 확장.",
+    "description": "화이트햇 스쿨 3기(7개월 과정의 국가 사이버보안 교육) 최종 프로젝트(팀 프로젝트, 개발 담당). Kali Linux 침투 테스트 도구와 Perplexity AI 검색을 FastMCP 서버 하나로 묶어, LLM이 정해진 스크립트를 따르는 대신 도구를 골라 호출하게 했다. → 발표 이후 CTF-Solver로 이어서 확장.",
     "skills": [
       "Python",
       "MCP",
@@ -133,7 +133,7 @@
     "thumbnail": "/figures/notyet-mcp.svg",
     "slug": "not-yet",
     "title_en": "Not-Yet: Security MCP server",
-    "description_en": "Final project for Whitehat School cohort 3 (a team project where I handled development). An MCP server that combines Kali Linux penetration-testing tools with Perplexity AI search. After the presentation I extended it into CTF-Solver."
+    "description_en": "Final project for Whitehat School cohort 3, a seven-month national cybersecurity training program (a team project where I handled development). A single FastMCP server fronts Kali Linux penetration-testing tools and Perplexity AI search, so an LLM picks and calls tools instead of following a fixed script. After the presentation I extended it into CTF-Solver."
   },
   {
     "id": "p5",
@@ -213,19 +213,19 @@
   {
     "id": "a1",
     "type": "activity",
-    "year": "2026.07",
+    "year": "2026.07.01~15",
     "title": "2026 AI·SW중심대학 디지털 경진대회 AI부문 28위 / 269팀",
-    "description": "AI 에이전트의 다음 행동을 14개 클래스로 예측. 추론 10분·1GB·오프라인 제약 아래 269팀 중 28위(팀 HUE, Macro-F1 0.79334). 계속 혼동되던 4개 클래스는 모델 성능이 아니라 라벨 모호성으로 진단했다. 입력 37.6%가 잘려나가던 것과 실패한 앙상블의 원인이 보정되지 않은 logit임도 찾아냈다.",
+    "description": "DACON 진행, IITP 주최. 팀장으로 참가해 AI 에이전트의 다음 행동을 14개 클래스로 예측했고, RunPod GPU에서 학습했다. 추론 10분·1GB·오프라인 제약 아래 269팀 중 28위(팀 HUE, Macro-F1 0.79334). 계속 혼동되던 4개 클래스는 모델 성능이 아니라 라벨 모호성으로 진단했다. 입력 37.6%가 잘려나가던 것과 실패한 앙상블의 원인이 보정되지 않은 logit임도 찾아냈다.",
     "measure": true,
     "metrics": "28 / 269 | 팀 중 순위 · Macro-F1 0.79334",
     "title_en": "2026 AI·SW-Centered University Digital Competition, AI track: 28th of 269 teams",
-    "description_en": "The task was predicting an AI agent's next action across 14 classes, with inference limited to 10 minutes, 1 GB, and offline. We placed 28th of 269 teams (Team HUE, Macro-F1 0.79334). Four classes kept getting confused, and I traced that to ambiguous labels. I also found that 37.6% of inputs were being truncated and that the ensemble failed because its logits weren't calibrated.",
+    "description_en": "Run on DACON and hosted by IITP. As team lead, I predicted an AI agent's next action across 14 classes, training on RunPod GPUs, with inference limited to 10 minutes, 1 GB, and offline. We placed 28th of 269 teams (Team HUE, Macro-F1 0.79334). Four classes kept getting confused, and I traced that to ambiguous labels. I also found that 37.6% of inputs were being truncated and that the ensemble failed because its logits weren't calibrated.",
     "metrics_en": "28 / 269 | Team rank · Macro-F1 0.79334"
   },
   {
     "id": "a2",
     "type": "award",
-    "year": "2026.07",
+    "year": "2026.08.27~29",
     "title": "호남권 SW중심대학 LLM 해커톤 경진대회 우수상",
     "description": "1박 2일 해커톤.",
     "title_en": "Honam SW-Centered University LLM Hackathon: Excellence Award",
@@ -236,9 +236,9 @@
     "type": "activity",
     "year": "2026.06",
     "title": "KCC 2026 논문 게재 — FinBERT와 LLM 성능 비교",
-    "description": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」, 한국정보과학회 학술발표논문집 2026.06. 6인 중 2저자 (교신저자 조석헌, UCSD).",
+    "description": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」, 한국정보과학회 학술발표논문집 2026.06. 6인 중 2저자 (교신저자 조석헌, UCSD). 논문에 실린 실험을 돌리고 영문 초록을 썼으며, UCSD 프로그램이 끝난 뒤에도 이어서 원고 교정과 제출까지 맡았다.",
     "title_en": "KCC 2026 paper: FinBERT vs. LLM performance comparison",
-    "description_en": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」 (\"Sentiment Classification of U.S. Yelp Reviews: FinBERT vs. LLMs\"), Proceedings of KIISE (Korean Institute of Information Scientists and Engineers), June 2026. Second author of six (corresponding author: 조석헌, UCSD)."
+    "description_en": "「미국 Yelp 리뷰 감성 분석 분류 모델 개발: FinBERT와 LLM 성능 비교」 (\"Sentiment Classification of U.S. Yelp Reviews: FinBERT vs. LLMs\"), Proceedings of KIISE (Korean Institute of Information Scientists and Engineers), June 2026. Second author of six (corresponding author: 조석헌, UCSD). I ran the experiments the paper reports, wrote its English abstract, and proofread and submitted the manuscript after the UCSD program ended."
   },
   {
     "id": "a4",
@@ -263,9 +263,9 @@
     "type": "award",
     "year": "2026.09.17",
     "title": "AI Pilot Top Gun Challenge 2026 장려상 (KAI 사장상)",
-    "description": "2026.09.17 수상.",
+    "description": "2026.09.17 수상. Unreal Engine 시뮬레이션 속 공중전 조종 에이전트를 만드는 대회로, 2인 팀에서 연속 제어 강화학습을 맡아 AWS에서 학습했다. 토너먼트 8강까지 올랐다.",
     "title_en": "AI Pilot Top Gun Challenge 2026: Honorable Mention (KAI President's Award)",
-    "description_en": "Awarded September 17, 2026."
+    "description_en": "Awarded September 17, 2026. The challenge was building an air-combat pilot agent in an Unreal Engine simulation. On a two-person team I owned the continuous-control reinforcement learning track, trained on AWS, and we reached the quarterfinals of the knockout bracket."
   },
   {
     "id": "a7",
@@ -289,11 +289,11 @@
     "type": "award",
     "year": "2025.10~11",
     "title": "2025년 조선대학교 SW중심대학 AI 챌린지 최우수상",
-    "description": "리더보드 5위였으나 상위 3팀이 500M MACs 제한을 초과해 실격, 30팀 중 최종 2위. 파라미터 5.01M / MACs 499.5M.\nhttps://www.kaggle.com/competitions/2025-csu-sw-ai-challenge",
+    "description": "500M MACs 제한 아래 균열 분할(crack segmentation) 과제. EfficientNet-B0 + GroupNorm U-Net 디코더를 499.5M MACs로 맞췄다. 리더보드 5위였으나 상위 3팀이 500M MACs 제한을 초과해 실격, 30팀 중 최종 2위. 파라미터 5.01M / MACs 499.5M.\nhttps://www.kaggle.com/competitions/2025-csu-sw-ai-challenge",
     "measure": true,
     "metrics": "2 / 30 | 최종 순위 · MACs 499.5M (제한 500M)",
     "title_en": "2025 Chosun University SW-Centered University AI Challenge: Top Excellence Award",
-    "description_en": "We were 5th on the leaderboard. The top three teams went over the 500M MACs limit and were disqualified, so we finished 2nd of 30. Our model had 5.01M parameters and used 499.5M MACs.\nhttps://www.kaggle.com/competitions/2025-csu-sw-ai-challenge",
+    "description_en": "A crack segmentation task under a 500M MACs budget. I tuned an EfficientNet-B0 encoder with a GroupNorm U-Net decoder to 499.5M MACs. We were 5th on the leaderboard. The top three teams went over the 500M MACs limit and were disqualified, so we finished 2nd of 30. Our model had 5.01M parameters and used 499.5M MACs.\nhttps://www.kaggle.com/competitions/2025-csu-sw-ai-challenge",
     "metrics_en": "2 / 30 | Final rank · 499.5M MACs (limit 500M)"
   },
   {

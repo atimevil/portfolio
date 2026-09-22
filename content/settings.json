@@ -7,18 +7,23 @@
   },
   "profile": {
     "name": "foxibu",
-    "bio": "돌려보고 눈으로 확인해야 납득하는 편입니다 · ML · LLM 에이전트",
+    "bio": "이론보다 실제로 해보며 이해하는 것을 좋아합니다 · ML · LLM 에이전트",
     "avatar": "https://avatars.githubusercontent.com/atimevil",
     "skills": [
       "Python",
       "PyTorch",
-      "Next.js",
-      "TypeScript",
-      "Docker"
+      "Hugging Face",
+      "MCP",
+      "LangChain",
+      "ChromaDB",
+      "Docker",
+      "AWS"
     ],
     "github": "https://github.com/atimevil",
     "linkedin": "",
     "email": "atimevil@gmail.com",
-    "aboutText": ""
+    "aboutText": "",
+    "affiliation": "조선대학교 컴퓨터공학과 4학년",
+    "affiliation_en": "Fourth-year Computer Engineering student, Chosun University"
   }
 }

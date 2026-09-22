@@ -11,7 +11,7 @@ interface Props {
 
 // 영문 소개 줄. 키워드 나열('AI/ML · LLM Agents')은 태그처럼 읽혀, 홈 첫 화면·공유 카드와
 // 같은 한 문장을 쓴다. 한국어는 설정의 한 줄 소개(bio)를 쓴다.
-const TAGLINE_EN = 'I build LLM agents and check where models go wrong.'
+const TAGLINE_EN = 'I learn by doing, more than by reading theory.'
 
 // 홈과 소개 페이지가 동일하게 쓰는 프로필 헤더 (이름 + 설명 + 스킬 + 링크)
 export default function ProfileHeader({ profile, locale = 'ko', headingLevel = 1 }: Props) {
@@ -23,6 +23,7 @@ export default function ProfileHeader({ profile, locale = 'ko', headingLevel = 1
       : '')
   const description = locale === 'en' ? TAGLINE_EN : profile.aboutText?.trim() || profile.bio
   const mail = cleanEmail(profile.email)
+  const affiliation = (locale === 'en' ? profile.affiliation_en : profile.affiliation)?.trim()
 
   // 아바타를 왼쪽에 두면 이름·소개만 92px 안으로 밀려, 아래 섹션들과 왼쪽
   // 가장자리가 어긋난다. 오른쪽으로 보내 본문 기준선에 맞춘다.
@@ -37,6 +38,7 @@ export default function ProfileHeader({ profile, locale = 'ko', headingLevel = 1
       </div>
       <div className="min-w-0 flex-1">
         <NameHeading className="text-2xl font-extrabold tracking-tight text-text-primary">{profile.name}</NameHeading>
+        {affiliation && <p className="mt-1 text-sm text-text-secondary">{affiliation}</p>}
         {description && (
           <p className="text-sm text-text-secondary mt-1.5 whitespace-pre-line leading-relaxed">{description}</p>
         )}

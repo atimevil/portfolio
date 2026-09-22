@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og'
 
-export const alt = 'foxibu — I build LLM agents and check where models go wrong.'
+export const alt = 'foxibu — I learn by doing, more than by reading theory.'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -48,7 +48,7 @@ export default function OpengraphImage() {
         </div>
 
         <div style={{ marginTop: 'auto', fontSize: 64, fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.15, maxWidth: 980 }}>
-          I build LLM agents and check where models go wrong.
+          I learn by doing, more than by reading theory.
         </div>
         <div style={{ marginTop: 40, fontSize: 26, color: DIM }}>foxibu.is-a.dev</div>
       </div>

@@ -76,5 +76,8 @@ export interface SiteSettings {
     linkedin: string
     email: string
     aboutText: string
+    /** 소속(학교·학과·학년). 이름 옆에 사실 그대로 적는다. */
+    affiliation?: string
+    affiliation_en?: string
   }
 }

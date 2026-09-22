@@ -14,22 +14,19 @@ const BUILT_COUNT = 4
 const RECORD_COUNT = 6
 const TEASER_COUNT = 3
 
-// 포지션 문구. 설정의 한 줄 소개(bio)는 검색 설명문을 겸해 짧게 두고,
-// 첫 화면에서 "무엇을 하는 사람인가"는 여기서 말한다.
-// '에이전트를 만들고 그 에이전트를 평가한다'로 읽히지 않게 주어를 나눈다 —
-// 만든 것(CTF-Solver 등)과 잰 것(FinBERT·경진대회)은 서로 다른 작업이다.
+// 첫 화면 문구. 제목은 사용자가 직접 쓴 한 줄, 그 아래 요약은 이력서 첫 문장을 옮긴 것이다.
+// 이름 위·아래에 역할 줄은 두지 않는다(제목과 같은 말을 키워드로 되풀이할 뿐이었다).
+// 설정의 한 줄 소개(bio)는 검색 설명문을 겸한다. 보안은 교육과정 한 번이라 내세우지 않는다.
 const INTRO: Record<Locale, { statement: string; summary: string }> = {
-  // 이름 위·아래에 역할 줄을 두지 않는다. 바로 아래 제목 문장과 같은 말을 키워드로 되풀이할 뿐이었다.
-  // 학교·전공·학년은 나중에 구체적인 사실로 넣는다. 보안은 교육과정 한 번이라 내세우지 않는다.
   ko: {
-    statement: 'LLM 에이전트를 만들고 모델이 어디서 틀리는지 확인합니다.',
+    statement: '이론보다 실제로 해보며 이해하는 것을 좋아합니다.',
     summary:
-      'Kali 보안 도구를 55종 넘게 다루는 MCP 에이전트 CTF-Solver를 만들었습니다. 금융 문장으로만 학습한 모델이 일반 리뷰에서 어떻게 틀리는지 연구해 KCC 2026에 실었습니다.',
+      '스스로 도구를 골라 호출하는 LLM 시스템과, 정해진 문서 안에서 답하는 검색 시스템을 만듭니다. MCP 도구를 공개 레지스트리에 올렸고, UC 샌디에이고 퀄컴연구소에서 한 연구로 KCC 2026 논문을 함께 썼습니다.',
   },
   en: {
-    statement: 'I build LLM agents and check where models go wrong.',
+    statement: 'I learn by doing, more than by reading theory.',
     summary:
-      'I built CTF-Solver, an MCP agent that drives more than 55 Kali security tools. I also published a KCC 2026 paper on how a model trained only on financial text gets general reviews wrong.',
+      "I build LLM systems that choose and call tools on their own, and retrieval systems that answer from a specific set of documents. I published MCP tooling to a public registry and co-authored a KCC 2026 paper from research at UC San Diego's Qualcomm Institute.",
   },
 }
 
@@ -76,7 +73,12 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
       <div className="mx-auto grid max-w-6xl gap-12 px-4 py-12 md:px-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-16">
         {/* 왼쪽: 스크롤해도 따라온다(넓은 화면만) */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <p className="font-mono text-xs text-text-muted">{profile.name}</p>
+          <p className="font-mono text-xs text-text-muted">
+            {profile.name}
+            {(locale === 'en' ? profile.affiliation_en : profile.affiliation)?.trim() && (
+              <span className="font-sans"> · {locale === 'en' ? profile.affiliation_en : profile.affiliation}</span>
+            )}
+          </p>
           <h1 className="mt-3 text-[2rem] font-bold leading-[1.25] tracking-tight text-text-primary [text-wrap:balance] md:text-[2.5rem]">
             {intro.statement}
           </h1>

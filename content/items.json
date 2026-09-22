@@ -255,7 +255,7 @@
     "year": "2026.07.01~15",
     "title": "2026 AI·SW중심대학 디지털 경진대회 AI부문 28위 / 269팀",
     "description": "DACON 진행, IITP 주최. 팀장으로 참가해 AI 에이전트의 다음 행동을 14개 클래스로 예측했고 RunPod GPU에서 학습했다. 추론 10분·1GB·오프라인 제약 아래 269팀 중 28위(팀 HUE, Macro-F1 0.79334). 계속 혼동되던 4개 클래스는 모델 성능이 아니라 라벨 모호성으로 진단했다. 입력 37.6%가 잘려나가던 것과 실패한 앙상블의 원인이 보정되지 않은 logit임도 찾아냈다.",
-    "measure": true,
+    "measure": false,
     "metrics": "28 / 269 | 팀 중 순위 · Macro-F1 0.79334",
     "title_en": "2026 AI·SW-Centered University Digital Competition, AI track: 28th of 269 teams",
     "description_en": "Run on DACON and hosted by IITP. As team lead, I predicted an AI agent's next action across 14 classes, training on RunPod GPUs, with inference limited to 10 minutes, 1 GB, and offline. We placed 28th of 269 teams (Team HUE, Macro-F1 0.79334). Four classes kept getting confused, and I traced that to ambiguous labels. I also found that 37.6% of inputs were being truncated and that the ensemble failed because its logits weren't calibrated.",
@@ -302,7 +302,10 @@
     "title": "AI Pilot Top Gun Challenge 2026 장려상 (KAI 사장상)",
     "description": "2026.09.17 수상. Unreal Engine 시뮬레이션 속 공중전 조종 에이전트를 만드는 대회로, 2인 팀에서 연속 제어 강화학습을 맡아 AWS에서 학습했다. 토너먼트 8강까지 올랐다.",
     "title_en": "AI Pilot Top Gun Challenge 2026: Honorable Mention (KAI President's Award)",
-    "description_en": "Awarded September 17, 2026. The challenge was building an air-combat pilot agent in an Unreal Engine simulation. On a two-person team I owned the continuous-control reinforcement learning track, trained on AWS, and we reached the quarterfinals of the knockout bracket."
+    "description_en": "Awarded September 17, 2026. The challenge was building an air-combat pilot agent in an Unreal Engine simulation. On a two-person team I owned the continuous-control reinforcement learning track, trained on AWS, and we reached the quarterfinals of the knockout bracket.",
+    "measure": true,
+    "metrics": "8강 | 토너먼트 진출\n장려상 | KAI 사장상",
+    "metrics_en": "Top 8 | Knockout bracket\nEncouragement | KAI President’s Award"
   },
   {
     "id": "a7",

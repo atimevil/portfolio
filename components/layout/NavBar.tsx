@@ -49,12 +49,12 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
     ? CORE_LINKS.map((l) => ({ ...l, href: l.href === '/blog' ? '/blog' : `/en${l.href}` }))
     : koLinks
 
-  // 반대 로케일로 가는 경로. /en에 짝이 없는 페이지(음악·글 상세 등)에서는 /en 첫 화면으로 보낸다.
-  // /en에 짝이 있는 경로만 그대로 넘기고, 없는 페이지(음악·글 상세 등)는 /en 첫 화면으로 보낸다.
-  const EN_PAIRS = ['/', '/about']
+  // 반대 로케일로 가는 경로. /en에 짝이 있는 곳(홈·소개·프로젝트 상세 /work/<slug>)은
+  // 그대로 넘기고, 짝이 없는 곳(음악·글은 한국어 전용)은 /en 첫 화면으로 보낸다.
+  const hasEnPair = (path: string) => path === '/' || path === '/about' || path.startsWith('/work/')
   const otherLocaleHref = isEn
     ? pathname.replace(/^\/en(?=\/|$)/, '') || '/'
-    : EN_PAIRS.includes(pathname)
+    : hasEnPair(pathname)
       ? pathForLocale(pathname, 'en')
       : '/en'
 

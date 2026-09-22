@@ -46,12 +46,14 @@ describe('content/items.json 영문판', () => {
     expect(missing).toEqual([])
   })
 
-  it('지표는 줄 수와 값이 한국어판과 같다 (라벨만 번역)', () => {
-    const norm = (v: string) => v.replace('~', '–').replace(/일$| days$/, '')
+  it('지표는 줄 수가 같고, 값 안의 숫자가 언어 간에 어긋나지 않는다', () => {
+    // 값의 숫자만 비교한다. "8강"→"Top 8"처럼 순위 표현은 번역되지만 숫자(8)는 같아야 한다.
+    const nums = (v: string) => (v.match(/\d[\d,.]*/g) ?? []).map((n) => n.replace(/,/g, ''))
     for (const i of items.filter((x) => x.metrics)) {
-      const ko = parseMetrics(i.metrics).map((m) => norm(m.value))
-      const en = parseMetrics(i.metrics_en).map((m) => norm(m.value))
-      expect(en, i.id).toEqual(ko)
+      const ko = parseMetrics(i.metrics)
+      const en = parseMetrics(i.metrics_en)
+      expect(en.length, `${i.id} 줄 수`).toBe(ko.length)
+      ko.forEach((m, k) => expect(nums(en[k].value), `${i.id} 지표 ${k}`).toEqual(nums(m.value)))
     }
   })
 })

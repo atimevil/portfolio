@@ -31,11 +31,15 @@ export function repoSlug(githubUrl?: string): string | null {
  * metrics 문자열의 "★ N" 값을 저장된 최신 스타 수로 바꾼다.
  * 저장값이 없거나 ★ 줄이 없으면 원문 그대로 둔다(손으로 적은 값이 폴백).
  */
-export function applyGithubStats(metrics: string | undefined, githubUrl: string | undefined): string | undefined {
+export function applyGithubStats(
+  metrics: string | undefined,
+  githubUrl: string | undefined,
+  stats: Record<string, RepoStat> = readGithubStats(),
+): string | undefined {
   if (!metrics) return metrics
   const slug = repoSlug(githubUrl)
   if (!slug) return metrics
-  const stat = readGithubStats()[slug]
+  const stat = stats[slug]
   if (!stat) return metrics
   // "★ 59 | GitHub 스타" → 숫자만 최신값으로. 한/영 라벨 모두 유지.
   return metrics.replace(/(★\s*)\d[\d,]*/g, `$1${stat.stars}`)

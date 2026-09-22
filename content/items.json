@@ -28,7 +28,8 @@
     "problem_en": "Nobody had checked what happens when FinBERT, trained only on a financial corpus (FPB), is applied as-is to general reviews.",
     "contribution_en": "Wrote and ran the BERT and FinBERT baselines. Also owned the data pipeline that filtered 650K Yelp reviews with a Gemini quality filter.",
     "result_en": "Showed negative transfer with numbers and published it at KCC 2026 as second author of six. A follow-up with semi-supervised self-training improved scores on the financial test set.",
-    "metrics_en": "0.84 → 0.87 | Financial test-set Macro-F1\n617,611 | Reviews kept out of 650K\n90–96% | Share FinBERT labeled neutral"
+    "metrics_en": "0.84 → 0.87 | Financial test-set Macro-F1\n617,611 | Reviews kept out of 650K\n90–96% | Share FinBERT labeled neutral",
+    "visible": true
   },
   {
     "id": "p9",
@@ -57,7 +58,8 @@
     "contribution_en": "I was the only developer on a two-person team. The idea and planning came from my teammate. To turn the preliminary-round skill into a web service, I called Solar Pro 4 directly, passed the source text, persona, and learning history into the prompt, and connected a database that catches duplicate words and tracks the learner profile.",
     "result_en": "It picks vocabulary from a source text based on the learner's history and profile, then gives each word an importance score, \"expressions to use today,\" and a CSV word list. Team Bulldog (No.45) reached the MABC 2026 finals.",
     "metrics_en": "20 | Words selected per text (max)\n3 | \"Expressions to use today\" per word\n6 days | From first meeting to testing",
-    "featured": true
+    "featured": true,
+    "visible": true
   },
   {
     "id": "p2",
@@ -86,7 +88,8 @@
     "problem_en": "Academic information mixes structured, unstructured, and real-time data, so no single retrieval method could answer every question.",
     "contribution_en": "Owned the RAG engine on a five-person industry-academia team, including three-way routing by question intent and the ingestion and index pipeline.",
     "result_en": "Fused dense (ChromaDB) and sparse (BM25) retrieval with RRF and moved live search of the university's official domain to its own path. Out-of-scope questions get declined instead of a made-up answer.",
-    "featured": true
+    "featured": true,
+    "visible": true
   },
   {
     "id": "p3",
@@ -105,17 +108,18 @@
     "github": "https://github.com/foxibu/CTF-Solver",
     "problem": "기반이 된 MCP-Kali-Server는 도구가 약 10종이고 단발 실행만 가능했다.",
     "contribution": "Kali Linux 보안도구를 55종 이상으로 늘리고 멀티스텝 워크플로를 짰다.",
-    "result": "Smithery 레지스트리에 공개해 운영하는 동안 월 600회 안팎 호출됐다. GitHub 스타 53개, 포크 7개. 화이트햇 스쿨 최종 프로젝트 발표 이후 혼자 이어서 확장했다.",
-    "metrics": "★ 53 | GitHub 스타\n55+ | 감싼 보안도구\n~600 | 월 도구 호출(Smithery 공개 당시)",
+    "result": "Smithery 레지스트리에 공개해 운영하는 동안 월 600회 안팎 호출됐다. GitHub 스타 59개, 포크 7개. 화이트햇 스쿨 최종 프로젝트 발표 이후 혼자 이어서 확장했다.",
+    "metrics": "★ 59 | GitHub 스타\n55+ | 감싼 보안도구\n~600 | 월 도구 호출(Smithery 공개 당시)",
     "thumbnail": "/figures/ctf-solver-mcp.svg",
     "slug": "ctf-solver",
     "title_en": "CTF-Solver: MCP server for security automation",
     "description_en": "Starting from the MIT-licensed Wh0am123/MCP-Kali-Server, which had about 10 tools, I extended it to more than 55 Kali Linux security tools with multi-step forensics, cryptography, and cloud workflows and Docker packaging. To limit misuse I re-scoped it from automated penetration testing to CTF problem-solving. I published it to the Smithery registry, where it drew about 600 tool calls a month while it was live. It grew out of Not-Yet, our Whitehat School final project (a team project where I handled development), and I kept working on it alone after the presentation.",
     "problem_en": "The MCP-Kali-Server it was built on had about 10 tools and could only run one command at a time.",
     "contribution_en": "Extended it to more than 55 Kali Linux security tools and built multi-step workflows.",
-    "result_en": "Published to the Smithery registry, where it drew about 600 tool calls a month while it was live. 53 GitHub stars, 7 forks. I kept extending it alone after the Whitehat School final presentation.",
-    "metrics_en": "★ 53 | GitHub stars\n55+ | Security tools wrapped\n~600 | Tool calls per month (while on Smithery)",
-    "featured": true
+    "result_en": "Published to the Smithery registry, where it drew about 600 tool calls a month while it was live. 59 GitHub stars, 7 forks. I kept extending it alone after the Whitehat School final presentation.",
+    "metrics_en": "★ 59 | GitHub stars\n55+ | Security tools wrapped\n~600 | Tool calls per month (while on Smithery)",
+    "featured": true,
+    "visible": true
   },
   {
     "id": "p4",
@@ -139,7 +143,8 @@
     "contribution": "Kali 도구(nmap·gobuster·sqlmap·metasploit·hydra 등)를 엔드포인트로 노출하는 Flask 서버와 Perplexity 검색 서버를 만들었다. 그 둘을 FastMCP 서버 하나로 감쌌다. @mcp.tool 데코레이터로 각 도구를 등록해 LLM이 함수처럼 골라 호출하게 했다.",
     "contribution_en": "Built a Flask server that exposes Kali tools (nmap, gobuster, sqlmap, metasploit, hydra, and more) as endpoints and a Perplexity search server, then wrapped both behind a single FastMCP server. The @mcp.tool decorator registers each tool so an LLM can pick and call it like a function.",
     "result": "LLM이 정해진 스크립트 대신 상황에 맞는 도구를 골라 호출한다. 화이트햇 스쿨 3기 최종 프로젝트였고 발표 이후 CTF-Solver로 이어서 확장했다.",
-    "result_en": "The LLM picks and calls the right tool for the situation instead of following a fixed script. It was the Whitehat School cohort 3 final project, and I extended it into CTF-Solver after the presentation."
+    "result_en": "The LLM picks and calls the right tool for the situation instead of following a fixed script. It was the Whitehat School cohort 3 final project, and I extended it into CTF-Solver after the presentation.",
+    "visible": true
   },
   {
     "id": "p5",
@@ -163,7 +168,8 @@
     "contribution": "모델을 기동 시 한 번만 읽어 메모리에 상주시키고 요청은 비동기 작업 큐로 받아 순차 처리하도록 백엔드를 재설계했다. Oracle Cloud ARM64에 배포했다.",
     "contribution_en": "Redesigned the backend to load the model once at startup and keep it in memory, and to take requests through an async job queue that runs them in order. Deployed on Oracle Cloud ARM64.",
     "result": "요청 경로에서 모델 로딩을 걷어냈다. 「미래와소프트웨어」 정보보안 공모전 우수상.",
-    "result_en": "Took model loading off the request path. Excellence Award at the Future & Software information security contest."
+    "result_en": "Took model loading off the request path. Excellence Award at the Future & Software information security contest.",
+    "visible": true
   },
   {
     "id": "p6",
@@ -188,7 +194,8 @@
     "contribution": "Next.js로 포트폴리오 겸 블로그를 만들었다. MDX 블로그, 갤러리, 관리자 CMS, 다크모드를 넣고 GitHub Actions로 lint·타입검사·테스트·빌드를 거쳐 SSH로 배포한다.",
     "contribution_en": "Built a portfolio and blog with Next.js — MDX blog, gallery, admin CMS, and dark mode — deployed over SSH through a GitHub Actions pipeline of lint, typecheck, test, and build.",
     "result": "Docker·Nginx로 자체 서버에 HTTPS로 배포했다. 지금 보고 있는 사이트다.",
-    "result_en": "Self-hosted over HTTPS with Docker and Nginx. It is the site you are looking at."
+    "result_en": "Self-hosted over HTTPS with Docker and Nginx. It is the site you are looking at.",
+    "visible": true
   },
   {
     "id": "p7",
@@ -212,7 +219,8 @@
     "contribution": "Photo Database 바이너리를 파싱해 메타데이터를 뽑고 .ithmb의 RGB565 픽셀을 디코딩해 JPEG·PNG로 변환하는 Python GUI를 만들었다. Real-ESRGAN x4 업스케일을 ONNX로 붙이고 DirectML로 Intel Arc GPU 가속을 지원했다.",
     "contribution_en": "Built a Python GUI that parses the Photo Database binary for metadata and decodes the RGB565 pixels in .ithmb files into JPEG or PNG. Added Real-ESRGAN x4 upscaling through ONNX, with Intel Arc GPU acceleration via DirectML.",
     "result": "320×240 사진을 1280×960으로 복원한다. 네 가지 해상도(F1015·F1019·F1024·F1036)를 지원하고 미리보기 그리드로 변환 전에 확인할 수 있다.",
-    "result_en": "Restores 320×240 photos to 1280×960. Supports four resolutions (F1015, F1019, F1024, F1036), with a preview grid to check before converting."
+    "result_en": "Restores 320×240 photos to 1280×960. Supports four resolutions (F1015, F1019, F1024, F1036), with a preview grid to check before converting.",
+    "visible": true
   },
   {
     "id": "p8",
@@ -238,7 +246,8 @@
     "contribution": "5인 팀 리더로 서버를 둘로 나눠 설계했다. Java/Spring 메인 서버가 모임·채팅·커뮤니티를 맡고 친구 추천은 별도 Flask 서버에 맡겼다. 관심사·이상형을 원-핫 인코딩한 뒤 TruncatedSVD로 차원을 줄이고 코사인 유사도로 매칭했다. 둘 다 Docker로 Oracle Cloud에 배포했다.",
     "contribution_en": "As leader of a five-person team, I split the backend in two. A Java/Spring main server handles meetups, chat, and community, while a separate Flask server recommends friends — one-hot encoding interests and ideal-type answers, reducing dimensions with TruncatedSVD, then matching by cosine similarity. Both run on Oracle Cloud in Docker.",
     "result": "지역·MBTI·관심사 기반으로 친구를 추천하고 모임 생성·참여, 실시간 채팅, 관심사 커뮤니티를 제공한다. 추천 연산을 떼어내 메인 서버 응답을 막지 않게 했다.",
-    "result_en": "Recommends friends by region, MBTI, and interests, with meetup creation and joining, real-time chat, and interest communities. Splitting out the recommendation work keeps it from blocking main-server responses."
+    "result_en": "Recommends friends by region, MBTI, and interests, with meetup creation and joining, real-time chat, and interest communities. Splitting out the recommendation work keeps it from blocking main-server responses.",
+    "visible": true
   },
   {
     "id": "a1",

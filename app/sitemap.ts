@@ -60,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }]
 
   // 프로젝트 상세는 ko/en 쌍으로 올린다 — 지원서에 개별 링크를 걸 수 있는 주소다.
-  const workEntries: MetadataRoute.Sitemap = getProjects().flatMap((project) => {
+  const workEntries: MetadataRoute.Sitemap = getProjects().filter((p) => p.visible).flatMap((project) => {
     const slug = projectSlug(project)
     const languages = { ko: `${BASE_URL}/work/${slug}`, en: `${BASE_URL}/en/work/${slug}` }
     return [`/work/${slug}`, `/en/work/${slug}`].map((path) => ({

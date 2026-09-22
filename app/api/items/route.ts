@@ -20,6 +20,8 @@ const ItemSchema = z.object({
   link: z.string().optional(),
   thumbnail: z.string().optional(),
   order: z.number().optional(),
+  visible: z.boolean().optional(),
+  featured: z.boolean().optional(),
 })
 
 export async function GET() {

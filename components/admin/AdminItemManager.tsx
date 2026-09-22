@@ -31,6 +31,8 @@ const EMPTY_FORM = {
   link: '',
   thumbnail: '',
   order: 0,
+  visible: true,
+  featured: false,
 }
 
 export default function AdminItemManager({ initialItems }: Props) {
@@ -57,6 +59,8 @@ export default function AdminItemManager({ initialItems }: Props) {
       link: item.link ?? '',
       thumbnail: item.thumbnail ?? '',
       order: item.order ?? 0,
+      visible: item.visible ?? false,
+      featured: item.featured ?? false,
     })
   }
 
@@ -86,6 +90,8 @@ export default function AdminItemManager({ initialItems }: Props) {
       link: isProject ? (form.link || undefined) : undefined,
       thumbnail: isProject ? (form.thumbnail || undefined) : undefined,
       order: isProject ? Number(form.order) || 0 : undefined,
+      visible: isProject ? form.visible : undefined,
+      featured: isProject ? (form.visible && form.featured) : undefined,
     }
     if (editId && editId !== 'new') {
       await fetch('/api/items', {
@@ -136,6 +142,12 @@ export default function AdminItemManager({ initialItems }: Props) {
                   {TYPE_LABEL[item.type]}
                 </span>
                 <p className="font-medium text-text-primary text-sm truncate">{item.title}</p>
+                {item.type === 'project' && item.featured && (
+                  <span className="text-[10px] text-accent border border-accent rounded px-1.5 py-px shrink-0">홈 대표</span>
+                )}
+                {item.type === 'project' && !item.visible && (
+                  <span className="text-[10px] text-text-muted border border-border rounded px-1.5 py-px shrink-0">숨김</span>
+                )}
               </div>
               {item.type === 'project' && item.skills && item.skills.length > 0 && (
                 <div className="flex flex-wrap gap-1 mt-1">
@@ -253,6 +265,22 @@ export default function AdminItemManager({ initialItems }: Props) {
                     onChange={(e) => setForm((f) => ({ ...f, order: Number(e.target.value) }))}
                     className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
                   />
+                </div>
+                <div className="col-span-2 flex flex-wrap gap-x-6 gap-y-2 rounded-md border border-border p-3">
+                  <label className="flex items-center gap-2 text-sm text-text-primary">
+                    <input
+                      type="checkbox" checked={form.visible}
+                      onChange={(e) => setForm((f) => ({ ...f, visible: e.target.checked, featured: e.target.checked && f.featured }))}
+                    />
+                    소개에 노출
+                  </label>
+                  <label className={`flex items-center gap-2 text-sm ${form.visible ? 'text-text-primary' : 'text-text-muted'}`}>
+                    <input
+                      type="checkbox" checked={form.featured} disabled={!form.visible}
+                      onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
+                    />
+                    홈 대표 (소개 노출 중에서)
+                  </label>
                 </div>
                 <div>
                   <label className="block text-xs text-text-muted mb-1">GitHub URL</label>

@@ -55,11 +55,13 @@ export function getProjects(): PortfolioItem[] {
 }
 
 /**
- * /about·홈·상세의 이전/다음이 같은 차례를 쓰도록 한 곳에서 정한다. 최신순.
- * 같은 시점이면 order로 가른다.
+ * 소개(/about)와 홈이 쓰는 목록 — visible한 것만, 최신순(같은 시점이면 order).
+ * 숨긴 프로젝트는 여기 안 나오지만 상세 페이지는 직접 URL로 열린다.
  */
 export function getOrderedProjects(): PortfolioItem[] {
-  return getProjects().sort((a, b) => timeKey(b.year) - timeKey(a.year) || (a.order ?? 0) - (b.order ?? 0))
+  return getProjects()
+    .filter((i) => i.visible)
+    .sort((a, b) => timeKey(b.year) - timeKey(a.year) || (a.order ?? 0) - (b.order ?? 0))
 }
 
 /** 전체 항목, 시점 desc 정렬 (타임라인용) */

@@ -34,7 +34,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-bg flex items-center justify-center">
+    <main className="min-h-screen bg-bg flex items-center justify-center">
       <div className="w-full max-w-xs">
         <div className="text-center mb-6">
           <p className="text-xs text-text-muted uppercase tracking-widest mb-2">Admin</p>
@@ -62,6 +62,6 @@ export default function LoginPage() {
           </Button>
         </form>
       </div>
-    </div>
+    </main>
   )
 }

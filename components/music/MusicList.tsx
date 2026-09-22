@@ -118,7 +118,9 @@ export default function MusicList({ tracks }: Props) {
       {visible.length === 0 ? (
         <p className="text-center text-text-secondary py-10 text-sm">해당 장르에 곡이 없습니다.</p>
       ) : (
-        <div className="border border-border rounded-lg overflow-x-auto">
+        <div className="relative border border-border rounded-lg overflow-x-auto">
+          {/* relative: 머리글의 sr-only(절대 위치)가 이 스크롤 상자를 기준점으로 삼게 한다.
+              없으면 표 오른쪽 끝의 숨김 글자가 상자 밖으로 빠져 모바일에서 문서 폭을 513px로 늘렸다. */}
           <table className="w-full text-sm min-w-[520px]">
             <thead>
               <tr className="border-b border-border">

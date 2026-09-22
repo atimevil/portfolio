@@ -180,9 +180,10 @@ describe('공개 파이프라인(renderBlogHtml) — 모든 블록 생존', () =
     const out = await renderBlogHtml(ALL_BLOCKS_HTML)
 
     // 텍스트 블록
-    expect(out).toContain('<h1>제목1</h1>')
-    expect(out).toContain('<h2>제목2</h2>')
-    expect(out).toContain('<h3>제목3</h3>')
+    // 공개 페이지는 글 제목이 이미 h1이라, 본문 제목은 가장 높은 단계가 h2가 되게 한 칸씩 내린다(상하 관계 유지)
+    expect(out).toContain('<h2>제목1</h2>')
+    expect(out).toContain('<h3>제목2</h3>')
+    expect(out).toContain('<h4>제목3</h4>')
     expect(out).toContain('인용문')
     expect(out).toContain('<blockquote>')
 

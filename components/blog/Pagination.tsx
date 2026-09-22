@@ -25,7 +25,8 @@ export default function Pagination({ currentPage, totalPages, basePath, extraPar
   const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
 
   return (
-    <nav className="flex items-center justify-center gap-2 mt-8">
+    // 5개씩 보면 44편이 9쪽이라 버튼이 한 줄(390px)에 안 들어가 "다음 →"이 화면 밖으로 잘렸다
+    <nav aria-label="페이지 이동" className="flex flex-wrap items-center justify-center gap-2 mt-8">
       {currentPage > 1 && (
         <Link
           href={buildHref(basePath, currentPage - 1, extraParams)}
@@ -38,6 +39,7 @@ export default function Pagination({ currentPage, totalPages, basePath, extraPar
         <Link
           key={page}
           href={buildHref(basePath, page, extraParams)}
+          aria-current={page === currentPage ? 'page' : undefined}
           className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
             page === currentPage
               ? 'bg-accent text-bg border-accent'

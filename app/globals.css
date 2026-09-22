@@ -444,3 +444,10 @@ code {
   .target-flash:target,
   .target-flash.is-target { animation: none; background-color: var(--color-accent-soft); }
 }
+
+/* 코드 주석 색 — material-theme-palenight의 주석(#676E95)은 코드 배경(#1e293b) 위에서
+   대비 2.95:1이라 읽기 어렵다. 같은 계열로 밝혀 5.23:1(WCAG AA 4.5:1 이상)로 맞춘다.
+   shiki가 색을 인라인 style로 넣으므로 !important로 덮는다. */
+.prose pre span[style*="#676E95" i] {
+  color: #9099c0 !important;
+}

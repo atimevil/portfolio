@@ -4,6 +4,7 @@ import rehypeStringify from 'rehype-stringify'
 import rehypePrettyCode from 'rehype-pretty-code'
 import { sanitizeBlogHtml } from '@/lib/sanitizeHtml'
 import rehypeUnwrapBoldParagraphs from '@/lib/mdx/rehypeUnwrapBoldParagraphs'
+import rehypePostA11y from '@/lib/mdx/rehypePostA11y'
 
 // contentFormat='html' 글의 공개 렌더용 HTML을 만든다.
 // 1) sanitize로 사용자 콘텐츠의 위험 요소 제거(script/on*/style)
@@ -15,6 +16,7 @@ export async function renderBlogHtml(html: string): Promise<string> {
     .use(rehypeParse, { fragment: true })
     .use(rehypeUnwrapBoldParagraphs)
     .use(rehypePrettyCode, { theme: 'material-theme-palenight', keepBackground: false })
+    .use(rehypePostA11y)
     .use(rehypeStringify)
     .process(sanitizeBlogHtml(html))
   return String(file)

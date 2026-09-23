@@ -2,6 +2,11 @@ import { describe, it, expect } from 'vitest'
 import { stripMarkdown, truncateExcerpt } from '@/lib/blog'
 
 describe('stripMarkdown', () => {
+  it('접기 버튼 글자(<summary>)는 빼고 접힌 내용은 남긴다', () => {
+    const html = '<p>SCPC 2015 1차 예선 문제</p><details><summary>더보기</summary><div>일직선 상에 돌들이 놓여있고</div></details>'
+    expect(stripMarkdown(html)).toBe('SCPC 2015 1차 예선 문제 일직선 상에 돌들이 놓여있고')
+  })
+
   it('strips code fences, images, links, headings, quotes, lists', () => {
     const md = [
       '# 제목',

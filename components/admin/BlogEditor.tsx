@@ -87,7 +87,8 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
 
     setLoading(true)
     // 본문은 에디터 네이티브 HTML로 저장한다 (마크다운 재직렬화 없음 → 무손실)
-    const excerpt = content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 150)
+    // 접기 버튼 글자(<summary>, 티스토리 '더보기')는 요약에 넣지 않는다
+    const excerpt = content.replace(/<summary\b[^>]*>[\s\S]*?<\/summary>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 150)
     const body = {
       title: title.trim(),
       date: date.trim() || new Date().toISOString().slice(0, 10),

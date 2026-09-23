@@ -11,7 +11,7 @@ export function generateMetadata() {
   return buildPageMetadata({
     path: '/en',
     title: `${name} — AI/ML · LLM Agents`,
-    description: 'Fourth-year Computer Engineering student at Chosun University building LLM tool-use agents and retrieval systems. Projects, research, and competition results.',
+    description: 'Fourth-year Computer Engineering student building LLM tool-use agents and retrieval systems. Projects, research, and competition results.',
     absoluteTitle: true,
     languages: { ko: '/', en: '/en' },
   })

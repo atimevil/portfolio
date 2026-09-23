@@ -15,6 +15,10 @@ export function stripMarkdown(md: string): string {
     // eslint-disable-next-line no-useless-escape
     .replace(/\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/g, '$1') // CommonMark 이스케이프("\+", "\<script\>" 등) → 기호만 남기고 백슬래시 제거. HTML/코드펜스 판별보다 먼저 해야 "\<script>" 같은 패턴에서 백슬래시가 고아로 남지 않음
     .replace(/<summary\b[^>]*>[\s\S]*?<\/summary>/gi, ' ') // 접기 버튼 글자(티스토리 '더보기'). 태그를 벗기기 전에 빼야 요약에 안 섞인다
+    // 티스토리 원문의 접기 위젯(<details><summary>더보기</summary>)이 마크다운으로 옮겨오며
+    // 태그는 사라지고 "더보기"라는 단독 줄만 34개 글에 남았다("### 문제" 다음 줄 등).
+    // 위 <summary> 규칙은 태그가 남아있는 글만 잡으므로, 태그 없이 홀로 남은 줄도 따로 걷어낸다.
+    .replace(/^[ \t]*더보기[ \t]*$/gm, '')
     .replace(/<[^>]+>/g, ' ') // HTML 태그 (무손실 html 글 본문/excerpt 대응)
     .replace(/```[\s\S]*?```/g, ' ') // 코드 펜스
     .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ') // 이미지

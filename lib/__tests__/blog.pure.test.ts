@@ -7,6 +7,16 @@ describe('stripMarkdown', () => {
     expect(stripMarkdown(html)).toBe('SCPC 2015 1차 예선 문제 일직선 상에 돌들이 놓여있고')
   })
 
+  it('태그 없이 홀로 남은 "더보기" 줄도 뺀다 (티스토리 접기 위젯이 태그 없이 옮겨온 경우)', () => {
+    // 34개 마크다운 글에서 실제로 발견된 패턴: 소제목 다음 줄에 "더보기"만 단독으로 남아 있음
+    const md = '### **문제**\n\n더보기\n\n**일직선 상에 돌들이 놓여있고**'
+    expect(stripMarkdown(md)).toBe('문제 일직선 상에 돌들이 놓여있고')
+  })
+
+  it('"더보기"가 문장 일부로 쓰였으면 지우지 않는다 (단독 줄일 때만 접기 위젯으로 본다)', () => {
+    expect(stripMarkdown('버튼을 누르면 더보기가 나타난다')).toBe('버튼을 누르면 더보기가 나타난다')
+  })
+
   it('strips code fences, images, links, headings, quotes, lists', () => {
     const md = [
       '# 제목',

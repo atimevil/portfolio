@@ -45,8 +45,6 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
         <Link href={aboutHref} className="min-h-[24px] inline-flex items-center transition-colors hover:text-accent">
           {t(locale, 'projects')}
         </Link>
-        <span aria-hidden="true" className="text-text-muted">/</span>
-        <span className="text-text-muted truncate">{title}</span>
       </nav>
 
       <header className="mt-4 mb-7 border-b border-border pb-6">

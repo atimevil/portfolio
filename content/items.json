@@ -300,9 +300,9 @@
     "type": "award",
     "year": "2026.09.17",
     "title": "AI Pilot Top Gun Challenge 2026 장려상 (KAI 사장상)",
-    "description": "2026.09.17 수상. Unreal Engine 시뮬레이션 속 공중전 조종 에이전트를 만드는 대회로, 2인 팀에서 연속 제어 강화학습을 맡아 AWS에서 학습했다. 토너먼트 8강까지 올랐다.",
+    "description": "Unreal Engine 시뮬레이션 속 공중전 조종 에이전트를 만드는 대회로, 2인 팀에서 연속 제어 강화학습을 맡아 AWS에서 학습했다. 토너먼트 8강까지 올랐다.",
     "title_en": "AI Pilot Top Gun Challenge 2026: Honorable Mention (KAI President's Award)",
-    "description_en": "Awarded September 17, 2026. The challenge was building an air-combat pilot agent in an Unreal Engine simulation. On a two-person team I owned the continuous-control reinforcement learning track, trained on AWS, and we reached the quarterfinals of the knockout bracket.",
+    "description_en": "The challenge was building an air-combat pilot agent in an Unreal Engine simulation. On a two-person team I owned the continuous-control reinforcement learning track, trained on AWS, and we reached the quarterfinals of the knockout bracket.",
     "measure": true,
     "metrics": "8강 | 토너먼트 진출\n장려상 | KAI 사장상",
     "metrics_en": "Top 8 | Knockout bracket\nEncouragement | KAI President’s Award"

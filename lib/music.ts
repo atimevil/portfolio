@@ -8,6 +8,7 @@ export type TrackInput = {
   cover?: string | null
   link?: string | null
   memo?: string | null
+  favorite?: boolean
 }
 
 export async function getAllTracks(): Promise<Track[]> {

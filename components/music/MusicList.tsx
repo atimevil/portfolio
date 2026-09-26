@@ -26,6 +26,7 @@ function sortTracks(tracks: Track[], key: SortKey | null, dir: SortDir): Track[]
 
 export default function MusicList({ tracks }: Props) {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null)
+  const [onlyFavorites, setOnlyFavorites] = useState(false)
   const [sortKey, setSortKey] = useState<SortKey | null>(null)
   const [sortDir, setSortDir] = useState<SortDir>('asc')
 
@@ -62,9 +63,13 @@ export default function MusicList({ tracks }: Props) {
     }
   }
 
+  const hasFavorites = useMemo(() => tracks.some((t) => t.favorite), [tracks])
   const filtered = useMemo(
-    () => (selectedGenre ? tracks.filter((t) => (t.genre || '기타') === selectedGenre) : tracks),
-    [tracks, selectedGenre]
+    () =>
+      tracks.filter(
+        (t) => (!selectedGenre || (t.genre || '기타') === selectedGenre) && (!onlyFavorites || t.favorite)
+      ),
+    [tracks, selectedGenre, onlyFavorites]
   )
   const visible = useMemo(() => sortTracks(filtered, sortKey, sortDir), [filtered, sortKey, sortDir])
 
@@ -100,6 +105,19 @@ export default function MusicList({ tracks }: Props) {
         >
           전체
         </button>
+        {hasFavorites && (
+          <button
+            onClick={() => setOnlyFavorites((v) => !v)}
+            aria-pressed={onlyFavorites}
+            className={`inline-flex min-h-[36px] items-center gap-1 rounded-full border px-3 py-2 text-xs transition-colors md:min-h-0 md:py-1 ${
+              onlyFavorites
+                ? 'border-accent text-accent'
+                : 'border-border text-text-secondary hover:text-text-primary'
+            }`}
+          >
+            <span aria-hidden="true">★</span> 즐겨찾기
+          </button>
+        )}
         {genres.map((genre) => (
           <button
             key={genre}
@@ -116,7 +134,7 @@ export default function MusicList({ tracks }: Props) {
       </div>
 
       {visible.length === 0 ? (
-        <p className="text-center text-text-secondary py-10 text-sm">해당 장르에 곡이 없습니다.</p>
+        <p className="text-center text-text-secondary py-10 text-sm">조건에 맞는 곡이 없습니다.</p>
       ) : (
         <div className="relative border border-border rounded-lg overflow-x-auto">
           {/* relative: 머리글의 sr-only(절대 위치)가 이 스크롤 상자를 기준점으로 삼게 한다.
@@ -158,18 +176,26 @@ export default function MusicList({ tracks }: Props) {
                   <td className="px-3 py-2 max-w-[240px]">
                     {/* 행 전체 onClick은 키보드로 도달할 수도, Enter로 실행할 수도 없었다.
                         제목을 진짜 링크로 두면 탭 이동·새 탭 열기·링크 복사가 전부 된다. */}
-                    {track.link ? (
-                      <a
-                        href={track.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block truncate py-0.5 font-medium text-text-primary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                      >
-                        {track.title}
-                      </a>
-                    ) : (
-                      <span className="block truncate font-medium text-text-primary">{track.title}</span>
-                    )}
+                    <div className="flex items-center gap-1.5">
+                      {track.favorite && (
+                        <span className="shrink-0 text-accent" title="즐겨찾기">
+                          <span aria-hidden="true">★</span>
+                          <span className="sr-only">즐겨찾기</span>
+                        </span>
+                      )}
+                      {track.link ? (
+                        <a
+                          href={track.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block min-w-0 truncate py-0.5 font-medium text-text-primary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        >
+                          {track.title}
+                        </a>
+                      ) : (
+                        <span className="block min-w-0 truncate font-medium text-text-primary">{track.title}</span>
+                      )}
+                    </div>
                     {/* 메모는 마우스 호버 툴팁에만 있어서 터치·키보드 사용자에겐 없는 정보였다 */}
                     {track.memo && (
                       <span className="mt-0.5 block line-clamp-2 text-xs text-text-secondary" title={track.memo}>

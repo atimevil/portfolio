@@ -19,6 +19,7 @@ const TrackSchema = z.object({
   cover: z.string().optional(),
   link: z.string().optional(),
   memo: z.string().optional(),
+  favorite: z.boolean().optional(),
 })
 
 export async function GET() {

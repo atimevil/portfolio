@@ -30,6 +30,15 @@ describe('updateTrack', () => {
   })
 })
 
+describe('favorite', () => {
+  it('기본은 즐겨찾기가 아니고, 수정으로 켜고 끌 수 있다', async () => {
+    const track = await createTrack({ title: 'T', artist: 'A' })
+    expect(track.favorite).toBe(false)
+    expect((await updateTrack(track.id, { favorite: true })).favorite).toBe(true)
+    expect((await updateTrack(track.id, { favorite: false })).favorite).toBe(false)
+  })
+})
+
 describe('deleteTrack', () => {
   it('삭제 후에는 목록에서 사라진다', async () => {
     const track = await createTrack({ title: 'T', artist: 'A' })

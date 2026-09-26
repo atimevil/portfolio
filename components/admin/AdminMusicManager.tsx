@@ -140,6 +140,22 @@ export default function AdminMusicManager({ initialTracks }: Props) {
     }
   }
 
+  async function toggleFavorite(track: Track) {
+    const favorite = !track.favorite
+    setTracks((prev) => prev.map((t) => (t.id === track.id ? { ...t, favorite } : t)))
+    try {
+      const res = await fetch('/api/music', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: track.id, favorite }),
+      })
+      if (!res.ok) throw new Error('failed')
+    } catch {
+      setTracks((prev) => prev.map((t) => (t.id === track.id ? { ...t, favorite: track.favorite } : t)))
+      setError('즐겨찾기 변경에 실패했습니다.')
+    }
+  }
+
   async function handleDelete(id: number) {
     if (!confirm('이 트랙을 삭제하시겠습니까?')) return
     const res = await fetch('/api/music', {
@@ -248,6 +264,15 @@ export default function AdminMusicManager({ initialTracks }: Props) {
         {tracks.length === 0 && <p className="text-center text-text-secondary py-10 text-sm">트랙이 없습니다.</p>}
         {tracks.map((track) => (
           <div key={track.id} className="flex items-center justify-between px-5 py-4">
+            <button
+              type="button"
+              onClick={() => toggleFavorite(track)}
+              aria-pressed={track.favorite}
+              aria-label={track.favorite ? '즐겨찾기 해제' : '즐겨찾기'}
+              className={`mr-3 shrink-0 text-lg leading-none ${track.favorite ? 'text-accent' : 'text-text-muted hover:text-text-primary'}`}
+            >
+              {track.favorite ? '★' : '☆'}
+            </button>
             <div className="min-w-0 flex-1">
               <p className="font-medium text-text-primary text-sm truncate">{track.title}</p>
               <p className="text-xs text-text-muted mt-0.5">{track.artist}</p>

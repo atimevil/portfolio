@@ -13,7 +13,7 @@ async function main() {
     tags: ['AI Safety', 'LLM', 'Red Teaming'],
     category: 'AI',
     excerpt:
-      '레드티밍 대회에서 만난 13개 문제를 복기한다. 역할 위임, 점진적 구체화, 빈칸 채우기 — 통했던 프레이밍과 막혔던 이유.',
+      '레드티밍 대회에서 만난 14개 문제를 복기한다. 역할 위임, 점진적 구체화, 빈칸 채우기 — 통했던 프레이밍과 막혔던 이유.',
     content,
     status: 'draft',
     contentFormat: 'markdown',

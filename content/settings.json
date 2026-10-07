@@ -1,7 +1,7 @@
 {
   "devMode": false,
   "navVisibility": {
-    "gallery": false,
+    "gallery": true,
     "books": false,
     "music": true
   },

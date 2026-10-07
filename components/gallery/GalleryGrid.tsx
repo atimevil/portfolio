@@ -27,7 +27,11 @@ function ModalImage({ image, onZoomableChange }: { image: GalleryImage; onZoomab
   const alt = image.description
 
   const tall = ratio > TALL_RATIO
-  const fit = zoomed ? 'max-w-none h-auto' : tall ? 'w-full h-auto' : 'w-full max-h-[72vh] object-contain'
+  // 원본은 원래 크기보다 키우지 않는다(작은 이미지가 늘어나 흐려지지 않게). 썸네일은 자리만 잡는 흐린 배경이라 꽉 채운다.
+  const fit = zoomed
+    ? 'block max-w-none h-auto'
+    : `block mx-auto w-auto h-auto max-w-full ${tall ? '' : 'max-h-[72vh]'}`
+  const placeholderFit = tall ? 'w-full h-auto' : 'w-full max-h-[72vh] object-contain'
 
   function readRatio(e: React.SyntheticEvent<HTMLImageElement>) {
     const { naturalWidth: w, naturalHeight: h } = e.currentTarget
@@ -78,14 +82,15 @@ function ModalImage({ image, onZoomableChange }: { image: GalleryImage; onZoomab
   }, [zoomed])
 
   return (
-    <div className="relative w-full overflow-hidden bg-surface">
+    // 확대하면 상자가 이미지 폭만큼 넓어져야 바깥 스크롤이 생긴다(overflow-hidden이면 잘려서 스크롤할 게 없다)
+    <div className={`relative bg-surface ${zoomed ? 'w-max min-w-full' : 'w-full overflow-hidden'}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={thumb}
         alt={alt}
         aria-hidden
         onLoad={readRatio}
-        className={`${fit} transition-opacity duration-300 ${loaded ? 'opacity-0 absolute inset-0' : 'opacity-100 blur-sm scale-105'}`}
+        className={`${placeholderFit} pointer-events-none transition-opacity duration-300 ${loaded ? 'opacity-0 absolute inset-0' : 'opacity-100 blur-sm scale-105'}`}
       />
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img

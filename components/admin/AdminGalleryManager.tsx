@@ -22,7 +22,7 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
     const file = e.target.files?.[0]
     if (!file) return
     setSelectedFile(file)
-    setPreview(URL.createObjectURL(file))
+    setPreview(file.type === 'application/pdf' ? null : URL.createObjectURL(file))
   }
 
   function handleCancel() {
@@ -46,7 +46,8 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
       setImages((prev) => [image, ...prev])
       handleCancel()
     } else {
-      alert('업로드 실패')
+      const data = await res.json().catch(() => null)
+      alert(data?.error ? `업로드 실패: ${data.error}` : '업로드 실패')
     }
     setUploading(false)
   }
@@ -73,15 +74,22 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
             className="border-2 border-dashed border-border rounded-lg p-10 text-center cursor-pointer hover:border-accent transition-colors"
             onClick={() => fileRef.current?.click()}
           >
-            <p className="text-text-secondary text-sm">클릭하여 이미지 선택</p>
-            <p className="text-xs text-text-muted mt-1">JPG, PNG, GIF, WebP</p>
+            <p className="text-text-secondary text-sm">클릭하여 이미지 또는 PDF 선택</p>
+            <p className="text-xs text-text-muted mt-1">JPG, PNG, GIF, WebP, PDF (첫 페이지가 이미지로 저장됨)</p>
           </div>
         ) : (
           /* 선택된 파일 미리보기 + 폼 */
           <div className="flex gap-5 items-start">
             <div className="relative w-32 h-32 rounded-lg overflow-hidden bg-surface shrink-0 border border-border">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={preview!} alt="미리보기" className="w-full h-full object-cover" />
+              {preview ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={preview} alt="미리보기" className="w-full h-full object-cover" />
+              ) : (
+                <div className="flex h-full w-full flex-col items-center justify-center gap-1 text-center">
+                  <span className="text-sm font-semibold text-text-secondary">PDF</span>
+                  <span className="px-2 text-[11px] leading-tight text-text-muted">첫 페이지가 이미지로 저장됩니다</span>
+                </div>
+              )}
             </div>
             <div className="flex-1 min-w-0 flex flex-col gap-3">
               <p className="text-xs text-text-muted truncate">{selectedFile.name}</p>
@@ -118,7 +126,7 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
             </div>
           </div>
         )}
-        <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+        <input ref={fileRef} type="file" accept="image/*,application/pdf" className="hidden" onChange={handleFileChange} />
       </div>
 
       {/* 이미지 목록 */}

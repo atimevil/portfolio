@@ -2,14 +2,12 @@
 
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 
 export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const router = useRouter()
 
   // 로그인 후 원래 가려던 곳으로 되돌아간다.
   // useSearchParams()는 이 페이지의 정적 생성을 깨뜨리므로(Suspense 요구), 값이 실제로
@@ -27,7 +25,9 @@ export default function LoginPage() {
     const res = await signIn('credentials', { password, redirect: false })
     setLoading(false)
     if (res?.ok) {
-      router.push(resolveCallbackUrl())
+      // router.push는 로그인 전에 받아둔 "/admin → 로그인 페이지" 리다이렉트를 클라이언트 캐시에서
+      // 재사용해 로그인 페이지에 그대로 머문다. 전체 페이지 이동으로 새 쿠키를 들고 서버에 다시 묻는다.
+      window.location.assign(resolveCallbackUrl())
     } else {
       setError('비밀번호가 틀렸습니다.')
     }

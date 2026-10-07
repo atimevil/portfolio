@@ -33,7 +33,7 @@ export default function Modal({ open, onClose, children }: ModalProps) {
             onClick={onClose}
           />
           <motion.div
-            className="relative z-10 max-w-4xl max-h-[90vh] overflow-auto rounded-xl bg-bg shadow-2xl"
+            className="relative z-10 w-full max-w-5xl overflow-hidden rounded-xl bg-bg shadow-2xl"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0, transition: { duration: 0.15 } }}
@@ -46,7 +46,8 @@ export default function Modal({ open, onClose, children }: ModalProps) {
             >
               ✕
             </button>
-            {children}
+            {/* 스크롤은 안쪽에서만 — 긴 포스터를 내려 읽어도 닫기 버튼이 같이 올라가 사라지지 않는다 */}
+            <div data-modal-scroll className="max-h-[90vh] overflow-auto">{children}</div>
           </motion.div>
         </motion.div>
       )}

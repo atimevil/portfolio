@@ -37,12 +37,12 @@ describe.skipIf(!hasPdftoppm)('pdfFirstPageToJpeg', () => {
     expect([meta.width, meta.height]).toEqual([417, 209])
   })
 
-  it('대형 포스터는 긴 변을 4000px로 줄인다', async () => {
+  it('대형 포스터는 폭을 2400px로 줄인다', async () => {
     // 24×72인치 세로 포스터: 150dpi면 3600×10800px
     const big = Buffer.from(PDF.toString('latin1').replace('[0 0 200 100]', '[0 0 1728 5184]'), 'latin1')
     const meta = await sharp(await pdfFirstPageToJpeg(big)).metadata()
-    expect(meta.height).toBe(4000)
-    expect(meta.width).toBeLessThan(1400)
+    expect(meta.width).toBe(2400)
+    expect(Math.abs(meta.height! - 7200)).toBeLessThanOrEqual(3) // poppler 렌더 크기 반올림 오차
   })
 
   it('깨진 PDF면 예외를 던진다', async () => {

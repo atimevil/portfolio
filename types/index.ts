@@ -20,6 +20,7 @@ export interface GalleryImage {
   category: string
   description: string
   createdAt: string
+  thumbnail?: string
 }
 
 export interface PortfolioItem {

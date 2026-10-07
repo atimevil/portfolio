@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { execFileSync } from 'child_process'
-import { isPdf, pdfFirstPageToPng } from '@/lib/pdfToImage'
+import sharp from 'sharp'
+import { isPdf, pdfFirstPageToJpeg } from '@/lib/pdfToImage'
 
 // 페이지 2장짜리 최소 PDF (xref 없이도 poppler가 복구해서 읽는다)
 const PDF = Buffer.from(
@@ -28,15 +29,23 @@ describe('isPdf', () => {
   })
 })
 
-describe.skipIf(!hasPdftoppm)('pdfFirstPageToPng', () => {
-  it('첫 페이지만 PNG로 만든다 (200×100pt → 150dpi에서 417×209px, poppler는 올림)', async () => {
-    const png = await pdfFirstPageToPng(PDF)
-    expect(png.subarray(1, 4).toString()).toBe('PNG')
-    expect(png.readUInt32BE(16)).toBe(417)
-    expect(png.readUInt32BE(20)).toBe(209)
+describe.skipIf(!hasPdftoppm)('pdfFirstPageToJpeg', () => {
+  it('첫 페이지만 JPEG로 만든다 (200×100pt → 150dpi에서 417×209px, poppler는 올림)', async () => {
+    const jpeg = await pdfFirstPageToJpeg(PDF)
+    const meta = await sharp(jpeg).metadata()
+    expect(meta.format).toBe('jpeg')
+    expect([meta.width, meta.height]).toEqual([417, 209])
+  })
+
+  it('대형 포스터는 긴 변을 4000px로 줄인다', async () => {
+    // 24×72인치 세로 포스터: 150dpi면 3600×10800px
+    const big = Buffer.from(PDF.toString('latin1').replace('[0 0 200 100]', '[0 0 1728 5184]'), 'latin1')
+    const meta = await sharp(await pdfFirstPageToJpeg(big)).metadata()
+    expect(meta.height).toBe(4000)
+    expect(meta.width).toBeLessThan(1400)
   })
 
   it('깨진 PDF면 예외를 던진다', async () => {
-    await expect(pdfFirstPageToPng(Buffer.from('%PDF-garbage'))).rejects.toThrow()
+    await expect(pdfFirstPageToJpeg(Buffer.from('%PDF-garbage'))).rejects.toThrow()
   })
 })

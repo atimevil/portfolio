@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { getGalleryImages, saveGalleryImage, deleteGalleryImage } from '@/lib/gallery'
-import { isPdf, pdfFirstPageToPng } from '@/lib/pdfToImage'
+import { isPdf, pdfFirstPageToJpeg } from '@/lib/pdfToImage'
 
 export async function GET() {
   const images = getGalleryImages()
@@ -22,24 +22,24 @@ export async function POST(req: NextRequest) {
   const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
   const buffer = Buffer.from(await file.arrayBuffer())
 
-  // PDF(포스터 등)는 첫 페이지를 PNG로 바꿔 일반 이미지와 똑같이 저장한다.
+  // PDF(포스터 등)는 첫 페이지를 JPEG로 바꿔 일반 이미지와 똑같이 저장한다.
   if (file.type === 'application/pdf') {
     if (!isPdf(buffer)) return NextResponse.json({ error: 'Invalid PDF' }, { status: 400 })
-    let png: Buffer
+    let jpeg: Buffer
     try {
-      png = await pdfFirstPageToPng(buffer)
+      jpeg = await pdfFirstPageToJpeg(buffer)
     } catch {
       return NextResponse.json({ error: 'PDF 변환에 실패했습니다' }, { status: 422 })
     }
-    const name = file.name.replace(/\.pdf$/i, '') + '.png'
-    return NextResponse.json(saveGalleryImage(png, name, category, description), { status: 201 })
+    const name = file.name.replace(/\.pdf$/i, '') + '.jpg'
+    return NextResponse.json(await saveGalleryImage(jpeg, name, category, description), { status: 201 })
   }
 
   if (!allowed.includes(file.type)) {
     return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
   }
 
-  const image = saveGalleryImage(buffer, file.name, category, description)
+  const image = await saveGalleryImage(buffer, file.name, category, description)
   return NextResponse.json(image, { status: 201 })
 }
 

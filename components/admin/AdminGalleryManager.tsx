@@ -1,9 +1,9 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import Image from 'next/image'
 import Button from '@/components/ui/Button'
 import type { GalleryImage } from '@/types'
+import { galleryThumbSrc } from '@/lib/galleryUrl'
 
 interface AdminGalleryManagerProps {
   initialImages: GalleryImage[]
@@ -137,11 +137,12 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
           {images.map((image) => (
             <div key={image.id} className="relative group">
               <div className="relative aspect-square rounded-lg overflow-hidden bg-surface">
-                <Image
-                  src={`/uploads/gallery/${image.filename}`}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={galleryThumbSrc(image)}
                   alt={image.description}
-                  fill
-                  className="object-cover"
+                  loading="lazy"
+                  className="absolute inset-0 h-full w-full object-cover"
                 />
               </div>
               <button

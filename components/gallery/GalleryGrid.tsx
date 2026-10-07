@@ -1,16 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import Image from 'next/image'
 import { motion } from 'framer-motion'
 import Modal from '@/components/ui/Modal'
 import type { GalleryImage } from '@/types'
+import { galleryFullSrc, galleryThumbSrc } from '@/lib/galleryUrl'
 
 // 블러 플레이스홀더 → 원본 크로스페이드
-function ModalImage({ filename, alt }: { filename: string; alt: string }) {
+function ModalImage({ image }: { image: GalleryImage }) {
   const [loaded, setLoaded] = useState(false)
-  const thumb = `/_next/image?url=${encodeURIComponent(`/uploads/gallery/${filename}`)}&w=400&q=60`
-  const full = `/uploads/gallery/${filename}`
+  const thumb = galleryThumbSrc(image)
+  const full = galleryFullSrc(image)
+  const alt = image.description
 
   return (
     <div className="relative w-full rounded-t-xl overflow-hidden bg-surface">
@@ -78,14 +79,15 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
               onClick={() => setSelected(image)}
               onMouseEnter={() => {
                 const img = new window.Image()
-                img.src = `/uploads/gallery/${image.filename}`
+                img.src = galleryFullSrc(image)
               }}
             >
-              <Image
-                src={`/uploads/gallery/${image.filename}`}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={galleryThumbSrc(image)}
                 alt={image.description}
-                fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
               {image.description && (
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
@@ -101,8 +103,7 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
       <Modal open={!!selected} onClose={() => setSelected(null)}>
         {selected && (
           <div>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <ModalImage filename={selected.filename} alt={selected.description} />
+            <ModalImage image={selected} />
             {(selected.description || selected.category) && (
               <div className="px-5 py-4">
                 {selected.description && (

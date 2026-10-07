@@ -25,7 +25,8 @@ export default function Modal({ open, onClose, children }: ModalProps) {
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          // 닫히는 애니메이션 동안에도 화면 전체를 덮고 있어서 그 사이 클릭이 먹혔다. 닫는 순간 클릭을 통과시킨다.
+          exit={{ opacity: 0, pointerEvents: 'none', transition: { duration: 0.15 } }}
         >
           <div
             className="absolute inset-0 bg-black/70 backdrop-blur-sm"
@@ -35,7 +36,7 @@ export default function Modal({ open, onClose, children }: ModalProps) {
             className="relative z-10 max-w-4xl max-h-[90vh] overflow-auto rounded-xl bg-bg shadow-2xl"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
+            exit={{ scale: 0.95, opacity: 0, transition: { duration: 0.15 } }}
             transition={{ type: 'spring', damping: 25 }}
           >
             <button

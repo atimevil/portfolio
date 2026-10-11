@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import sharp from 'sharp'
+import { stripImageMetadata } from '@/lib/stripMetadata'
 import type { GalleryImage } from '@/types'
 
 const META_FILE = path.join(process.cwd(), 'content/gallery.json')
@@ -36,12 +37,13 @@ export async function makeThumbnail(buffer: Buffer, id: string): Promise<string>
 }
 
 export async function saveGalleryImage(
-  buffer: Buffer,
+  original: Buffer,
   originalName: string,
   category: string,
   description: string,
 ): Promise<GalleryImage> {
   if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true })
+  const buffer = await stripImageMetadata(original)
   const ext = path.extname(originalName)
   const id = Date.now().toString()
   const filename = `${id}${ext}`

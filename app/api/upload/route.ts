@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
+import { stripImageMetadata } from '@/lib/stripMetadata'
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession()
@@ -16,8 +17,7 @@ export async function POST(req: NextRequest) {
   const subdir = type === 'blog' ? 'blog' : type === 'maps' ? 'maps' : type === 'music' ? 'music' : ''
   const prefix = subdir || 'avatar'
 
-  const bytes = await file.arrayBuffer()
-  const buffer = Buffer.from(bytes)
+  const buffer = await stripImageMetadata(Buffer.from(await file.arrayBuffer()))
   // 확장자도 허용 목록으로 제한 (파일명에서 온 값을 그대로 쓰지 않는다)
   const rawExt = (file.name.split('.').pop() ?? '').toLowerCase()
   const ext = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'].includes(rawExt) ? rawExt : 'jpg'

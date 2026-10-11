@@ -55,22 +55,82 @@ fi
 log "코드 갱신: ${CURRENT:0:7} → ${TARGET:0:7}"
 
 # content/items.json·settings.json은 git이 추적하면서 서버 /admin도 직접 쓴다.
-# 관리자가 운영 화면에서 뭘 고치면 추적 파일의 로컬 수정으로 남아 fast-forward가
-# 막히고 배포가 통째로 멈춘다. 그래서 백업을 남기고 git 쪽으로 맞춘다.
-# 조용히 버리지 않는 이유: 폰에서 급히 넣은 수상 같은 게 여기 들어있을 수 있다.
-DIRTY="$(git status --porcelain -- content | awk '{print $2}')"
+# 운영 화면에서 고친 내용은 커밋되지 않은 로컬 수정으로 남는다. 예전엔 백업만 하고 git 버전으로
+# 되돌렸는데, 그러면 배포할 때마다 어드민에서 넣은 수상·설정이 사이트에서 사라졌다.
+# 이제는 백업 → 코드 갱신 → 운영 수정을 다시 얹는다. 들어오는 커밋도 같은 파일을 고쳤으면 3-way 병합하고,
+# 병합이 깨끗하고 JSON으로 읽힐 때만 쓴다. 아니면 git 버전을 쓰고 백업 위치를 알린다.
+DIRTY="$(git diff --name-only -- content)"
+BACKUP=""
 if [ -n "$DIRTY" ]; then
   BACKUP="$REPO/deploy-backups/content-$(date +%Y%m%d-%H%M%S)"
   mkdir -p "$BACKUP"
   for f in $DIRTY; do
     cp -a "$REPO/$f" "$BACKUP/$(basename "$f")"
-    log "⚠ 서버에서 수정된 $f → $BACKUP/$(basename "$f") 에 백업 후 git 버전으로 되돌림"
   done
-  log "⚠ 운영 화면에서 고친 내용이라면 위 백업에서 꺼내 저장소에 커밋하세요"
+  log "운영 화면에서 수정된 파일 백업: $BACKUP ($(echo $DIRTY | tr '\n' ' '))"
   git checkout -- content
 fi
 
 git merge --ff-only "$TARGET" >/dev/null || die "fast-forward 실패. 서버 작업트리의 미커밋 변경과 충돌했을 수 있습니다"
+
+is_json() { python3 -c 'import json,sys; json.load(open(sys.argv[1]))' "$1" 2>/dev/null; }
+
+# JSON 구조로 3-way 병합: 객체는 키별, id가 있는 객체 배열(items.json)은 id별로 합친다.
+# 줄 단위 병합은 붙어 있는 두 키(예: 메뉴의 gallery·music)를 따로 고쳐도 충돌로 본다.
+# 같은 값을 양쪽이 다르게 고쳤을 때만 실패(종료코드 1)한다.
+json_merge() { # base ours theirs out
+  python3 - "$@" <<'PY'
+import json, sys
+base, ours, theirs, out = sys.argv[1:5]
+MISSING = object()
+class Conflict(Exception): pass
+def keyed(xs):
+    return isinstance(xs, list) and all(isinstance(e, dict) and 'id' in e for e in xs)
+def merge(b, o, t):
+    if o == t: return o
+    if o == b: return t
+    if t == b: return o
+    if all(isinstance(x, dict) for x in (b, o, t)):
+        keys = list(t) + [k for k in o if k not in t]
+        r = {k: merge(b.get(k, MISSING), o.get(k, MISSING), t.get(k, MISSING)) for k in keys}
+        return {k: v for k, v in r.items() if v is not MISSING}
+    if all(keyed(x) for x in (b, o, t)):
+        B, O, T = ({e['id']: e for e in x} for x in (b, o, t))
+        order = [e['id'] for e in t] + [e['id'] for e in o if e['id'] not in T]
+        r = [merge(B.get(i, MISSING), O.get(i, MISSING), T.get(i, MISSING)) for i in order]
+        return [v for v in r if v is not MISSING]
+    raise Conflict
+load = lambda p: json.load(open(p, encoding='utf-8'))
+try:
+    result = merge(load(base), load(ours), load(theirs))
+except Conflict:
+    sys.exit(1)
+with open(out, 'w', encoding='utf-8') as fh:
+    json.dump(result, fh, indent=2, ensure_ascii=False)  # lib/items.ts·settings.ts의 JSON.stringify(_, null, 2)와 같은 모양
+PY
+}
+
+for f in $DIRTY; do
+  saved="$BACKUP/$(basename "$f")"
+  if git diff --quiet "$CURRENT" "$TARGET" -- "$f"; then
+    cp -a "$saved" "$REPO/$f"
+    log "운영 수정 유지: $f"
+    continue
+  fi
+  # 양쪽이 같은 파일을 고쳤다: base=배포 전 커밋, ours=운영 수정, theirs=새 커밋
+  tmp="$(mktemp)"; base="$(mktemp)"
+  git show "$CURRENT:$f" > "$base"
+  if json_merge "$base" "$saved" "$REPO/$f" "$tmp"; then
+    cp "$tmp" "$REPO/$f"
+    log "운영 수정과 새 커밋을 병합: $f"
+  elif cp "$saved" "$tmp" && git merge-file -q "$tmp" "$base" "$REPO/$f" && is_json "$tmp"; then
+    cp "$tmp" "$REPO/$f"
+    log "운영 수정과 새 커밋을 줄 단위로 병합: $f"
+  else
+    log "⚠ $f 는 운영 수정과 새 커밋이 충돌해 새 커밋 버전을 씁니다. 운영 수정은 $saved 에 있습니다"
+  fi
+  rm -f "$tmp" "$base"
+done
 
 # 롤백용으로 지금 돌고 있는 이미지를 태그해 둔다
 PREV_ID="$(docker inspect portfolio --format '{{.Image}}' 2>/dev/null || true)"

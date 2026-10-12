@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import sharp from 'sharp'
 import { stripImageMetadata } from '@/lib/stripMetadata'
+import { detectImageExt } from '@/lib/imageExt'
 import type { GalleryImage } from '@/types'
 
 const META_FILE = path.join(process.cwd(), 'content/gallery.json')
@@ -36,17 +37,18 @@ export async function makeThumbnail(buffer: Buffer, id: string): Promise<string>
   return `thumbs/${name}`
 }
 
+// 브라우저가 띄울 수 없는 파일이면 null을 돌려준다(저장하지 않음).
 export async function saveGalleryImage(
   original: Buffer,
-  originalName: string,
   category: string,
   description: string,
-): Promise<GalleryImage> {
-  if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true })
+): Promise<GalleryImage | null> {
   const buffer = await stripImageMetadata(original)
-  const ext = path.extname(originalName)
+  const ext = await detectImageExt(buffer)
+  if (!ext) return null
+  if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true })
   const id = Date.now().toString()
-  const filename = `${id}${ext}`
+  const filename = `${id}.${ext}`
   fs.writeFileSync(path.join(UPLOAD_DIR, filename), buffer)
   // 썸네일을 못 만들어도(드문 포맷 등) 업로드 자체는 살린다. 그리드는 원본으로 대신 보여준다.
   const thumbnail = await makeThumbnail(buffer, id).catch(() => undefined)

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { stripImageMetadata } from '@/lib/stripMetadata'
+import { detectImageExt } from '@/lib/imageExt'
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession()
@@ -18,9 +19,9 @@ export async function POST(req: NextRequest) {
   const prefix = subdir || 'avatar'
 
   const buffer = await stripImageMetadata(Buffer.from(await file.arrayBuffer()))
-  // 확장자도 허용 목록으로 제한 (파일명에서 온 값을 그대로 쓰지 않는다)
-  const rawExt = (file.name.split('.').pop() ?? '').toLowerCase()
-  const ext = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif'].includes(rawExt) ? rawExt : 'jpg'
+  // 확장자는 파일명이 아니라 실제 내용으로 정한다. 이미지가 아니면 저장하지 않는다
+  const ext = await detectImageExt(buffer)
+  if (!ext) return NextResponse.json({ error: '이미지 파일이 아닙니다' }, { status: 400 })
   const filename = `${prefix}-${Date.now()}.${ext}`
 
   const uploadDir = path.join(process.cwd(), 'public/uploads', subdir)

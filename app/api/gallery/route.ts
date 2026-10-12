@@ -31,15 +31,16 @@ export async function POST(req: NextRequest) {
     } catch {
       return NextResponse.json({ error: 'PDF 변환에 실패했습니다' }, { status: 422 })
     }
-    const name = file.name.replace(/\.pdf$/i, '') + '.jpg'
-    return NextResponse.json(await saveGalleryImage(jpeg, name, category, description), { status: 201 })
+    return NextResponse.json(await saveGalleryImage(jpeg, category, description), { status: 201 })
   }
 
   if (!allowed.includes(file.type)) {
     return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
   }
 
-  const image = await saveGalleryImage(buffer, file.name, category, description)
+  // 브라우저가 보낸 MIME은 위조할 수 있으므로, 저장 형식은 파일 내용으로 다시 판별한다
+  const image = await saveGalleryImage(buffer, category, description)
+  if (!image) return NextResponse.json({ error: '이미지 파일이 아닙니다' }, { status: 400 })
   return NextResponse.json(image, { status: 201 })
 }
 

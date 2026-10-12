@@ -24,7 +24,7 @@ ROLLBACK_TAG="${IMAGE}:rollback"
 DEPLOYED_FILE=/home/ubuntu/deploy/deployed-sha
 
 log() { printf '[deploy %s] %s\n' "$(date +%H:%M:%S)" "$*"; }
-die() { log "중단: $*"; exit 1; }
+die() { log "중단: $*"; DIED=1; exit 1; }
 
 # 동시에 두 번 돌지 않게 잠근다
 exec 9>"$LOCK"
@@ -79,6 +79,10 @@ restore_content() {
       cp -a "$BACKUP/$(basename "$f")" "$REPO/$f" || true
     done
     log "실패해서 운영 수정을 백업에서 되돌렸습니다 ($BACKUP)"
+  fi
+  # die를 거치지 않은 실패(빌드 오류 등 set -e 종료)도 결과를 한 줄로 남긴다
+  if [ "$status" -ne 0 ] && [ -z "${DIED:-}" ]; then
+    log "실패 (종료 코드 $status). 돌고 있던 컨테이너는 그대로입니다 — 고친 뒤 같은 명령으로 다시 배포하면 됩니다"
   fi
   exit $status
 }

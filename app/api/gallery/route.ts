@@ -19,14 +19,14 @@ export async function POST(req: NextRequest) {
   const category = (formData.get('category') as string) || '기타'
   const description = (formData.get('description') as string) || ''
 
-  if (!file) return NextResponse.json({ error: 'No file' }, { status: 400 })
+  if (!file) return NextResponse.json({ error: '파일을 선택하세요' }, { status: 400 })
 
   const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
   const buffer = Buffer.from(await file.arrayBuffer())
 
   // PDF(포스터 등)는 첫 페이지를 JPEG로 바꿔 일반 이미지와 똑같이 저장한다.
   if (file.type === 'application/pdf') {
-    if (!isPdf(buffer)) return NextResponse.json({ error: 'Invalid PDF' }, { status: 400 })
+    if (!isPdf(buffer)) return NextResponse.json({ error: 'PDF 파일이 아닙니다' }, { status: 400 })
     let jpeg: Buffer
     try {
       jpeg = await pdfFirstPageToJpeg(buffer)
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (!allowed.includes(file.type)) {
-    return NextResponse.json({ error: 'Invalid file type' }, { status: 400 })
+    return NextResponse.json({ error: '이미지나 PDF 파일만 올릴 수 있습니다' }, { status: 400 })
   }
 
   // 브라우저가 보낸 MIME은 위조할 수 있으므로, 저장 형식은 파일 내용으로 다시 판별한다

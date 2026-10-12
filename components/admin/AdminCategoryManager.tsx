@@ -5,9 +5,15 @@ import Button from '@/components/ui/Button'
 
 interface AdminCategoryManagerProps {
   initialCategories: string[]
+  postCounts?: Record<string, number>
 }
 
-export default function AdminCategoryManager({ initialCategories }: AdminCategoryManagerProps) {
+function failMessage(action: string, status?: number) {
+  if (status === 401) return `${action} 실패: 로그인이 만료됐습니다. 다른 탭에서 다시 로그인한 뒤 눌러 주세요.`
+  return status ? `${action} 실패 (오류 ${status})` : `${action} 실패: 네트워크 오류`
+}
+
+export default function AdminCategoryManager({ initialCategories, postCounts = {} }: AdminCategoryManagerProps) {
   const [categories, setCategories] = useState(initialCategories)
   const [input, setInput] = useState('')
   const [saving, setSaving] = useState(false)
@@ -16,28 +22,37 @@ export default function AdminCategoryManager({ initialCategories }: AdminCategor
     const name = input.trim()
     if (!name) return
     setSaving(true)
-    const res = await fetch('/api/categories', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
-    })
-    if (res.ok) {
-      const updated = await res.json()
-      setCategories(updated)
+    try {
+      const res = await fetch('/api/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      })
+      if (!res.ok) { alert(failMessage('추가', res.status)); return }
+      setCategories(await res.json())
       setInput('')
+    } catch {
+      alert(failMessage('추가'))
+    } finally {
+      setSaving(false)
     }
-    setSaving(false)
   }
 
+  // 삭제하면 그 카테고리의 글은 '카테고리 없음'이 된다(글은 지워지지 않는다). 되돌릴 수 없어 확인을 받는다.
   async function handleDelete(name: string) {
-    const res = await fetch('/api/categories', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
-    })
-    if (res.ok) {
-      const updated = await res.json()
-      setCategories(updated)
+    const n = postCounts[name] ?? 0
+    const detail = n > 0 ? `\n이 카테고리의 글 ${n}개는 '카테고리 없음'이 됩니다(글은 그대로 남습니다).` : ''
+    if (!confirm(`'${name}' 카테고리를 삭제할까요?${detail}`)) return
+    try {
+      const res = await fetch('/api/categories', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      })
+      if (!res.ok) { alert(failMessage('삭제', res.status)); return }
+      setCategories(await res.json())
+    } catch {
+      alert(failMessage('삭제'))
     }
   }
 
@@ -70,10 +85,14 @@ export default function AdminCategoryManager({ initialCategories }: AdminCategor
                 i < categories.length - 1 ? 'border-b border-border' : ''
               }`}
             >
-              <span className="text-sm text-text-primary">{cat}</span>
+              <span className="text-sm text-text-primary">
+                {cat}
+                <span className="ml-2 text-xs text-text-muted">글 {postCounts[cat] ?? 0}</span>
+              </span>
               <button
                 onClick={() => handleDelete(cat)}
-                className="text-xs text-text-muted hover:text-red-500 transition-colors"
+                aria-label={`${cat} 카테고리 삭제`}
+                className="min-h-[36px] px-3 -mr-3 text-xs text-text-muted hover:text-red-500 transition-colors"
               >
                 삭제
               </button>

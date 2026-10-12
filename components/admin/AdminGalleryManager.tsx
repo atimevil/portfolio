@@ -40,16 +40,25 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
     formData.append('file', selectedFile)
     formData.append('category', category || '기타')
     formData.append('description', description)
-    const res = await fetch('/api/gallery', { method: 'POST', body: formData })
-    if (res.ok) {
-      const image = await res.json()
-      setImages((prev) => [image, ...prev])
-      handleCancel()
-    } else {
-      const data = await res.json().catch(() => null)
-      alert(data?.error ? `업로드 실패: ${data.error}` : '업로드 실패')
+    try {
+      const res = await fetch('/api/gallery', { method: 'POST', body: formData })
+      if (res.ok) {
+        const image = await res.json()
+        setImages((prev) => [image, ...prev])
+        handleCancel()
+      } else if (res.status === 401) {
+        alert('업로드 실패: 로그인이 만료됐습니다. 다른 탭에서 다시 로그인한 뒤 올려 주세요.')
+      } else if (res.status === 413) {
+        alert('업로드 실패: 파일이 너무 큽니다 (최대 20MB).')
+      } else {
+        const data = await res.json().catch(() => null)
+        alert(data?.error ? `업로드 실패: ${data.error}` : `업로드 실패 (오류 ${res.status})`)
+      }
+    } catch {
+      alert('업로드 실패: 네트워크 오류')
+    } finally {
+      setUploading(false)
     }
-    setUploading(false)
   }
 
   async function handleDelete(id: string) {

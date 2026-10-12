@@ -117,8 +117,10 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
               <p className="text-xs text-text-muted mt-0.5">ON 시 방문자 차단, 관리자는 정상 접근</p>
             </div>
             <button
+              type="button"
               role="switch"
               aria-checked={devMode}
+              aria-label="개발중 모드"
               onClick={() => setDevMode(!devMode)}
               className={`relative inline-flex w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none overflow-hidden shrink-0 ${
                 devMode ? 'bg-text-primary' : 'bg-border'
@@ -140,8 +142,10 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
               <div key={key} className="flex items-center justify-between">
                 <p className="text-sm text-text-primary">{label}</p>
                 <button
+                  type="button"
                   role="switch"
                   aria-checked={navVisibility[key]}
+                  aria-label={`${label} 메뉴 노출`}
                   onClick={() => setNavVisibility((v) => ({ ...v, [key]: !v[key] }))}
                   className={`relative inline-flex w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none overflow-hidden shrink-0 ${
                     navVisibility[key] ? 'bg-text-primary' : 'bg-border'
@@ -225,7 +229,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
               {profile.skills.map((skill) => (
                 <span key={skill} className="inline-flex items-center gap-1 bg-surface text-text-secondary text-xs px-2 py-0.5 rounded-md">
                   {skill}
-                  <button onClick={() => removeSkill(skill)} className="text-text-muted hover:text-red-500 leading-none" aria-label={`${skill} 삭제`}>×</button>
+                  <button type="button" onClick={() => removeSkill(skill)} className="-my-1 -mr-1.5 inline-flex h-7 w-7 items-center justify-center text-text-muted hover:text-red-500 leading-none" aria-label={`${skill} 삭제`}>×</button>
                 </span>
               ))}
             </div>

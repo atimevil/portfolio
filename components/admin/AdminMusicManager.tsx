@@ -127,7 +127,7 @@ export default function AdminMusicManager({ initialTracks }: Props) {
       })
 
       if (!res.ok) {
-        setError('저장에 실패했습니다.')
+        setError(res.status === 401 ? '저장 실패: 로그인이 만료됐습니다. 다른 탭에서 다시 로그인한 뒤 저장해 주세요 (입력한 내용은 그대로 둡니다).' : res.status === 400 ? '저장 실패: 입력값을 확인해 주세요.' : `저장에 실패했습니다 (오류 ${res.status}).`)
         return
       }
       const saved: Track = await res.json()
@@ -149,10 +149,10 @@ export default function AdminMusicManager({ initialTracks }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: track.id, favorite }),
       })
-      if (!res.ok) throw new Error('failed')
-    } catch {
+      if (!res.ok) throw new Error(String(res.status))
+    } catch (err) {
       setTracks((prev) => prev.map((t) => (t.id === track.id ? { ...t, favorite: track.favorite } : t)))
-      setError('즐겨찾기 변경에 실패했습니다.')
+      setError((err as Error).message === '401' ? '즐겨찾기 변경 실패: 로그인이 만료됐습니다. 다시 로그인해 주세요.' : '즐겨찾기 변경에 실패했습니다.')
     }
   }
 

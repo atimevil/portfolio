@@ -19,6 +19,10 @@ const inputCls = 'w-full px-3 py-2 text-sm border border-border rounded-md bg-bg
 
 // /en 페이지용 영문 칸. 한국어 칸을 채우고 영문을 비우면 /en에 한국어가 그대로 나온다.
 const EN_FIELDS = ['title', 'description', 'problem', 'contribution', 'result', 'metrics'] as const
+// 영문 칸이 빈 것을 알릴 때 키 이름(problem 등) 대신 화면의 칸 이름으로 보여준다
+const FIELD_LABELS: Record<(typeof EN_FIELDS)[number], string> = {
+  title: '제목', description: '설명', problem: '문제', contribution: '내가 한 것', result: '결과', metrics: '지표',
+}
 
 const EMPTY_FORM = {
   type: 'project' as PortfolioItem['type'],
@@ -93,29 +97,30 @@ export default function AdminItemManager({ initialItems }: Props) {
     const missingEn = EN_FIELDS
       .filter((f) => isProject || f === 'title' || f === 'description')
       .filter((f) => form[f].trim() && !form[`${f}_en`].trim())
-    if (missingEn.length > 0 && !confirm(`영문 칸이 비어 있습니다 (${missingEn.join(', ')}).\n/en 페이지에 한국어로 나옵니다. 그래도 저장할까요?`)) return
+    if (missingEn.length > 0 && !confirm(`영문 칸이 비어 있습니다 (${missingEn.map((f) => FIELD_LABELS[f]).join(', ')}).\n/en 페이지에 한국어로 나옵니다. 그래도 저장할까요?`)) return
     setLoading(true)
+    // 비운 칸은 ''로 보낸다 — 서버가 그 키를 지운다(undefined로 보내면 기존 값이 남는다)
     const body = {
       type: form.type,
       year: form.year.trim(),
       title: form.title,
-      description: form.description || undefined,
-      title_en: form.title_en || undefined,
-      description_en: form.description_en || undefined,
-      problem_en: isProject ? (form.problem_en || undefined) : undefined,
-      contribution_en: isProject ? (form.contribution_en || undefined) : undefined,
-      result_en: isProject ? (form.result_en || undefined) : undefined,
-      metrics_en: isProject ? (form.metrics_en || undefined) : undefined,
-      problem: isProject ? (form.problem || undefined) : undefined,
-      contribution: isProject ? (form.contribution || undefined) : undefined,
-      result: isProject ? (form.result || undefined) : undefined,
-      metrics: isProject ? (form.metrics || undefined) : undefined,
+      description: form.description,
+      title_en: form.title_en,
+      description_en: form.description_en,
+      problem_en: isProject ? form.problem_en : undefined,
+      contribution_en: isProject ? form.contribution_en : undefined,
+      result_en: isProject ? form.result_en : undefined,
+      metrics_en: isProject ? form.metrics_en : undefined,
+      problem: isProject ? form.problem : undefined,
+      contribution: isProject ? form.contribution : undefined,
+      result: isProject ? form.result : undefined,
+      metrics: isProject ? form.metrics : undefined,
       skills: isProject ? form.skills.split(',').map((s) => s.trim()).filter(Boolean) : undefined,
-      github: isProject ? (form.github || undefined) : undefined,
-      paper: isProject ? (form.paper || undefined) : undefined,
-      slug: isProject ? (form.slug || undefined) : undefined,
-      link: isProject ? (form.link || undefined) : undefined,
-      thumbnail: isProject ? (form.thumbnail || undefined) : undefined,
+      github: isProject ? form.github : undefined,
+      paper: isProject ? form.paper : undefined,
+      slug: isProject ? form.slug : undefined,
+      link: isProject ? form.link : undefined,
+      thumbnail: isProject ? form.thumbnail : undefined,
       order: isProject ? Number(form.order) || 0 : undefined,
       visible: isProject ? form.visible : undefined,
       featured: isProject ? (form.visible && form.featured) : undefined,
@@ -188,8 +193,8 @@ export default function AdminItemManager({ initialItems }: Props) {
               )}
             </div>
             <div className="flex gap-3 shrink-0">
-              <button onClick={() => startEdit(item)} className="text-xs text-text-secondary hover:text-text-primary transition-colors">수정</button>
-              <button onClick={() => handleDelete(item.id)} className="text-xs text-text-secondary hover:text-red-500 transition-colors">삭제</button>
+              <button type="button" onClick={() => startEdit(item)} aria-label={`${item.title} 수정`} className="min-h-[36px] px-2 text-xs text-text-secondary hover:text-text-primary transition-colors">수정</button>
+              <button type="button" onClick={() => handleDelete(item.id)} aria-label={`${item.title} 삭제`} className="min-h-[36px] px-2 text-xs text-text-secondary hover:text-red-500 transition-colors">삭제</button>
             </div>
           </div>
         ))}
@@ -411,5 +416,6 @@ export default function AdminItemManager({ initialItems }: Props) {
 function saveErrorMessage(status: number, action = '저장') {
   if (status === 401) return `${action} 실패: 로그인이 만료됐습니다. 다른 탭에서 다시 로그인한 뒤 눌러 주세요 (입력한 내용은 그대로 둡니다).`
   if (status === 400) return `${action} 실패: 입력값을 확인해 주세요.`
+  if (status === 409) return `${action} 실패: 다른 프로젝트가 이미 쓰는 슬러그(주소)입니다. 다른 슬러그를 입력해 주세요.`
   return `${action} 실패 (오류 ${status})`
 }

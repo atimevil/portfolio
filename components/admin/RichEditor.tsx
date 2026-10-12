@@ -113,13 +113,22 @@ function ColorSwatchButton({
 }
 
 // 이미지 File을 업로드하고 에디터 현재 위치에 이미지 노드로 삽입한다.
+// 이미지 노드는 블록이라 표 칸 안처럼 들어갈 수 없는 위치가 있다. 예전엔 올린 뒤 삽입만 조용히 실패해
+// 서버에 쓰이지 않는 파일이 남았다 — 올리기 전에 먼저 확인한다.
+const CANNOT_INSERT = '여기에는 이미지를 넣을 수 없습니다 (표 안 등). 커서를 표 밖으로 옮긴 뒤 다시 시도해 주세요.'
 async function insertUploadedImage(editor: Editor, file: File) {
+  if (!editor.can().setImage({ src: '/x.png' })) {
+    alert(CANNOT_INSERT)
+    return
+  }
+  let url: string
   try {
-    const url = await uploadBlogImage(file)
-    editor.chain().focus().setImage({ src: url }).run()
+    url = await uploadBlogImage(file)
   } catch {
     alert('이미지 업로드에 실패했습니다.')
+    return
   }
+  if (!editor.chain().focus().setImage({ src: url }).run()) alert(CANNOT_INSERT)
 }
 
 export default function RichEditor({ content, onChange }: RichEditorProps) {

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { z } from 'zod'
 import { hiddenFromPublic } from '@/lib/publicGate'
-import { getItems, createItem, updateItem, deleteItem } from '@/lib/items'
+import { getItems, createItem, updateItem, deleteItem, slugTaken } from '@/lib/items'
 
 const ItemSchema = z.object({
   type: z.enum(['project', 'activity', 'award']),
@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const result = ItemSchema.safeParse(await req.json())
   if (!result.success) return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
+  if (slugTaken(result.data.slug)) return NextResponse.json({ error: 'slug taken' }, { status: 409 })
   return NextResponse.json(createItem(result.data), { status: 201 })
 }
 
@@ -56,6 +57,7 @@ export async function PUT(req: NextRequest) {
   // 모르는 키나 잘못된 타입이 items.json에 그대로 들어가지 않게 POST와 같은 스키마로 거른다
   const result = ItemSchema.partial().safeParse(updates)
   if (!result.success) return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
+  if (slugTaken(result.data.slug, id)) return NextResponse.json({ error: 'slug taken' }, { status: 409 })
   if (!updateItem(id, result.data)) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json({ ok: true })
 }

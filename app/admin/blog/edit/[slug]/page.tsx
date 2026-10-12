@@ -3,7 +3,7 @@ import { authOptions } from '@/lib/auth'
 import { redirect, notFound } from 'next/navigation'
 import AdminLayout from '@/components/admin/AdminLayout'
 import BlogEditor from '@/components/admin/BlogEditor'
-import { getPostBySlug } from '@/lib/blog'
+import { getPostBySlug, getRawExcerpt } from '@/lib/blog'
 import { getCategories } from '@/lib/categories'
 
 interface Props {
@@ -15,10 +15,10 @@ export default async function EditBlogPage({ params: { slug } }: Props) {
   if (!session) redirect('/admin/login')
   const post = await getPostBySlug(slug)
   if (!post) notFound()
-  const categories = await getCategories()
+  const [categories, excerpt] = await Promise.all([getCategories(), getRawExcerpt(post.slug)])
   return (
     <AdminLayout>
-      <BlogEditor initialPost={post} categories={categories} />
+      <BlogEditor initialPost={{ ...post, excerpt }} categories={categories} />
     </AdminLayout>
   )
 }

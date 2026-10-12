@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import RichEditor from '@/components/admin/RichEditor'
 import { markdownToEditorHtml } from '@/lib/markdownToEditorHtml'
+import { excerptFromHtml } from '@/lib/excerpt'
 import {
   draftKey, saveDraft, loadDraft, clearDraft, draftDiffersFrom, type DraftData,
 } from '@/lib/draftStorage'
@@ -34,6 +35,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
   const [tags, setTags] = useState(initialPost?.tags?.join(', ') ?? '')
   const [content, setContent] = useState(initialHtml)
   const [category, setCategory] = useState(initialPost?.category ?? '')
+  const [excerpt, setExcerpt] = useState(initialPost?.excerpt ?? '')
   const [loading, setLoading] = useState(false)
   const [recoverable, setRecoverable] = useState<DraftData | null>(null)
 
@@ -87,14 +89,13 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
 
     setLoading(true)
     // 본문은 에디터 네이티브 HTML로 저장한다 (마크다운 재직렬화 없음 → 무손실)
-    // 접기 버튼 글자(<summary>, 티스토리 '더보기')는 요약에 넣지 않는다
-    const excerpt = content.replace(/<summary\b[^>]*>[\s\S]*?<\/summary>/gi, ' ').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 150)
+    // 요약은 직접 쓴 것을 그대로 두고, 비어 있을 때만 본문 앞부분으로 만든다(예전엔 저장할 때마다 덮어썼다)
     const body = {
       title: title.trim(),
       date: date.trim() || new Date().toISOString().slice(0, 10),
       tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
       category: category.trim(),
-      excerpt,
+      excerpt: excerpt.trim() || excerptFromHtml(content),
       content,
       contentFormat: 'html' as const,
       status,
@@ -114,7 +115,9 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
       router.push(`/admin/blog`)
       router.refresh()
     } else {
-      alert('저장 실패')
+      alert(res.status === 401
+        ? '저장 실패: 로그인이 만료됐습니다. 다른 탭에서 다시 로그인한 뒤 저장해 주세요 (작성 중인 글은 이 브라우저에 임시 보관돼 있습니다).'
+        : `저장 실패 (오류 ${res.status})`)
     }
   }
 
@@ -161,6 +164,11 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
             </select>
           </div>
         </div>
+      </div>
+
+      <div className="mb-5">
+        <label className="block text-xs text-text-muted mb-1">요약 (목록·검색 결과에 보임 — 비워두면 본문 앞부분으로 자동 생성)</label>
+        <textarea value={excerpt} onChange={(e) => setExcerpt(e.target.value)} rows={2} maxLength={300} className={`${inputClass} resize-y`} />
       </div>
 
       <label className="block text-xs text-text-muted mb-1">본문</label>

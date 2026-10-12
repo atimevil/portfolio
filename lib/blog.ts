@@ -117,6 +117,13 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   return null
 }
 
+// 편집 화면용: 목록에 쓰는 잘라낸 요약(toBlogPost)이 아니라 DB에 저장된 요약 원문.
+// 잘린 값을 편집 화면에 채웠다가 저장하면 요약 끝이 "…"로 잘려 굳는다.
+export async function getRawExcerpt(slug: string): Promise<string> {
+  const post = await prisma.post.findUnique({ where: { slug }, select: { excerpt: true } })
+  return post?.excerpt ?? ''
+}
+
 async function upsertCategoryId(
   tx: Prisma.TransactionClient,
   name: string | undefined

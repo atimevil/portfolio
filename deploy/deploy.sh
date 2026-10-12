@@ -197,7 +197,8 @@ fi
 
 echo "$TARGET" > "$DEPLOYED_FILE"
 
-# 빌드 캐시가 배포마다 쌓인다(정리 전 9GB). 일주일 넘은 것만 지운다 — 실패해도 배포는 성공이다.
-docker builder prune -f --filter until=168h >/dev/null 2>&1 || true
+# 빌드 캐시가 배포마다 쌓인다(정리 전 9.5GB). 5GB를 넘으면 오래 안 쓴 것부터 지운다 — 실패해도 배포는 성공이다.
+# 캐시는 이 서버의 다른 프로젝트와 공유라 다 지우지 않고 상한만 둔다.
+docker builder prune -f --max-used-space 5gb >/dev/null 2>&1 || true
 
 log "완료: ${TARGET:0:7} 배포됨"

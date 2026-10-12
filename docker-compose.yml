@@ -48,6 +48,7 @@ services:
       - ./certbot/www:/var/www/certbot:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
       - ./public/uploads:/usr/share/nginx/uploads:ro
+      - /home/ubuntu/nihongo/dist:/usr/share/nginx/nihongo:ro
     depends_on:
       - app
     networks:

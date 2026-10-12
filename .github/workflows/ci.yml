@@ -54,6 +54,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # PDF 갤러리 업로드 테스트가 pdftoppm을 쓴다(운영 이미지는 Dockerfile에서 poppler-utils 설치). 없으면 테스트가 건너뛰어진다.
+      - name: Install poppler
+        run: sudo apt-get update -q && sudo apt-get install -y -q poppler-utils
+
       - name: Prisma client & test DB schema
         run: |
           npx prisma generate

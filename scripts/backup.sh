@@ -39,7 +39,9 @@ echo "[backup] 복원된 Post 행수: $POST_COUNT"
 
 echo "[backup] rsync 미러"
 rsync -a --delete "$PROJECT_DIR/public/uploads/" "$BACKUP_REPO/uploads/"
-rsync -a --delete "$PROJECT_DIR/content/"        "$BACKUP_REPO/content/"
+# auth.json(관리자 비밀번호 해시)과 그 백업본은 올리지 않는다. --delete-excluded로 예전에 올라간 사본도 지운다.
+# 복원 후 auth.json이 없으면 .env의 ADMIN_PASSWORD로 로그인된다.
+rsync -a --delete --delete-excluded --exclude 'auth.json*' "$PROJECT_DIR/content/" "$BACKUP_REPO/content/"
 
 echo "[backup] git commit & push"
 git -C "$BACKUP_REPO" add -A

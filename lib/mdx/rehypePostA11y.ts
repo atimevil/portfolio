@@ -7,6 +7,9 @@ import type { Root } from 'hast'
 //    제목끼리의 상하 관계는 그대로다. 본문에 h1이 있으면 h2로 내려 페이지에 h1이 하나만 남는다.
 // 2) 코드 블록: 가로 스크롤이 생기는 <pre>에 키보드로 들어갈 수 없었다. tabindex=0을 붙인다.
 //    rehype-pretty-code가 <pre>를 새로 만들므로 이 플러그인은 그 뒤에 둔다.
+// 3) 이미지: 옮겨온 글의 이미지는 alt가 전부 비어 있다. 바로 앞 제목을 alt로 채워 화면 낭독기에
+//    어떤 대목의 그림인지라도 전한다(앞 제목이 없으면 장식 이미지로 빈 alt).
+//    한 글에 이미지가 수십 장이라 첫 장을 빼고는 지연 로딩한다(첫 장은 첫 화면에 보일 수 있다).
 
 interface AnyNode {
   type: string
@@ -16,6 +19,11 @@ interface AnyNode {
 }
 
 const HEADING = /^h([1-6])$/
+
+function textOf(node: AnyNode): string {
+  if (node.type === 'text') return String((node as { value?: string }).value ?? '')
+  return (node.children ?? []).map(textOf).join('')
+}
 
 function collect(node: AnyNode, out: AnyNode[]) {
   if (node.type === 'element' && node.tagName) out.push(node)
@@ -38,8 +46,21 @@ export default function rehypePostA11y() {
       }
     }
 
+    let heading = ''
+    let imgCount = 0
     for (const e of els) {
       if (e.tagName === 'pre') e.properties = { ...e.properties, tabIndex: 0 }
+      if (HEADING.test(e.tagName!)) heading = textOf(e).trim()
+      if (e.tagName === 'img') {
+        const alt = String(e.properties?.alt ?? '').trim()
+        e.properties = {
+          ...e.properties,
+          alt: alt || heading,
+          decoding: 'async',
+          ...(imgCount > 0 ? { loading: 'lazy' } : {}),
+        }
+        imgCount++
+      }
     }
   }
 }

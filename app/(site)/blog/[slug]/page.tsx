@@ -1,8 +1,10 @@
+import { cache } from 'react'
 import { notFound } from 'next/navigation'
+import 'katex/dist/katex.min.css' // 수식은 글 본문에만 있다 — 전역에 두면 모든 페이지가 받는다
 import Link from 'next/link'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
-import { getPostBySlug, getAllPosts } from '@/lib/blog'
+import { getPostBySlug, getAdjacentPosts } from '@/lib/blog'
 import { buildPageMetadata } from '@/lib/site'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import remarkGfm from 'remark-gfm'
@@ -23,8 +25,11 @@ interface Props {
 // 로그인 여부에 따라 수정 버튼이 달라지므로 요청마다 렌더한다
 export const dynamic = 'force-dynamic'
 
+// 메타데이터와 본문이 같은 글을 두 번 조회하지 않게 한 요청 안에서 결과를 나눠 쓴다
+const getPost = cache(getPostBySlug)
+
 export async function generateMetadata({ params }: Props) {
-  const post = await getPostBySlug(params.slug)
+  const post = await getPost(params.slug)
   if (!post) return {}
   const meta = buildPageMetadata({
     path: `/blog/${params.slug}`,
@@ -35,7 +40,7 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export default async function BlogPostPage({ params: { slug } }: Props) {
-  const post = await getPostBySlug(slug)
+  const post = await getPost(slug)
   if (!post) notFound()
 
   const session = await getServerSession(authOptions)
@@ -43,11 +48,8 @@ export default async function BlogPostPage({ params: { slug } }: Props) {
   const isDraft = post.status !== 'published'
   if (isDraft && !session) notFound()
 
-  const allPosts = await getAllPosts()
-  const idx = allPosts.findIndex((p) => p.slug === slug)
   // 이전/다음은 발행 글 목록 기준 (임시 글은 목록에 없으므로 네비 생략)
-  const prevPost = idx !== -1 && idx < allPosts.length - 1 ? allPosts[idx + 1] : null
-  const nextPost = idx > 0 ? allPosts[idx - 1] : null
+  const { prev: prevPost, next: nextPost } = await getAdjacentPosts(post.slug)
 
   // html 글은 정제+하이라이트한 HTML을, markdown 글은 기존 MDX 파이프라인을 쓴다.
   const htmlRendered = post.contentFormat === 'html' ? await renderBlogHtml(post.content) : null

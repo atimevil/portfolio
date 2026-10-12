@@ -130,7 +130,8 @@ export default async function BlogHome({
             {filtering ? t(locale, 'noMatch') : t(locale, 'noPosts')}
           </p>
         ) : (
-          <BlogViews posts={pagePosts} locale={locale} />
+          // 목록은 본문을 안 쓴다. 그대로 넘기면 클라이언트 컴포넌트라 글 10개 본문이 페이지에 실려 간다
+          <BlogViews posts={pagePosts.map((p) => ({ ...p, content: '' }))} locale={locale} />
         )}
         <Pagination currentPage={currentPage} totalPages={totalPages} basePath={base} extraParams={extraParams} />
       </section>

@@ -29,6 +29,10 @@ const config: Config = {
           soft:    'var(--color-accent-soft)',
         },
       },
+      // 본문 글꼴을 400·600만 받으므로(app/layout.tsx) 500은 600으로 맞춘다 — 안 그러면 400으로 내려가 강조가 사라진다
+      fontWeight: {
+        medium: '600',
+      },
       fontFamily: {
         sans: ['"IBM Plex Sans KR"', 'system-ui', 'sans-serif'],
         mono: ['var(--font-mono)', 'ui-monospace', 'monospace'],

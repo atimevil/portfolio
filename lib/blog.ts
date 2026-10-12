@@ -3,6 +3,7 @@ import { Prisma } from '@prisma/client'
 import type { Post, Tag, PostTag, Category } from '@prisma/client'
 import type { BlogPost } from '@/types'
 import { slugify } from '@/lib/slug'
+import { excerptFromHtml, markdownExcerptSource } from '@/lib/excerpt'
 
 function calcReadingTime(content: string): number {
   const words = content.trim().split(/\s+/).length
@@ -55,7 +56,10 @@ function toBlogPost(post: PostWithRelations, opts: { includeCover?: boolean } = 
     date: post.date.toISOString().slice(0, 10),
     tags: post.tags.map((pt) => pt.tag.name),
     category: post.category?.name,
-    excerpt: truncateExcerpt(stripMarkdown(post.excerpt || post.content)),
+    // 요약이 비어 있으면 본문에서 만든다. 제목·목차는 빼야 요약이 제목 반복이나 "목차 …"로 시작하지 않는다
+    excerpt: truncateExcerpt(stripMarkdown(
+      post.excerpt || (post.contentFormat === 'html' ? excerptFromHtml(post.content, 400) : markdownExcerptSource(post.content)),
+    )),
     content: post.content,
     contentFormat: post.contentFormat === 'html' ? 'html' : 'markdown',
     status: post.status as 'published' | 'draft',
@@ -82,6 +86,20 @@ export async function getAllPosts(): Promise<BlogPost[]> {
     orderBy: { date: 'desc' },
   })
   return posts.map((p) => toBlogPost(p, { includeCover: true }))
+}
+
+// 글 페이지의 이전/다음 링크용. 발행 글 전체의 본문까지 읽던 getAllPosts 대신 slug·제목만 읽는다.
+export async function getAdjacentPosts(
+  slug: string,
+): Promise<{ prev: { slug: string; title: string } | null; next: { slug: string; title: string } | null }> {
+  const posts = await prisma.post.findMany({
+    where: { status: 'published' },
+    select: { slug: true, title: true },
+    orderBy: { date: 'desc' },
+  })
+  const idx = posts.findIndex((p) => p.slug === slug)
+  if (idx === -1) return { prev: null, next: null }
+  return { prev: posts[idx + 1] ?? null, next: posts[idx - 1] ?? null }
 }
 
 export async function getAllPostsAdmin(): Promise<BlogPost[]> {

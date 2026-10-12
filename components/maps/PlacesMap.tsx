@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import type { Place } from '@prisma/client'
+import 'leaflet/dist/leaflet.css'
 
 interface Props {
   places: Place[]

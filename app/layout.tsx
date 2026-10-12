@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import './globals.css'
-import 'katex/dist/katex.min.css'
-import 'leaflet/dist/leaflet.css'
 import { getSettings } from '@/lib/settings'
 import { OG_IMAGE, SITE_NAME, SITE_URL } from '@/lib/site'
 import { IBM_Plex_Mono } from 'next/font/google'
@@ -12,7 +10,9 @@ import { IBM_Plex_Mono } from 'next/font/google'
 // next/font로 받으면 전 글자를 빌드 때 내려받다 시간 초과로 대체 글꼴로 조용히 넘어간다.
 // 브라우저가 받으면 페이지에 쓰인 글자 조각(unicode-range)만 내려받는다.
 const mono = IBM_Plex_Mono({ weight: ['400', '500'], subsets: ['latin'], variable: '--font-mono', display: 'swap' })
-const SANS_CSS = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap'
+// 굵기는 400·600 두 개만 받는다. 굵기마다 한글 조각 파일을 따로 받아서 4개면 페이지 무게의 60~75%(200~580KB)였다.
+// font-medium은 tailwind 설정에서 600으로 합쳤고, 700 이상(font-bold, 제목 800)은 브라우저가 600으로 그린다.
+const SANS_CSS = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600&display=swap'
 
 export function generateMetadata(): Metadata {
   const { profile } = getSettings()

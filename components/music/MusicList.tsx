@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import type { Track } from '@prisma/client'
+import { smallYoutubeThumb } from '@/lib/youtubeThumb'
 
 interface Props {
   tracks: Track[]
@@ -162,7 +163,7 @@ export default function MusicList({ tracks }: Props) {
                     {track.cover ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={track.cover}
+                        src={smallYoutubeThumb(track.cover)}
                         alt=""
                         width={32}
                         height={32}

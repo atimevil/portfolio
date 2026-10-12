@@ -92,7 +92,6 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
           <div className="flex gap-5 items-start">
             <div className="relative w-32 h-32 rounded-lg overflow-hidden bg-surface shrink-0 border border-border">
               {preview ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img src={preview} alt="미리보기" className="w-full h-full object-cover" />
               ) : (
                 <div className="flex h-full w-full flex-col items-center justify-center gap-1 text-center">
@@ -147,7 +146,6 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
           {images.map((image) => (
             <div key={image.id} className="relative group">
               <div className="relative aspect-square rounded-lg overflow-hidden bg-surface">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={galleryThumbSrc(image)}
                   alt={image.description}

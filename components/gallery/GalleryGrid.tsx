@@ -84,7 +84,6 @@ function ModalImage({ image, onZoomableChange }: { image: GalleryImage; onZoomab
   return (
     // 확대하면 상자가 이미지 폭만큼 넓어져야 바깥 스크롤이 생긴다(overflow-hidden이면 잘려서 스크롤할 게 없다)
     <div className={`relative bg-surface ${zoomed ? 'w-max min-w-full' : 'w-full overflow-hidden'}`}>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={thumb}
         alt={alt}
@@ -92,7 +91,6 @@ function ModalImage({ image, onZoomableChange }: { image: GalleryImage; onZoomab
         onLoad={readRatio}
         className={`${placeholderFit} pointer-events-none transition-opacity duration-300 ${loaded ? 'opacity-0 absolute inset-0' : 'opacity-100 blur-sm scale-105'}`}
       />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={fullRef}
         src={full}
@@ -158,7 +156,6 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
                 img.src = galleryFullSrc(image)
               }}
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={galleryThumbSrc(image)}
                 alt={image.description}

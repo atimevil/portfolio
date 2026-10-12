@@ -19,7 +19,7 @@ import ViewIncrementer from '@/components/blog/ViewIncrementer'
 import TagBadges from '@/components/blog/TagBadges'
 
 interface Props {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 // 로그인 여부에 따라 수정 버튼이 달라지므로 요청마다 렌더한다
@@ -28,7 +28,8 @@ export const dynamic = 'force-dynamic'
 // 메타데이터와 본문이 같은 글을 두 번 조회하지 않게 한 요청 안에서 결과를 나눠 쓴다
 const getPost = cache(getPostBySlug)
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params
   const post = await getPost(params.slug)
   if (!post) return {}
   const meta = buildPageMetadata({
@@ -39,7 +40,8 @@ export async function generateMetadata({ params }: Props) {
   return { ...meta, openGraph: { ...meta.openGraph, type: 'article' } }
 }
 
-export default async function BlogPostPage({ params: { slug } }: Props) {
+export default async function BlogPostPage(props: Props) {
+  const { slug } = await props.params
   const post = await getPost(slug)
   if (!post) notFound()
 

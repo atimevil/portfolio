@@ -40,10 +40,13 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
   const isEn = locale === 'en'
   const menuButton = useRef<HTMLButtonElement>(null)
 
-  // 주소가 바뀌면(뒤로가기 포함) 메뉴를 닫는다 — 링크 클릭만 닫던 탓에 뒤로가기하면 열린 채 남았다
-  useEffect(() => {
+  // 주소가 바뀌면(뒤로가기 포함) 메뉴를 닫는다 — 링크 클릭만 닫던 탓에 뒤로가기하면 열린 채 남았다.
+  // 이펙트 대신 렌더 중에 이전 주소와 비교한다(React 권장 방식, 한 번 더 그리는 일이 없다).
+  const [menuPath, setMenuPath] = useState(pathname)
+  if (menuPath !== pathname) {
+    setMenuPath(pathname)
     setMenuOpen(false)
-  }, [pathname])
+  }
 
   // Esc로 닫고 포커스를 메뉴 버튼으로 돌려준다
   useEffect(() => {
@@ -115,7 +118,6 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
           href={isEn ? '/en' : '/'}
           className="inline-flex h-11 items-center gap-2 rounded-sm font-semibold text-[15px] tracking-tight text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/icon.svg" alt="" width={28} height={28} className="rounded-md" />
           <span>fo<span className="text-accent">xi</span>bu</span>
         </Link>

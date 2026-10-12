@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 
-// Edge runtime — only does admin auth (getToken is Edge-safe). devMode blocking
-// lives in app/(site)/layout.tsx because it needs to read content/settings.json,
-// which the Edge runtime cannot do.
-export async function middleware(req: NextRequest) {
+// Next 16에서 middleware.ts가 proxy.ts로 이름이 바뀌었다(동작은 같다). 관리자 인증과 /en 로케일 표시만 한다.
+// devMode 차단은 content/settings.json을 읽어야 해서 app/(site)/layout.tsx에 있다.
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   // 영문 페이지는 인증과 무관하다. 루트 레이아웃의 <html lang>이 읽을 로케일만 표시하고 통과시킨다.

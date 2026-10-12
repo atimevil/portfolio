@@ -238,7 +238,6 @@ export default function AdminMusicManager({ initialTracks }: Props) {
         <div className="flex items-center gap-3">
           <input type="file" accept="image/*" onChange={handleCoverChange} className="text-sm" />
           {form.cover && (
-            // eslint-disable-next-line @next/next/no-img-element
             <img src={form.cover} alt="" className="w-10 h-10 rounded object-cover" />
           )}
         </div>

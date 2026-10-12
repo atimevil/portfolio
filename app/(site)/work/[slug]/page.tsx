@@ -5,7 +5,8 @@ import ProjectDetail from '@/components/work/ProjectDetail'
 import { getProjectBySlug, projectSlug } from '@/lib/items'
 import { buildPageMetadata } from '@/lib/site'
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params
   const project = getProjectBySlug(params.slug)
   if (!project) return {}
   const slug = projectSlug(project)
@@ -17,7 +18,8 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   })
 }
 
-export default async function WorkDetailPage({ params }: { params: { slug: string } }) {
+export default async function WorkDetailPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params
   const project = getProjectBySlug(params.slug)
   if (!project) notFound()
   return <ProjectDetail project={project} locale="ko" />

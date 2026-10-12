@@ -7,10 +7,11 @@ import { getPostBySlug, getRawExcerpt } from '@/lib/blog'
 import { getCategories } from '@/lib/categories'
 
 interface Props {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
-export default async function EditBlogPage({ params: { slug } }: Props) {
+export default async function EditBlogPage(props: Props) {
+  const { slug } = await props.params
   const session = await getServerSession(authOptions)
   if (!session) redirect('/admin/login')
   const post = await getPostBySlug(slug)

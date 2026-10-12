@@ -32,13 +32,12 @@ export default function PlaceSearch({ onPick, placeholder }: Props) {
   const [suggestions, setSuggestions] = useState<NominatimResult[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // 두 글자 미만이면 지난 검색 결과를 보여주지 않는다
+  const shown = input.trim().length < 2 ? [] : suggestions
 
   useEffect(() => {
     const query = input.trim()
-    if (query.length < 2) {
-      setSuggestions([])
-      return
-    }
+    if (query.length < 2) return // 목록은 아래에서 감춘다(shown)
 
     // 타이핑이 멈춘 뒤에만 호출 (요청 억제 + Nominatim 정책 준수).
     // cancelled 플래그: 타이머를 지워도 이미 나간 요청은 못 막으므로, 늦게 도착한
@@ -96,9 +95,9 @@ export default function PlaceSearch({ onPick, placeholder }: Props) {
       {loading && <span className="absolute right-3 top-2.5 text-xs text-text-muted">검색 중…</span>}
       {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
 
-      {suggestions.length > 0 && (
+      {shown.length > 0 && (
         <ul className="absolute z-20 mt-1 w-full overflow-hidden rounded-md border border-border bg-bg-secondary shadow-lg">
-          {suggestions.map((s) => (
+          {shown.map((s) => (
             <li key={s.place_id}>
               <button
                 type="button"

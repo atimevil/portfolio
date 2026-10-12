@@ -11,6 +11,7 @@ export function generateMetadata() {
   })
 }
 
-export default async function BlogIndexPage({ searchParams }: { searchParams: BlogHomeSearchParams }) {
+export default async function BlogIndexPage(props: { searchParams: Promise<BlogHomeSearchParams> }) {
+  const searchParams = await props.searchParams
   return <BlogHome searchParams={searchParams} locale="ko" />
 }

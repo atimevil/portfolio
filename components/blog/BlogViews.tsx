@@ -84,6 +84,7 @@ export default function BlogViews({ posts, locale = 'ko' }: { posts: BlogPost[];
   useEffect(() => {
     try {
       const saved = window.localStorage.getItem(VIEW_KEY)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 브라우저 저장소는 마운트 뒤에만 읽을 수 있다(SSR 불일치 방지)
       if (saved && TABS.some((tab) => tab.key === saved)) setViewState(saved as View)
     } catch {
       // 저장소 접근 불가 — 기본값 유지

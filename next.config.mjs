@@ -3,11 +3,9 @@ const nextConfig = {
   output: 'standalone',
   poweredByHeader: false, // 응답에 "X-Powered-By: Next.js"를 붙이지 않는다(버전 노출)
   // sanitize-html(CommonJS)가 htmlparser2(ESM)를 require → 서버 전용으로 번들에서 제외
-  experimental: {
-    serverComponentsExternalPackages: ['sanitize-html'],
-  },
+  serverExternalPackages: ['sanitize-html'],
   // next/image를 쓰지 않는다(새 업로드가 standalone에서 404 나서 정적 썸네일 + <img>로 바꿈).
-  // 최적화 API(/_next/image)를 꺼둔다 — 열려 있으면 14.2.x에 남은 이미지 최적화 취약점이 그대로 닿는다.
+  // 최적화 API(/_next/image)는 쓰지 않으니 꺼둔다 — 쓰지 않는 공격 지점을 열어둘 이유가 없다.
   images: {
     unoptimized: true,
   },

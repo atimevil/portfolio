@@ -69,7 +69,6 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
           dangerouslySetInnerHTML={{ __html: figure }}
         />
       ) : project.thumbnail ? (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={project.thumbnail}
           alt={title}

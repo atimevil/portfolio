@@ -12,7 +12,7 @@ export const metadata = { title: '없는 페이지', robots: { index: false } }
 // 없는 주소·없는 프로젝트 슬러그로 들어왔을 때. Next 기본 화면("This page could not be
 // found.")은 사이트 헤더도 돌아갈 곳도 없어서, 여기서 사이트 틀 안에 길을 보여준다.
 export default async function NotFound() {
-  const locale = headers().get('x-locale') === 'en' ? 'en' : 'ko'
+  const locale = (await headers()).get('x-locale') === 'en' ? 'en' : 'ko'
   const { profile, navVisibility, devMode } = getSettings()
   // 루트 404는 (site) 레이아웃 밖에서 그려져 그쪽의 개발중 모드 차단을 거치지 않는다.
   // 같은 규칙을 여기서도 건다 — 안 그러면 없는 주소로 헤더·푸터(연락처)가 새어 나간다.

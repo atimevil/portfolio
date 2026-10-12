@@ -31,11 +31,8 @@ function legacyBlogQuery(searchParams: Record<string, string | string[] | undefi
   return qs ? qs : null
 }
 
-export default async function EnHomePage({
-  searchParams,
-}: {
-  searchParams: Record<string, string | string[] | undefined>
-}) {
+export default async function EnHomePage(props: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const searchParams = await props.searchParams
   const qs = legacyBlogQuery(searchParams)
   if (qs) redirect(`/blog?${qs}`)
   return <PortfolioHome locale="en" />

@@ -6,6 +6,7 @@ export default function ThemeToggle() {
   const [isDark, setIsDark] = useState(true)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- 실제 테마는 <head> 스크립트가 정한 html 클래스라 마운트 뒤에 읽는다
     setIsDark(document.documentElement.classList.contains('dark'))
   }, [])
 

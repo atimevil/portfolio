@@ -49,16 +49,15 @@ export function generateMetadata(): Metadata {
   }
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // 미들웨어가 /en 요청에만 x-locale을 붙인다. 나머지는 기본값 ko.
-  const locale = headers().get('x-locale') === 'en' ? 'en' : 'ko'
+  const locale = (await headers()).get('x-locale') === 'en' ? 'en' : 'ko'
 
   return (
     <html lang={locale} className={mono.variable} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link rel="stylesheet" href={SANS_CSS} />
         <script
           dangerouslySetInnerHTML={{

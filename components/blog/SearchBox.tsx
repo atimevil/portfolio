@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { t, blogBase, type Locale } from '@/lib/i18n'
 
 interface Props {
@@ -19,9 +19,11 @@ export default function SearchBox({ initialQuery, extraParams, locale = 'ko' }: 
 
   // "← 전체 글"처럼 q를 떼는 이동을 해도 이 컴포넌트는 마운트된 채로 남아 입력값이 그대로 남는다.
   // URL의 q가 바뀌면 입력창도 따라가게 맞춘다.
-  useEffect(() => {
+  const [syncedQuery, setSyncedQuery] = useState(initialQuery)
+  if (syncedQuery !== initialQuery) {
+    setSyncedQuery(initialQuery)
     setValue(initialQuery ?? '')
-  }, [initialQuery])
+  }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

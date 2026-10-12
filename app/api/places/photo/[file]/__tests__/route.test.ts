@@ -17,7 +17,7 @@ beforeAll(() => {
 })
 afterAll(() => fs.rmSync(path.join(PHOTO_DIR, FILE), { force: true }))
 
-const get = (file: string) => GET(new NextRequest(`http://localhost/api/places/photo/${file}`), { params: { file } })
+const get = (file: string) => GET(new NextRequest(`http://localhost/api/places/photo/${file}`), { params: Promise.resolve({ file }) })
 
 describe('GET /api/places/photo/[file]', () => {
   it('로그인하면 사진을 준다', async () => {

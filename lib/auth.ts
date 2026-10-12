@@ -39,6 +39,6 @@ export const authOptions: NextAuthOptions = {
   },
   // NOTE: no custom `cookies` override on purpose. Over HTTPS, NextAuth uses
   // the `__Secure-next-auth.session-token` cookie and getToken() looks for that
-  // same name — forcing the non-secure name here breaks middleware auth.
+  // same name — forcing the non-secure name here breaks proxy.ts auth.
   secret: process.env.NEXTAUTH_SECRET,
 }

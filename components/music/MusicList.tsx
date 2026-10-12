@@ -25,6 +25,23 @@ function sortTracks(tracks: Track[], key: SortKey | null, dir: SortDir): Track[]
   return dir === 'asc' ? sorted : sorted.reverse()
 }
 
+// 컴포넌트 밖에 둔다 — 렌더 안에서 정의하면 렌더마다 새 컴포넌트가 되어 버튼이 다시 마운트되고,
+// 정렬 버튼을 누른 직후 키보드 포커스가 사라졌다.
+function SortHeader({ label, active, dir, onClick }: { label: string; active: boolean; dir: SortDir; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`flex min-h-[24px] items-center gap-1 py-1 text-xs font-semibold uppercase tracking-wide ${
+        active ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'
+      }`}
+    >
+      {label}
+      {active && <span aria-hidden="true">{dir === 'asc' ? '▲' : '▼'}</span>}
+    </button>
+  )
+}
+
 export default function MusicList({ tracks }: Props) {
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null)
   const [onlyFavorites, setOnlyFavorites] = useState(false)
@@ -39,6 +56,7 @@ export default function MusicList({ tracks }: Props) {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(FILTER_STORAGE_KEY)
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- 브라우저 저장소는 마운트 뒤에만 읽을 수 있다(SSR 불일치 방지)
       if (saved && genres.includes(saved)) setSelectedGenre(saved)
     } catch {
       // 저장된 필터를 못 읽으면 그냥 "전체"로 시작한다
@@ -80,20 +98,7 @@ export default function MusicList({ tracks }: Props) {
     return sortDir === 'asc' ? 'ascending' : 'descending'
   }
 
-  function SortHeader({ label, sortKeyName }: { label: string; sortKeyName: SortKey }) {
-    const active = sortKey === sortKeyName
-    return (
-      <button
-        onClick={() => toggleSort(sortKeyName)}
-        className={`flex min-h-[24px] items-center gap-1 py-1 text-xs font-semibold uppercase tracking-wide ${
-          active ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary'
-        }`}
-      >
-        {label}
-        {active && <span>{sortDir === 'asc' ? '▲' : '▼'}</span>}
-      </button>
-    )
-  }
+
 
   if (tracks.length === 0) {
     return <p className="text-center text-text-secondary py-10 text-sm">아직 없습니다.</p>
@@ -156,13 +161,13 @@ export default function MusicList({ tracks }: Props) {
               <tr className="border-b border-border">
                 <th className="w-12 px-3 py-2"><span className="sr-only">표지</span></th>
                 <th className="text-left px-3 py-2" aria-sort={ariaSort('title')}>
-                  <SortHeader label="제목" sortKeyName="title" />
+                  <SortHeader label="제목" active={sortKey === 'title'} dir={sortDir} onClick={() => toggleSort('title')} />
                 </th>
                 <th className="text-left px-3 py-2" aria-sort={ariaSort('artist')}>
-                  <SortHeader label="가수" sortKeyName="artist" />
+                  <SortHeader label="가수" active={sortKey === 'artist'} dir={sortDir} onClick={() => toggleSort('artist')} />
                 </th>
                 <th className="text-left px-3 py-2" aria-sort={ariaSort('genre')}>
-                  <SortHeader label="장르" sortKeyName="genre" />
+                  <SortHeader label="장르" active={sortKey === 'genre'} dir={sortDir} onClick={() => toggleSort('genre')} />
                 </th>
                 <th className="w-12 px-3 py-2"><span className="sr-only">링크</span></th>
               </tr>
@@ -172,7 +177,6 @@ export default function MusicList({ tracks }: Props) {
                 <tr key={track.id} className={track.link ? 'transition-colors hover:bg-bg-secondary' : ''}>
                   <td className="px-3 py-2">
                     {track.cover ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={smallYoutubeThumb(track.cover)}
                         alt=""

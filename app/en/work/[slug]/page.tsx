@@ -6,7 +6,8 @@ import { getProjectBySlug, projectSlug } from '@/lib/items'
 import { buildPageMetadata } from '@/lib/site'
 import { localized } from '@/lib/i18n'
 
-export function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params
   const project = getProjectBySlug(params.slug)
   if (!project) return {}
   const slug = projectSlug(project)
@@ -19,7 +20,8 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
   })
 }
 
-export default async function EnWorkDetailPage({ params }: { params: { slug: string } }) {
+export default async function EnWorkDetailPage(props: { params: Promise<{ slug: string }> }) {
+  const params = await props.params
   const project = getProjectBySlug(params.slug)
   if (!project) notFound()
   return <ProjectDetail project={project} locale="en" />

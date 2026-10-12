@@ -17,8 +17,11 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input, select, textarea, [ta
 // 모달 뒤의 링크로 빠져나갔고, 모바일에선 모달을 넘기다 뒤 페이지가 같이 스크롤됐다.
 export default function Modal({ open, onClose, children, label }: ModalProps) {
   const panel = useRef<HTMLDivElement>(null)
+  // 최신 onClose를 담아둔다(렌더 중이 아니라 이펙트에서 갱신). 열려 있는 동안 키 처리기를 다시 걸지 않으려고.
   const closeRef = useRef(onClose)
-  closeRef.current = onClose
+  useEffect(() => {
+    closeRef.current = onClose
+  }, [onClose])
 
   useEffect(() => {
     if (!open) return

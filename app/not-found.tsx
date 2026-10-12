@@ -6,6 +6,9 @@ import NavBar from '@/components/layout/NavBar'
 import Footer from '@/components/layout/Footer'
 import { getSettings } from '@/lib/settings'
 
+// 탭 제목이 사이트 이름만 나오던 것을 바로잡는다. 검색에도 올리지 않는다.
+export const metadata = { title: '없는 페이지', robots: { index: false } }
+
 // 없는 주소·없는 프로젝트 슬러그로 들어왔을 때. Next 기본 화면("This page could not be
 // found.")은 사이트 헤더도 돌아갈 곳도 없어서, 여기서 사이트 틀 안에 길을 보여준다.
 export default async function NotFound() {

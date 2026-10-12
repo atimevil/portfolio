@@ -10,7 +10,8 @@ export const dynamic = 'force-dynamic'
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getAllPosts()
   const postEntries = posts.map((post) => ({
-    url: `${BASE_URL}/blog/${post.slug}`,
+    // 한글 slug는 퍼센트 인코딩해야 유효한 sitemap URL이다(검색엔진이 원문 그대로는 거부할 수 있다)
+    url: `${BASE_URL}/blog/${encodeURIComponent(post.slug)}`,
     lastModified: post.date ? new Date(post.date) : new Date(),
     changeFrequency: 'weekly' as const,
     priority: 0.8,
@@ -61,7 +62,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 프로젝트 상세는 ko/en 쌍으로 올린다 — 지원서에 개별 링크를 걸 수 있는 주소다.
   const workEntries: MetadataRoute.Sitemap = getProjects().filter((p) => p.visible).flatMap((project) => {
-    const slug = projectSlug(project)
+    const slug = encodeURIComponent(projectSlug(project))
     const languages = { ko: `${BASE_URL}/work/${slug}`, en: `${BASE_URL}/en/work/${slug}` }
     return [`/work/${slug}`, `/en/work/${slug}`].map((path) => ({
       url: `${BASE_URL}${path}`,

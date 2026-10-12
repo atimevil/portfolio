@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { BlogPost } from '@/types'
 import BlogListItem from './BlogListItem'
@@ -74,16 +74,40 @@ function ImageCard({ post }: { post: BlogPost }) {
   )
 }
 
+// 고른 보기 방식을 기억한다 — 예전엔 쪽을 넘기거나 필터를 바꿀 때마다(서버 렌더링) 목록으로 돌아갔다.
+// 사생활 모드 등에서 저장소가 막혀도 동작은 그대로(기본 목록).
+const VIEW_KEY = 'blog-view'
+
 export default function BlogViews({ posts, locale = 'ko' }: { posts: BlogPost[]; locale?: Locale }) {
-  const [view, setView] = useState<View>('list')
+  const [view, setViewState] = useState<View>('list')
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(VIEW_KEY)
+      if (saved && TABS.some((tab) => tab.key === saved)) setViewState(saved as View)
+    } catch {
+      // 저장소 접근 불가 — 기본값 유지
+    }
+  }, [])
+
+  function setView(next: View) {
+    setViewState(next)
+    try {
+      window.localStorage.setItem(VIEW_KEY, next)
+    } catch {
+      // 저장 실패해도 이번 화면에서는 바뀐다
+    }
+  }
 
   return (
     <div>
       <div className="-mt-1 mb-4 flex justify-end">
-        <div className="flex shrink-0 gap-1 rounded-lg border border-border p-1">
+        <div role="group" aria-label={locale === 'en' ? 'View' : '보기 방식'} className="flex shrink-0 gap-1 rounded-lg border border-border p-1">
           {TABS.map((tab) => (
             <button
               key={tab.key}
+              type="button"
+              aria-pressed={view === tab.key}
               onClick={() => setView(tab.key)}
               className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
                 view === tab.key ? 'bg-accent-soft text-accent' : 'text-text-muted hover:text-text-primary'

@@ -3,7 +3,7 @@ import BlogViews from '@/components/blog/BlogViews'
 import Pagination from '@/components/blog/Pagination'
 import { CategoryFilter, PageSizeSelect } from '@/components/blog/BlogFilters'
 import SearchBox from '@/components/blog/SearchBox'
-import { getAllPosts } from '@/lib/blog'
+import { getAllPosts, stripMarkdown } from '@/lib/blog'
 import { t, categoryLabel, blogBase, type Locale } from '@/lib/i18n'
 
 export const DEFAULT_PER_PAGE = 10
@@ -59,12 +59,15 @@ export default async function BlogHome({
       (p) =>
         p.title.toLowerCase().includes(needle) ||
         p.excerpt?.toLowerCase().includes(needle) ||
-        p.tags?.some((tagName) => tagName.toLowerCase().includes(needle))
+        p.tags?.some((tagName) => tagName.toLowerCase().includes(needle)) ||
+        // 본문도 찾는다(예전엔 제목·요약·태그만 봐서 본문에만 나오는 낱말은 0건이었다). 검색할 때만 돈다.
+        stripMarkdown(p.content).toLowerCase().includes(needle)
     )
   }
 
-  const currentPage = Math.max(1, Number(searchParams.page) || 1)
   const totalPages = Math.max(1, Math.ceil(posts.length / perPage))
+  // page=1.5·page=999 같은 값은 정수로 내리고 1~마지막 쪽 사이로 맞춘다(빈 목록·이상한 쪽 번호 방지)
+  const currentPage = Math.min(totalPages, Math.max(1, Math.floor(Number(searchParams.page)) || 1))
   const pagePosts = posts.slice((currentPage - 1) * perPage, currentPage * perPage)
 
   const extraParams = { category, tag, q, perPage: perPage !== DEFAULT_PER_PAGE ? String(perPage) : undefined }

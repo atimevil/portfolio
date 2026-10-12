@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import ThemeToggle from '@/components/ui/ThemeToggle'
@@ -38,6 +38,24 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname() ?? '/'
   const isEn = locale === 'en'
+  const menuButton = useRef<HTMLButtonElement>(null)
+
+  // 주소가 바뀌면(뒤로가기 포함) 메뉴를 닫는다 — 링크 클릭만 닫던 탓에 뒤로가기하면 열린 채 남았다
+  useEffect(() => {
+    setMenuOpen(false)
+  }, [pathname])
+
+  // Esc로 닫고 포커스를 메뉴 버튼으로 돌려준다
+  useEffect(() => {
+    if (!menuOpen) return
+    function onKey(e: KeyboardEvent) {
+      if (e.key !== 'Escape') return
+      setMenuOpen(false)
+      menuButton.current?.focus()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [menuOpen])
 
   // /en에는 소개와 프로젝트 상세만 있다. 글은 한국어로만 쓰므로 영문 메뉴의
   // 글 링크도 한국어 /blog를 가리킨다. 갤러리·책·음악·지도는 한국어 전용이라 뺀다.
@@ -115,6 +133,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
         {/* ☰/✕는 텍스트 글리프라 폰트에 따라 깨진다 → 인라인 SVG.
             터치 타겟 44px, 열림 상태는 aria-expanded로 노출. */}
         <button
+          ref={menuButton}
           type="button"
           className="md:hidden -mr-2 inline-flex h-11 w-11 items-center justify-center text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           onClick={() => setMenuOpen(!menuOpen)}

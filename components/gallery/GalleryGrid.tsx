@@ -143,12 +143,15 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
           {filtered.map((image, idx) => (
-            <motion.div
+            // 버튼이라 키보드(Tab·Enter·Space)로도 열 수 있다
+            <motion.button
+              type="button"
               key={image.id}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: idx * 0.04 }}
-              className="relative aspect-square overflow-hidden rounded-lg cursor-pointer group bg-surface"
+              aria-label={image.description ? `${image.description} 크게 보기` : '이미지 크게 보기'}
+              className="relative block aspect-square w-full overflow-hidden rounded-lg cursor-pointer group bg-surface text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
               onClick={() => setSelected(image)}
               onMouseEnter={() => {
                 const img = new window.Image()
@@ -163,17 +166,17 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
                 className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
               />
               {image.description && (
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-3">
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity flex items-end p-3">
                   <p className="text-white text-xs line-clamp-2">{image.description}</p>
                 </div>
               )}
-            </motion.div>
+            </motion.button>
           ))}
         </div>
       )}
 
       {/* 이미지 모달 */}
-      <Modal open={!!selected} onClose={() => setSelected(null)}>
+      <Modal open={!!selected} onClose={() => setSelected(null)} label={selected?.description || '이미지'}>
         {selected && (
           <div>
             {/* 캡션을 위에 둔다 — 긴 포스터면 아래까지 내려야 안내와 원본 링크가 보였다. 오른쪽은 닫기 버튼 자리 */}

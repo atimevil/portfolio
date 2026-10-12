@@ -74,6 +74,12 @@ export default function MusicList({ tracks }: Props) {
   )
   const visible = useMemo(() => sortTracks(filtered, sortKey, sortDir), [filtered, sortKey, sortDir])
 
+  // 화면 낭독기에 지금 어느 열로 어떻게 정렬됐는지 알린다(▲▼ 기호는 읽히지 않는다)
+  function ariaSort(key: SortKey): 'ascending' | 'descending' | 'none' {
+    if (sortKey !== key) return 'none'
+    return sortDir === 'asc' ? 'ascending' : 'descending'
+  }
+
   function SortHeader({ label, sortKeyName }: { label: string; sortKeyName: SortKey }) {
     const active = sortKey === sortKeyName
     return (
@@ -96,10 +102,13 @@ export default function MusicList({ tracks }: Props) {
   return (
     <div>
       <div className="flex flex-wrap gap-2 mb-4">
+        {/* "전체"는 즐겨찾기 필터도 끈다 — 예전엔 장르만 풀려서 전체를 눌러도 즐겨찾기만 보였다 */}
         <button
-          onClick={() => selectGenre(null)}
+          type="button"
+          onClick={() => { selectGenre(null); setOnlyFavorites(false) }}
+          aria-pressed={selectedGenre === null && !onlyFavorites}
           className={`inline-flex min-h-[36px] items-center rounded-full border px-3 py-2 text-xs transition-colors md:min-h-0 md:py-1 ${
-            selectedGenre === null
+            selectedGenre === null && !onlyFavorites
               ? 'border-accent text-accent'
               : 'border-border text-text-secondary hover:text-text-primary'
           }`}
@@ -122,7 +131,9 @@ export default function MusicList({ tracks }: Props) {
         {genres.map((genre) => (
           <button
             key={genre}
+            type="button"
             onClick={() => selectGenre(genre)}
+            aria-pressed={selectedGenre === genre}
             className={`inline-flex min-h-[36px] items-center rounded-full border px-3 py-2 text-xs transition-colors md:min-h-0 md:py-1 ${
               selectedGenre === genre
                 ? 'border-accent text-accent'
@@ -144,13 +155,13 @@ export default function MusicList({ tracks }: Props) {
             <thead>
               <tr className="border-b border-border">
                 <th className="w-12 px-3 py-2"><span className="sr-only">표지</span></th>
-                <th className="text-left px-3 py-2">
+                <th className="text-left px-3 py-2" aria-sort={ariaSort('title')}>
                   <SortHeader label="제목" sortKeyName="title" />
                 </th>
-                <th className="text-left px-3 py-2">
+                <th className="text-left px-3 py-2" aria-sort={ariaSort('artist')}>
                   <SortHeader label="가수" sortKeyName="artist" />
                 </th>
-                <th className="text-left px-3 py-2">
+                <th className="text-left px-3 py-2" aria-sort={ariaSort('genre')}>
                   <SortHeader label="장르" sortKeyName="genre" />
                 </th>
                 <th className="w-12 px-3 py-2"><span className="sr-only">링크</span></th>

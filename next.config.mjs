@@ -11,6 +11,13 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // 프로젝트 상세는 /work/<slug>만 있다. 주소 끝을 지워 /work로 오면 404 대신 프로젝트 목록이 있는 소개로 보낸다.
+  async redirects() {
+    return [
+      { source: '/work', destination: '/about', permanent: false },
+      { source: '/en/work', destination: '/en/about', permanent: false },
+    ]
+  },
   async headers() {
     return [
       {

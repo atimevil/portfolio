@@ -43,25 +43,31 @@ cd ~/portfolio && node scripts/fetch-github-stats.mjs
 매일 새벽 5시 30분 크론 등록:
 
 ```bash
+mkdir -p ~/logs
 ( crontab -l 2>/dev/null; \
-  echo "30 5 * * * cd /home/ubuntu/portfolio && /usr/bin/node scripts/fetch-github-stats.mjs >> /tmp/gh-stats.log 2>&1" \
+  echo "30 5 * * * cd /home/ubuntu/portfolio && /usr/bin/node scripts/fetch-github-stats.mjs >> /home/ubuntu/logs/gh-stats.log 2>&1" \
 ) | crontab -
 ```
 
 - `node` 경로는 `which node`로 확인해 바꾼다.
 - 비공개 레포까지 세거나 rate limit(시간당 60회)이 걸리면 `GITHUB_TOKEN=<토큰>`을 크론 줄 앞에 붙인다. 공개 레포·하루 6개면 토큰 없이 충분하다.
-- 로그: `/tmp/gh-stats.log`.
+- 로그: `~/logs/gh-stats.log` (예전엔 `/tmp`라 재부팅하면 사라졌다).
+- 2일 넘게 갱신이 없거나 주간 백업이 실패·지연되면 어드민 대시보드 위에 경고가 뜬다 (`lib/opsStatus.ts`, 백업 결과는 `content/ops/`).
 
 ## content/ 볼륨에 있는 것
 
 git으로 추적: `items.json`(프로젝트·이력), `settings.json`(프로필·메뉴).
-git 밖(런타임 상태): `views.json`(조회수), `github-stats.json`(위 크론), `auth.json`(관리자 비밀번호 해시).
+git 밖(런타임 상태): `views.json`(조회수), `gallery.json`(갤러리 목록), `github-stats.json`(위 크론),
+`auth.json`(관리자 비밀번호 해시), `private-uploads/maps/`(로그인해야 보이는 지도 사진), `ops/`(백업 결과 기록).
 
-`auth.json`은 절대 커밋하지 않는다. 배포는 추적 파일만 git 버전으로 되돌리므로
-비밀번호·조회수·스타 캐시는 배포로 사라지지 않는다.
+`auth.json`은 절대 커밋하지 않는다(주간 백업에서도 뺀다). git 밖 파일은 배포가 건드리지 않는다.
 
-**규칙:** 프로젝트·이력·설정은 로컬에서 고쳐 푸시한다. `/admin`에서 고치면 다음 배포 때
-git 버전으로 덮이되(백업은 `deploy-backups/`에 남는다), 블로그 글은 Postgres라 영향이 없다.
+`/admin`에서 고친 `items.json`·`settings.json`은 배포 때 백업(`deploy-backups/`) → 코드 갱신 →
+운영 수정을 다시 얹는다(같은 파일을 커밋도 고쳤으면 JSON 단위로 병합, 충돌하면 커밋 버전을 쓰고 백업 위치를 알린다).
+배포가 도중에 실패하면 운영 수정을 백업에서 되돌린다. 블로그 글은 Postgres라 영향이 없다.
+
+배포 성공 기록은 `~/deploy/deployed-sha`에 남는다. 빌드가 실패해 git만 새 커밋으로 가 있어도
+같은 커밋을 다시 배포하면 건너뛰지 않고 다시 빌드한다. 성공하면 일주일 넘은 Docker 빌드 캐시를 지운다.
 
 ## 자주 쓰는 것
 

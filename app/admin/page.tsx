@@ -6,6 +6,7 @@ import { getAllPostsAdmin } from '@/lib/blog'
 import { getItems } from '@/lib/items'
 import { getGalleryImages } from '@/lib/gallery'
 import { getAllViews } from '@/lib/views'
+import { getOpsWarnings } from '@/lib/opsStatus'
 
 export default async function AdminDashboardPage() {
   const session = await getServerSession()
@@ -15,9 +16,12 @@ export default async function AdminDashboardPage() {
   const items = getItems()
   const images = getGalleryImages()
   const allViews = getAllViews()
+  const drafts = posts.filter((p) => p.status === 'draft').length
+  const opsWarnings = getOpsWarnings()
 
   const stats = [
-    { label: '블로그 글', value: posts.length, href: '/admin/blog' },
+    // 발행 글 수(방문자에게 보이는 수). 임시글이 있으면 따로 적는다
+    { label: '블로그 글', value: posts.filter((p) => p.status === 'published').length, href: '/admin/blog', note: drafts > 0 ? `임시 ${drafts}` : undefined },
     { label: '이력', value: items.length, href: '/admin/items' },
     { label: '이미지', value: images.length, href: '/admin/gallery' },
   ]
@@ -30,6 +34,16 @@ export default async function AdminDashboardPage() {
         <h1 className="text-lg font-semibold text-text-primary">대시보드</h1>
       </div>
 
+      {/* 백업·통계 수집이 실패하거나 밀렸을 때만 보인다(lib/opsStatus) */}
+      {opsWarnings.length > 0 && (
+        <div role="alert" className="mb-6 rounded-lg border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-text-primary">
+          <p className="font-semibold">서버 작업 확인 필요</p>
+          <ul className="mt-1 list-disc pl-5 text-text-secondary">
+            {opsWarnings.map((w) => <li key={w.key}>{w.message}</li>)}
+          </ul>
+        </div>
+      )}
+
       <div className="grid grid-cols-3 gap-3 mb-8">
         {stats.map((stat) => (
           <Link
@@ -40,7 +54,10 @@ export default async function AdminDashboardPage() {
             <p className="text-2xl font-bold text-text-primary group-hover:text-text-primary transition-colors">
               {stat.value}
             </p>
-            <p className="text-xs text-text-muted mt-1">{stat.label}</p>
+            <p className="text-xs text-text-muted mt-1">
+              {stat.label}
+              {'note' in stat && stat.note && <span className="ml-1.5">· {stat.note}</span>}
+            </p>
           </Link>
         ))}
       </div>

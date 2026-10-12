@@ -8,11 +8,30 @@ BACKUP_REPO="/home/ubuntu/portfolio-db"
 PG_CONTAINER="portfolio-postgres"
 CHECK_DB="portfolio_restore_check"
 
+STATUS_DIR="$PROJECT_DIR/content/ops"
+
+# 결과를 content/ops에 남긴다 — 알림 채널이 없어서 어드민 대시보드가 이 파일을 읽어 실패·지연을 띄운다.
+# backup.json은 매번(성공/실패), backup-ok.json은 성공했을 때만 갱신한다.
+record_status() {
+  local ok="$1" now
+  now="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  mkdir -p "$STATUS_DIR"
+  printf '{ "at": "%s", "ok": %s }\n' "$now" "$ok" > "$STATUS_DIR/.backup.json.tmp" \
+    && mv "$STATUS_DIR/.backup.json.tmp" "$STATUS_DIR/backup.json"
+  if [ "$ok" = true ]; then
+    printf '{ "at": "%s", "ok": true }\n' "$now" > "$STATUS_DIR/.backup-ok.json.tmp" \
+      && mv "$STATUS_DIR/.backup-ok.json.tmp" "$STATUS_DIR/backup-ok.json"
+  fi
+}
+
 # 검증용 임시 DB는 성공/실패 무관하게 항상 회수
 cleanup() {
+  local status=$?
   docker exec -e CHECK_DB="$CHECK_DB" "$PG_CONTAINER" sh -c \
     'PGPASSWORD="$POSTGRES_PASSWORD" psql -U postgres -c "DROP DATABASE IF EXISTS $CHECK_DB;"' \
     >/dev/null 2>&1 || true
+  if [ "$status" -eq 0 ]; then record_status true; else record_status false; fi || true
+  exit "$status"
 }
 trap cleanup EXIT
 

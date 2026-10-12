@@ -11,12 +11,17 @@
 #  - 새 Prisma 마이그레이션이 들어 있으면 배포하지 않고 중단한다 (운영 DB 변경은 사람이 확인)
 #  - 이 스크립트는 app 서비스만 교체한다. nginx·postgres는 건드리지 않는다
 #  - 헬스체크에 실패하면 이전 이미지로 자동 롤백한다 (HEALTH_PATHS로 경로를 바꿔 롤백을 시험할 수 있다)
+#  - 중간에 실패하면 운영 화면에서 고친 content 파일을 백업에서 되돌린다
+#  - "이미 배포됨" 판단은 git HEAD가 아니라 성공한 배포 기록(DEPLOYED_FILE)으로 한다
 set -euo pipefail
 
 REPO=/home/ubuntu/portfolio
 LOCK=/tmp/portfolio-deploy.lock
 IMAGE=portfolio-app
 ROLLBACK_TAG="${IMAGE}:rollback"
+# 마지막으로 헬스체크까지 통과한 커밋. 예전엔 git HEAD로 판단해서, 코드 갱신 뒤 빌드가 실패하면
+# HEAD만 새 커밋으로 가 있고 옛 컨테이너가 도는데도 다시 배포하면 "이미 배포됨"으로 건너뛰었다.
+DEPLOYED_FILE=/home/ubuntu/deploy/deployed-sha
 
 log() { printf '[deploy %s] %s\n' "$(date +%H:%M:%S)" "$*"; }
 die() { log "중단: $*"; exit 1; }
@@ -38,14 +43,16 @@ git cat-file -e "${TARGET}^{commit}" 2>/dev/null || die "알 수 없는 커밋�
 git merge-base --is-ancestor "$TARGET" origin/master || die "origin/master에 없는 커밋입니다: $TARGET"
 
 CURRENT="$(git rev-parse HEAD)"
-if [ "$CURRENT" = "$TARGET" ] && [ -z "${FORCE_REBUILD:-}" ]; then
+DEPLOYED="$(cat "$DEPLOYED_FILE" 2>/dev/null || echo "$CURRENT")"
+if [ "$DEPLOYED" = "$TARGET" ] && [ -z "${FORCE_REBUILD:-}" ]; then
   log "이미 $TARGET 입니다. 배포할 변경이 없습니다 (강제하려면 FORCE_REBUILD=1)"
   exit 0
 fi
 
 # 새 마이그레이션이 있으면 자동 배포하지 않는다. 앱이 옛 스키마로 뜨는 걸 막기 위해서다.
-if [ -z "${ALLOW_MIGRATIONS:-}" ] && git cat-file -e "${CURRENT}^{commit}" 2>/dev/null; then
-  NEW_MIG="$(git diff --name-only --diff-filter=A "$CURRENT" "$TARGET" -- prisma/migrations | grep migration.sql || true)"
+# 비교 기준은 마지막 성공 배포 — 빌드 실패로 HEAD만 앞서 있어도 그 사이 마이그레이션을 놓치지 않는다.
+if [ -z "${ALLOW_MIGRATIONS:-}" ] && git cat-file -e "${DEPLOYED}^{commit}" 2>/dev/null; then
+  NEW_MIG="$(git diff --name-only --diff-filter=A "$DEPLOYED" "$TARGET" -- prisma/migrations | grep migration.sql || true)"
   if [ -n "$NEW_MIG" ]; then
     printf '%s\n' "$NEW_MIG"
     die "새 마이그레이션이 있습니다. 서버에서 'npx prisma migrate deploy'를 확인·실행한 뒤 ALLOW_MIGRATIONS=1 $0 $TARGET 로 배포하세요"
@@ -61,6 +68,21 @@ log "코드 갱신: ${CURRENT:0:7} → ${TARGET:0:7}"
 # 병합이 깨끗하고 JSON으로 읽힐 때만 쓴다. 아니면 git 버전을 쓰고 백업 위치를 알린다.
 DIRTY="$(git diff --name-only -- content)"
 BACKUP=""
+RESTORE_PENDING=""
+
+# content는 컨테이너에 마운트돼 있어 아래 checkout 순간부터 운영 사이트가 git 버전을 본다.
+# 병합을 끝내기 전에 실패하면(ff 실패·디스크 등) 운영 수정이 백업 폴더에만 남으므로 되돌려 놓는다.
+restore_content() {
+  local status=$?
+  if [ -n "$RESTORE_PENDING" ] && [ -n "$BACKUP" ]; then
+    for f in $DIRTY; do
+      cp -a "$BACKUP/$(basename "$f")" "$REPO/$f" || true
+    done
+    log "실패해서 운영 수정을 백업에서 되돌렸습니다 ($BACKUP)"
+  fi
+  exit $status
+}
+trap restore_content EXIT
 if [ -n "$DIRTY" ]; then
   BACKUP="$REPO/deploy-backups/content-$(date +%Y%m%d-%H%M%S)"
   mkdir -p "$BACKUP"
@@ -68,6 +90,7 @@ if [ -n "$DIRTY" ]; then
     cp -a "$REPO/$f" "$BACKUP/$(basename "$f")"
   done
   log "운영 화면에서 수정된 파일 백업: $BACKUP ($(echo $DIRTY | tr '\n' ' '))"
+  RESTORE_PENDING=1
   git checkout -- content
 fi
 
@@ -131,6 +154,7 @@ for f in $DIRTY; do
   fi
   rm -f "$tmp" "$base"
 done
+RESTORE_PENDING=""
 
 # 롤백용으로 지금 돌고 있는 이미지를 태그해 둔다
 PREV_ID="$(docker inspect portfolio --format '{{.Image}}' 2>/dev/null || true)"
@@ -170,5 +194,10 @@ if [ -z "$OK" ]; then
   fi
   die "롤백할 이전 이미지가 없습니다"
 fi
+
+echo "$TARGET" > "$DEPLOYED_FILE"
+
+# 빌드 캐시가 배포마다 쌓인다(정리 전 9GB). 일주일 넘은 것만 지운다 — 실패해도 배포는 성공이다.
+docker builder prune -f --filter until=168h >/dev/null 2>&1 || true
 
 log "완료: ${TARGET:0:7} 배포됨"

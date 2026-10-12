@@ -3,25 +3,25 @@ import path from 'path'
 import sharp from 'sharp'
 import { stripImageMetadata } from '@/lib/stripMetadata'
 import { detectImageExt } from '@/lib/imageExt'
+import { readJsonFile, readJsonFileOr, writeJsonAtomic } from '@/lib/jsonFile'
 import type { GalleryImage } from '@/types'
 
 const META_FILE = path.join(process.cwd(), 'content/gallery.json')
 const UPLOAD_DIR = path.join(process.cwd(), 'public/uploads/gallery')
 const THUMB_DIR = path.join(UPLOAD_DIR, 'thumbs')
 
+// 저장 경로용 — 깨진 파일이면 예외를 올려 빈 목록으로 덮어쓰지 않는다
 function readMeta(): GalleryImage[] {
-  if (!fs.existsSync(META_FILE)) return []
-  return JSON.parse(fs.readFileSync(META_FILE, 'utf-8'))
+  return readJsonFile<GalleryImage[]>(META_FILE, [])
 }
 
 function writeMeta(data: GalleryImage[]): void {
-  const dir = path.dirname(META_FILE)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(META_FILE, JSON.stringify(data, null, 2), 'utf-8')
+  writeJsonAtomic(META_FILE, data)
 }
 
+// 화면 표시용 — 파일이 깨져도 /gallery가 500이 되지 않는다(빈 목록)
 export function getGalleryImages(): GalleryImage[] {
-  return readMeta().sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+  return readJsonFileOr<GalleryImage[]>(META_FILE, []).sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
 }
 
 // 그리드용 작은 썸네일. 업로드 직후 만든 파일은 Next 서버가 모르므로(_next/image가 404)

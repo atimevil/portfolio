@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { scryptSync, randomBytes, timingSafeEqual } from 'crypto'
+import { writeJsonAtomic } from '@/lib/jsonFile'
 
 // Stored in the content volume, NOT exposed by any route (unlike settings.json,
 // which is public via GET /api/settings). Holds a scrypt hash, never plaintext.
@@ -62,7 +63,5 @@ function verifyHash(input: string, stored: string): boolean {
 export function setPassword(newPassword: string): void {
   const salt = randomBytes(16).toString('hex')
   const key = scryptSync(newPassword, salt, 64, { ...PARAMS, maxmem: MAXMEM }).toString('hex')
-  const dir = path.dirname(FILE)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(FILE, JSON.stringify({ hash: `scrypt$${PARAMS.N}$${PARAMS.r}$${PARAMS.p}$${salt}$${key}` }, null, 2), 'utf-8')
+  writeJsonAtomic(FILE, { hash: `scrypt$${PARAMS.N}$${PARAMS.r}$${PARAMS.p}$${salt}$${key}` })
 }

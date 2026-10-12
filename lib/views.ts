@@ -1,15 +1,10 @@
-import fs from 'fs'
 import path from 'path'
+import { readJsonFile, readJsonFileOr, writeJsonAtomic } from '@/lib/jsonFile'
 
 const FILE = path.join(process.cwd(), 'content/views.json')
 
 function readViews(): Record<string, number> {
-  if (!fs.existsSync(FILE)) return {}
-  try {
-    return JSON.parse(fs.readFileSync(FILE, 'utf-8'))
-  } catch {
-    return {}
-  }
+  return readJsonFileOr<Record<string, number>>(FILE, {})
 }
 
 export function getViews(slug: string): number {
@@ -21,10 +16,9 @@ export function getAllViews(): Record<string, number> {
 }
 
 export function incrementViews(slug: string): number {
-  const views = readViews()
+  // 깨진 파일이면 여기서 예외 — 빈 객체에 1을 더해 모든 글의 조회수를 지우지 않는다
+  const views = readJsonFile<Record<string, number>>(FILE, {})
   views[slug] = (views[slug] ?? 0) + 1
-  const dir = path.dirname(FILE)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(FILE, JSON.stringify(views, null, 2), 'utf-8')
+  writeJsonAtomic(FILE, views)
   return views[slug]
 }

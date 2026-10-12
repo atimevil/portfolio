@@ -53,5 +53,8 @@ if (ok === 0 && Object.keys(existing).length > 0) {
   process.exit(0)
 }
 fs.mkdirSync(path.dirname(OUT), { recursive: true })
-fs.writeFileSync(OUT, JSON.stringify(next, null, 2) + '\n')
+// 임시 파일에 쓰고 바꿔치기 — 쓰다 끊겨도 반쯤 쓴 파일이 남지 않는다(lib/jsonFile과 같은 방식)
+const tmp = `${OUT}.${process.pid}.tmp`
+fs.writeFileSync(tmp, JSON.stringify(next, null, 2) + '\n')
+fs.renameSync(tmp, OUT)
 console.log(`\n${ok}/${slugs.length}개 갱신 → ${OUT}`)

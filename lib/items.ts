@@ -1,22 +1,21 @@
-import fs from 'fs'
 import path from 'path'
+import { readJsonFile, readJsonFileOr, writeJsonAtomic } from '@/lib/jsonFile'
 import type { PortfolioItem } from '@/types'
 
 const FILE = path.join(process.cwd(), 'content/items.json')
 
+// 화면 표시용 — 파일이 깨져도 페이지는 뜬다(빈 목록)
 function read(): PortfolioItem[] {
-  if (!fs.existsSync(FILE)) return []
-  try {
-    return JSON.parse(fs.readFileSync(FILE, 'utf-8')) as PortfolioItem[]
-  } catch {
-    return []
-  }
+  return readJsonFileOr<PortfolioItem[]>(FILE, [])
+}
+
+// 저장 경로용 — 깨진 파일이면 예외를 올려 빈 목록으로 덮어쓰지 않는다
+function readForWrite(): PortfolioItem[] {
+  return readJsonFile<PortfolioItem[]>(FILE, [])
 }
 
 function write(data: PortfolioItem[]): void {
-  const dir = path.dirname(FILE)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(FILE, JSON.stringify(data, null, 2), 'utf-8')
+  writeJsonAtomic(FILE, data)
 }
 
 // 관리자 화면 전용(대시보드·이력관리·items API). 최신 시점(year)이 위로 오도록 desc 정렬.
@@ -69,23 +68,39 @@ export function getTimeline(): PortfolioItem[] {
   return read().sort((a, b) => timeKey(b.year) - timeKey(a.year))
 }
 
+// 편집 폼은 비운 칸을 ''로 보낸다. 예전엔 비운 칸을 아예 안 보내서(undefined) 병합할 때
+// 기존 값이 그대로 남았다 — 링크·슬러그를 지우고 저장해도 안 지워졌다. ''인 키는 빼서 저장한다.
+function dropEmpty<T extends object>(item: T): T {
+  return Object.fromEntries(Object.entries(item).filter(([, v]) => v !== '')) as T
+}
+
+/**
+ * slug가 다른 프로젝트의 주소(slug 또는 id)와 겹치는지. 겹치면 상세 페이지가 먼저 찾은 쪽만 열린다.
+ * selfId는 수정 중인 항목(자기 자신과는 비교하지 않는다).
+ */
+export function slugTaken(slug: string | undefined, selfId?: string): boolean {
+  const s = slug?.trim()
+  if (!s) return false
+  return read().some((i) => i.type === 'project' && i.id !== selfId && (projectSlug(i) === s || i.id === s))
+}
+
 export function createItem(item: Omit<PortfolioItem, 'id'>): PortfolioItem {
-  const data = read()
-  const newItem: PortfolioItem = { ...item, id: Date.now().toString() }
+  const data = readForWrite()
+  const newItem: PortfolioItem = dropEmpty({ ...item, id: Date.now().toString() })
   write([...data, newItem])
   return newItem
 }
 
 // 없는 id면 false (라우트가 404로 답한다)
 export function updateItem(id: string, updates: Partial<PortfolioItem>): boolean {
-  const data = read()
+  const data = readForWrite()
   const idx = data.findIndex((i) => i.id === id)
   if (idx === -1) return false
-  data[idx] = { ...data[idx], ...updates }
+  data[idx] = dropEmpty({ ...data[idx], ...updates })
   write(data)
   return true
 }
 
 export function deleteItem(id: string): void {
-  write(read().filter((i) => i.id !== id))
+  write(readForWrite().filter((i) => i.id !== id))
 }

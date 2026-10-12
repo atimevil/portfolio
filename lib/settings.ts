@@ -1,5 +1,5 @@
-import fs from 'fs'
 import path from 'path'
+import { readJsonFile, writeJsonAtomic } from '@/lib/jsonFile'
 import type { SiteSettings } from '@/types'
 
 const FILE = path.join(process.cwd(), 'content/settings.json')
@@ -23,23 +23,28 @@ const DEFAULT_SETTINGS: SiteSettings = {
   },
 }
 
+function withDefaults(saved: Partial<SiteSettings>): SiteSettings {
+  return {
+    ...DEFAULT_SETTINGS,
+    ...saved,
+    navVisibility: { ...DEFAULT_SETTINGS.navVisibility, ...(saved.navVisibility ?? {}) },
+    profile: { ...DEFAULT_SETTINGS.profile, ...(saved.profile ?? {}) },
+  }
+}
+
+// 화면 표시용 — 파일이 깨져도 기본 설정으로 페이지는 뜬다
 export function getSettings(): SiteSettings {
-  if (!fs.existsSync(FILE)) return DEFAULT_SETTINGS
   try {
-    const saved = JSON.parse(fs.readFileSync(FILE, 'utf-8')) as Partial<SiteSettings>
-    return {
-      ...DEFAULT_SETTINGS,
-      ...saved,
-      navVisibility: { ...DEFAULT_SETTINGS.navVisibility, ...(saved.navVisibility ?? {}) },
-      profile: { ...DEFAULT_SETTINGS.profile, ...(saved.profile ?? {}) },
-    }
-  } catch {
+    return withDefaults(readJsonFile<Partial<SiteSettings>>(FILE, {}))
+  } catch (err) {
+    console.error(err)
     return DEFAULT_SETTINGS
   }
 }
 
 export function updateSettings(updates: Partial<SiteSettings>): SiteSettings {
-  const current = getSettings()
+  // 깨진 파일이면 예외 — 기본값(이름 '이름' 등)으로 실제 프로필을 덮어쓰지 않는다
+  const current = withDefaults(readJsonFile<Partial<SiteSettings>>(FILE, {}))
   const merged: SiteSettings = {
     ...current,
     ...updates,
@@ -52,8 +57,6 @@ export function updateSettings(updates: Partial<SiteSettings>): SiteSettings {
       ...(updates.profile ?? {}),
     },
   }
-  const dir = path.dirname(FILE)
-  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(FILE, JSON.stringify(merged, null, 2), 'utf-8')
+  writeJsonAtomic(FILE, merged)
   return merged
 }

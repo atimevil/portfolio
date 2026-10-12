@@ -68,8 +68,11 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
     form.append('file', file)
     try {
       const res = await fetch('/api/upload', { method: 'POST', body: form })
-      const data = await res.json()
-      if (data.url) setProfile((p) => ({ ...p, avatar: data.url }))
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data.url) setProfile((p) => ({ ...p, avatar: data.url }))
+      else alert(`업로드 실패: ${data.error ?? `오류 ${res.status}`}`)
+    } catch {
+      alert('업로드 실패: 네트워크 오류')
     } finally {
       setUploading(false)
     }
@@ -77,14 +80,26 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
 
   async function handleSave() {
     setSaving(true)
-    await fetch('/api/settings', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ devMode, navVisibility, profile }),
-    })
-    setSaving(false)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+    // 실패(로그인 만료 401 등)를 "저장됨"으로 보여주면 고친 내용이 조용히 사라진다
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ devMode, navVisibility, profile }),
+      })
+      if (!res.ok) {
+        alert(res.status === 401
+          ? '저장 실패: 로그인이 만료됐습니다. 다른 탭에서 다시 로그인한 뒤 저장해 주세요 (입력한 내용은 그대로 둡니다).'
+          : `저장 실패 (오류 ${res.status})`)
+        return
+      }
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+    } catch {
+      alert('저장 실패: 네트워크 오류')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const avatarSrc = profile.avatar || (profile.github ? `https://avatars.githubusercontent.com/${profile.github.split('/').pop()}` : '')

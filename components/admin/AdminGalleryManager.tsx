@@ -54,12 +54,13 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
 
   async function handleDelete(id: string) {
     if (!confirm('삭제하시겠습니까?')) return
-    await fetch('/api/gallery', {
+    const res = await fetch('/api/gallery', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
     })
-    setImages((prev) => prev.filter((i) => i.id !== id))
+    if (res.ok) setImages((prev) => prev.filter((i) => i.id !== id))
+    else alert(res.status === 401 ? '삭제 실패: 로그인이 만료됐습니다. 다시 로그인해 주세요.' : `삭제 실패 (오류 ${res.status})`)
   }
 
   return (

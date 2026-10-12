@@ -85,6 +85,7 @@ export default function AdminBookManager({ initialBooks }: Props) {
       body: JSON.stringify({ id }),
     })
     if (res.ok) setBooks((prev) => prev.filter((b) => b.id !== id))
+    else alert(res.status === 401 ? '삭제 실패: 로그인이 만료됐습니다. 다시 로그인해 주세요.' : `삭제 실패 (오류 ${res.status})`)
   }
 
   return (

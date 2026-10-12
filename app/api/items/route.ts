@@ -13,6 +13,13 @@ const ItemSchema = z.object({
   contribution: z.string().optional(),
   result: z.string().optional(),
   metrics: z.string().optional(),
+  // /en 페이지용 영문판 (lib/i18n의 localized가 비어 있으면 한국어로 폴백)
+  title_en: z.string().optional(),
+  description_en: z.string().optional(),
+  problem_en: z.string().optional(),
+  contribution_en: z.string().optional(),
+  result_en: z.string().optional(),
+  metrics_en: z.string().optional(),
   skills: z.array(z.string()).optional(),
   github: z.string().optional(),
   slug: z.string().optional(),
@@ -41,7 +48,10 @@ export async function PUT(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { id, ...updates } = await req.json()
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
-  updateItem(id, updates)
+  // 모르는 키나 잘못된 타입이 items.json에 그대로 들어가지 않게 POST와 같은 스키마로 거른다
+  const result = ItemSchema.partial().safeParse(updates)
+  if (!result.success) return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
+  updateItem(id, result.data)
   return NextResponse.json({ ok: true })
 }
 

@@ -20,6 +20,8 @@ export default function AdminBlogList({ posts: initialPosts }: AdminBlogListProp
     })
     if (res.ok) {
       setPosts((prev) => prev.filter((p) => p.slug !== slug))
+    } else {
+      alert(res.status === 401 ? '삭제 실패: 로그인이 만료됐습니다. 다시 로그인해 주세요.' : `삭제 실패 (오류 ${res.status})`)
     }
   }
 

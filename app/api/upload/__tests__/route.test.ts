@@ -75,6 +75,15 @@ describe('POST /api/upload', () => {
     written.push(path.join(process.cwd(), 'public', url))
   })
 
+  it('type=maps면 공개 폴더가 아니라 content/private-uploads에 두고 인증 라우트 주소를 준다', async () => {
+    const res = await POST(makeUploadRequest({ file: pngFile('place.png'), type: 'maps' }))
+    const { url } = await res.json()
+    expect(url).toMatch(/^\/api\/places\/photo\/maps-\d+\.png$/)
+    const abs = path.join(process.cwd(), 'content/private-uploads/maps', url.split('/').pop())
+    written.push(abs)
+    expect(existsSync(abs)).toBe(true)
+  })
+
   it('파일이 없으면 400', async () => {
     const res = await POST(makeUploadRequest({ type: 'blog' }))
     expect(res.status).toBe(400)

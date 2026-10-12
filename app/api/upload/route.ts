@@ -4,6 +4,7 @@ import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { stripImageMetadata } from '@/lib/stripMetadata'
 import { detectImageExt } from '@/lib/imageExt'
+import { PHOTO_DIR, URL_PREFIX as PHOTO_URL_PREFIX } from '@/lib/place-photos'
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession()
@@ -23,6 +24,13 @@ export async function POST(req: NextRequest) {
   const ext = await detectImageExt(buffer)
   if (!ext) return NextResponse.json({ error: '이미지 파일이 아닙니다' }, { status: 400 })
   const filename = `${prefix}-${Date.now()}.${ext}`
+
+  // 지도 사진은 비공개(로그인해야 보이는 /maps용)라 public 밖에 두고 인증 라우트로 서빙한다
+  if (subdir === 'maps') {
+    await mkdir(PHOTO_DIR, { recursive: true })
+    await writeFile(path.join(PHOTO_DIR, filename), buffer)
+    return NextResponse.json({ url: `${PHOTO_URL_PREFIX}${filename}` })
+  }
 
   const uploadDir = path.join(process.cwd(), 'public/uploads', subdir)
   await mkdir(uploadDir, { recursive: true })

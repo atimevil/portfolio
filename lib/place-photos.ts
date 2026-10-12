@@ -4,12 +4,14 @@ import { prisma } from '@/lib/prisma'
 
 // 맛집/쇼핑 사진만 이 폴더에 저장된다(업로드 시 type=maps). 블로그·갤러리 이미지는
 // 다른 폴더라 여기 스캔 대상에 들어오지 않는다.
-const PHOTO_DIR = path.join(process.cwd(), 'public/uploads/maps')
-const URL_PREFIX = '/uploads/maps/'
+// /maps는 로그인해야 보이는 페이지라 사진도 공개 폴더(public/uploads, nginx가 인증 없이 서빙)에 두지 않는다.
+// content/는 컨테이너에 마운트되고 git에서 빠지며(.gitignore 허용 목록) 주 1회 백업에 포함된다.
+export const PHOTO_DIR = path.join(process.cwd(), 'content/private-uploads/maps')
+export const URL_PREFIX = '/api/places/photo/'
 
 // 우리가 만든 파일명만 대상으로 삼는다(maps-<타임스탬프>.<확장자>).
 // 손으로 넣어둔 다른 파일을 실수로 지우지 않기 위한 안전장치.
-const OWN_FILE = /^maps-\d+\.[a-z0-9]+$/i
+export const OWN_FILE = /^maps-\d+\.[a-z0-9]+$/i
 
 export type OrphanPhoto = { file: string; bytes: number }
 

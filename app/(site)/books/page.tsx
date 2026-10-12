@@ -3,10 +3,12 @@ export const dynamic = 'force-dynamic'
 import { getAllBooks } from '@/lib/books'
 import BooksList from '@/components/books/BooksList'
 import { buildPageMetadata } from '@/lib/site'
+import { getSettings } from '@/lib/settings'
 
 export function generateMetadata() {
   return buildPageMetadata({
     path: '/books',
+    noindex: !getSettings().navVisibility.books,
     title: '책',
     description: '읽고 있는 책, 읽은 책, 읽고 싶은 책',
   })

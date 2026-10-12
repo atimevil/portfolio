@@ -3,10 +3,12 @@ export const dynamic = 'force-dynamic'
 import { getAllTracks } from '@/lib/music'
 import MusicList from '@/components/music/MusicList'
 import { buildPageMetadata } from '@/lib/site'
+import { getSettings } from '@/lib/settings'
 
 export function generateMetadata() {
   return buildPageMetadata({
     path: '/music',
+    noindex: !getSettings().navVisibility.music,
     title: '음악',
     description: '즐겨 듣는 트랙 모음',
   })

@@ -16,6 +16,7 @@ export function buildPageMetadata({
   description,
   absoluteTitle = false,
   languages,
+  noindex = false,
 }: {
   path: string
   title: string
@@ -24,11 +25,14 @@ export function buildPageMetadata({
   absoluteTitle?: boolean
   /** hreflang 짝. 같은 내용의 ko/en 경로가 둘 다 있는 페이지에서만 넘긴다. */
   languages?: Record<string, string>
+  /** 검색엔진 색인 제외. 설정에서 메뉴를 끈 페이지는 사이트맵처럼 색인에서도 뺀다(주소로 들어오면 보이긴 한다). */
+  noindex?: boolean
 }): Metadata {
   const url = `${SITE_URL}${path || '/'}`
   return {
     title: absoluteTitle ? { absolute: title } : title,
     description,
+    ...(noindex ? { robots: { index: false, follow: true } } : {}),
     // types까지 여기서 같이 넣는 이유: Next 메타데이터는 최상위 필드 단위로 교체돼서,
     // 페이지가 alternates를 정의하면 루트 레이아웃의 alternates(RSS 링크)가 통째로 사라진다.
     alternates: {

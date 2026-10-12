@@ -42,6 +42,10 @@ export async function GET() {
     })
     .join('\n')
 
+  // 가장 최근 글 날짜. 피드 리더가 새 글이 있는지 판단하는 데 쓴다
+  const latest = posts.reduce((max, p) => (p.date > max ? p.date : max), '')
+  const lastBuildDate = latest ? new Date(latest).toUTCString() : ''
+
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
@@ -49,7 +53,7 @@ export async function GET() {
     <link>${SITE_URL}</link>
     <description>${escapeXml(description)}</description>
     <language>ko</language>
-${items}
+${lastBuildDate ? `    <lastBuildDate>${lastBuildDate}</lastBuildDate>\n` : ''}${items}
   </channel>
 </rss>`
 

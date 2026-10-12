@@ -6,9 +6,9 @@ import { getSettings } from '@/lib/settings'
 import { buildPageMetadata } from '@/lib/site'
 
 export function generateMetadata() {
-  const { profile } = getSettings()
+  const { profile, navVisibility } = getSettings()
   const name = profile.name?.trim() || '포트폴리오'
-  return buildPageMetadata({ path: '/gallery', title: '갤러리', description: `${name}의 갤러리` })
+  return buildPageMetadata({ path: '/gallery', title: '갤러리', description: `${name}의 갤러리`, noindex: !navVisibility.gallery })
 }
 
 export default async function GalleryPage() {

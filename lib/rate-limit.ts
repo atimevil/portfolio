@@ -7,6 +7,19 @@ const WINDOW_MS = 15 * 60 * 1000
 const MAX_FAILS = 5
 const LOCK_MS = 15 * 60 * 1000
 
+// IPv6는 한 가입자가 /64 대역(주소 2^64개)을 통째로 받으므로, 주소마다 세면 주소를 바꿔 가며 제한을 피한다.
+// IPv6는 앞 64비트(/64)를 한 키로 묶는다. IPv4-mapped(::ffff:1.2.3.4)는 IPv4로 본다.
+export function ipKey(ip: string): string {
+  const mapped = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/i.exec(ip)
+  if (mapped) return mapped[1]
+  if (!ip.includes(':')) return ip
+  const [head, tail = ''] = ip.toLowerCase().split('::')
+  const h = head ? head.split(':') : []
+  const t = tail ? tail.split(':') : []
+  const groups = ip.includes('::') ? [...h, ...Array(Math.max(0, 8 - h.length - t.length)).fill('0'), ...t] : h
+  return `${groups.slice(0, 4).map((g) => g.replace(/^0+(?=.)/, '')).join(':')}::/64`
+}
+
 export function isLocked(key: string): boolean {
   const r = store.get(key)
   return !!r && r.lockedUntil > Date.now()

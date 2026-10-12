@@ -12,10 +12,18 @@ export default function LoginPage() {
   // 로그인 후 원래 가려던 곳으로 되돌아간다.
   // useSearchParams()는 이 페이지의 정적 생성을 깨뜨리므로(Suspense 요구), 값이 실제로
   // 필요한 제출 시점에 브라우저에서 직접 읽는다.
-  // 외부 URL로 튕기지 않도록 내부 경로("/"로 시작, "//" 제외)만 허용한다.
+  // 외부 URL로 튕기지 않도록 같은 사이트 주소만 허용한다. 문자열 검사("/"로 시작, "//" 제외)는
+  // "/\evil.com"을 못 막는다 — 브라우저가 백슬래시를 슬래시로 읽어 //evil.com이 된다.
+  // 그래서 브라우저와 같은 규칙으로 실제 주소를 풀어 출처(origin)를 비교한다.
   function resolveCallbackUrl() {
     const raw = new URLSearchParams(window.location.search).get('callbackUrl') ?? ''
-    return raw.startsWith('/') && !raw.startsWith('//') ? raw : '/admin'
+    try {
+      const url = new URL(raw, window.location.origin)
+      if (raw.startsWith('/') && url.origin === window.location.origin) return url.pathname + url.search + url.hash
+    } catch {
+      // 잘못된 주소는 기본값으로
+    }
+    return '/admin'
   }
 
   async function handleSubmit(e: React.FormEvent) {

@@ -25,10 +25,32 @@ export function verifyPassword(input: string): boolean {
     const envPw = process.env.ADMIN_PASSWORD
     return !!envPw && !!input && input === envPw
   }
-  const [salt, key] = stored.split(':')
+  const ok = verifyHash(input, stored)
+  // 예전 형식(기본 강도)으로 저장된 해시는 맞았을 때 지금 강도로 다시 저장한다
+  if (ok && !stored.startsWith('scrypt$')) setPassword(input)
+  return ok
+}
+
+// 저장 형식: "scrypt$N$r$p$salt$key". 강도를 해시와 함께 적어 두어 나중에 올려도 예전 해시를 검증할 수 있다.
+// 예전 형식 "salt:key"는 Node 기본값(N=16384, r=8, p=1)이다.
+// N=2^16, r=8, p=2는 OWASP 권장 조합 중 하나로, 계산 1회에 메모리 64MB를 쓴다(기본 maxmem 32MB라 늘린다).
+const PARAMS = { N: 2 ** 16, r: 8, p: 2 }
+const MAXMEM = 256 * 1024 * 1024
+
+function verifyHash(input: string, stored: string): boolean {
+  let salt: string, key: string, opts: { N: number; r: number; p: number }
+  if (stored.startsWith('scrypt$')) {
+    const [, n, r, p, s, k] = stored.split('$')
+    opts = { N: Number(n), r: Number(r), p: Number(p) }
+    salt = s
+    key = k
+  } else {
+    ;[salt, key] = stored.split(':')
+    opts = { N: 16384, r: 8, p: 1 }
+  }
   if (!salt || !key) return false
   try {
-    const derived = scryptSync(input, salt, 64)
+    const derived = scryptSync(input, salt, 64, { ...opts, maxmem: MAXMEM })
     const expected = Buffer.from(key, 'hex')
     return derived.length === expected.length && timingSafeEqual(derived, expected)
   } catch {
@@ -39,8 +61,8 @@ export function verifyPassword(input: string): boolean {
 /** Hash and persist a new admin password (overwrites any env fallback). */
 export function setPassword(newPassword: string): void {
   const salt = randomBytes(16).toString('hex')
-  const key = scryptSync(newPassword, salt, 64).toString('hex')
+  const key = scryptSync(newPassword, salt, 64, { ...PARAMS, maxmem: MAXMEM }).toString('hex')
   const dir = path.dirname(FILE)
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true })
-  fs.writeFileSync(FILE, JSON.stringify({ hash: `${salt}:${key}` }, null, 2), 'utf-8')
+  fs.writeFileSync(FILE, JSON.stringify({ hash: `scrypt$${PARAMS.N}$${PARAMS.r}$${PARAMS.p}$${salt}$${key}` }, null, 2), 'utf-8')
 }

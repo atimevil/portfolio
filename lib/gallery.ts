@@ -65,12 +65,14 @@ export async function saveGalleryImage(
   return image
 }
 
-export function deleteGalleryImage(id: string): void {
+// 없는 id면 false (라우트가 404로 답한다)
+export function deleteGalleryImage(id: string): boolean {
   const meta = readMeta()
   const image = meta.find((i) => i.id === id)
-  if (!image) throw new Error(`Image not found: ${id}`)
+  if (!image) return false
   const filePath = path.join(UPLOAD_DIR, image.filename)
   if (fs.existsSync(filePath)) fs.unlinkSync(filePath)
   if (image.thumbnail) fs.rmSync(path.join(UPLOAD_DIR, image.thumbnail), { force: true })
   writeMeta(meta.filter((i) => i.id !== id))
+  return true
 }

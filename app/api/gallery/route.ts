@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { getGalleryImages, saveGalleryImage, deleteGalleryImage } from '@/lib/gallery'
+import { hiddenFromPublic } from '@/lib/publicGate'
 import { isPdf, pdfFirstPageToJpeg } from '@/lib/pdfToImage'
 
 export async function GET() {
+  if (await hiddenFromPublic('gallery')) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   const images = getGalleryImages()
   return NextResponse.json(images)
 }
@@ -49,6 +51,6 @@ export async function DELETE(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { id } = await req.json()
   if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
-  deleteGalleryImage(id)
+  if (!deleteGalleryImage(id)) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json({ ok: true })
 }

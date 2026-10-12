@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { Prisma } from '@prisma/client'
+import { hiddenFromPublic } from '@/lib/publicGate'
 import { getAllBooks, createBook, updateBook, deleteBook } from '@/lib/books'
 
 async function requireSession() {
@@ -22,6 +23,7 @@ const BookSchema = z.object({
 })
 
 export async function GET() {
+  if (await hiddenFromPublic('books')) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json(await getAllBooks())
 }
 

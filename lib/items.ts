@@ -76,12 +76,14 @@ export function createItem(item: Omit<PortfolioItem, 'id'>): PortfolioItem {
   return newItem
 }
 
-export function updateItem(id: string, updates: Partial<PortfolioItem>): void {
+// 없는 id면 false (라우트가 404로 답한다)
+export function updateItem(id: string, updates: Partial<PortfolioItem>): boolean {
   const data = read()
   const idx = data.findIndex((i) => i.id === id)
-  if (idx === -1) throw new Error(`Item not found: ${id}`)
+  if (idx === -1) return false
   data[idx] = { ...data[idx], ...updates }
   write(data)
+  return true
 }
 
 export function deleteItem(id: string): void {

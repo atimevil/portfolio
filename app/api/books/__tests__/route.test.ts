@@ -3,16 +3,26 @@ import { NextRequest } from 'next/server'
 import { resetDb } from '@/lib/__tests__/helpers/resetDb'
 import { createBook } from '@/lib/books'
 import { GET, POST, PUT, DELETE } from '../route'
+import { getServerSession } from 'next-auth'
 
 vi.mock('next-auth', () => ({
   getServerSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
 }))
+
+// 공개 GET은 설정의 메뉴 노출·개발중 모드를 따른다(lib/publicGate). 실제 settings.json 대신 고정값을 쓴다.
+const settings = { devMode: false, navVisibility: { books: true, music: true, gallery: true } }
+vi.mock('@/lib/settings', () => ({ getSettings: () => settings }))
 
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }))
 
 beforeEach(resetDb)
+// 공개 GET은 메뉴가 보일 때 세션을 묻지 않아서, 한 테스트에서 걸어둔 mockResolvedValueOnce(null)가
+// 소비되지 않고 다음 테스트로 넘어간다. 테스트마다 기본값(관리자)으로 되돌린다.
+beforeEach(() => {
+  vi.mocked(getServerSession).mockReset().mockResolvedValue({ user: { name: 'admin' } })
+})
 
 function makeRequest(method: string, body?: unknown): NextRequest {
   return new NextRequest('http://localhost/api/books', {
@@ -84,5 +94,17 @@ describe('인증', () => {
     vi.mocked(getServerSession).mockResolvedValueOnce(null)
     const res = await GET()
     expect(res.status).toBe(200)
+  })
+
+  it('책 메뉴를 꺼 두면 세션 없는 GET은 404, 관리자는 200', async () => {
+    settings.navVisibility.books = false
+    try {
+      const { getServerSession } = await import('next-auth')
+      vi.mocked(getServerSession).mockResolvedValueOnce(null)
+      expect((await GET()).status).toBe(404)
+      expect((await GET()).status).toBe(200)
+    } finally {
+      settings.navVisibility.books = true
+    }
   })
 })

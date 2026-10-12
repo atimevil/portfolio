@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { z } from 'zod'
+import { hiddenFromPublic } from '@/lib/publicGate'
 import { getItems, createItem, updateItem, deleteItem } from '@/lib/items'
 
 const ItemSchema = z.object({
@@ -32,7 +33,11 @@ const ItemSchema = z.object({
 })
 
 export async function GET() {
-  return NextResponse.json(getItems())
+  if (await hiddenFromPublic()) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+  // 비로그인에게는 소개에서 숨긴 프로젝트를 빼고 준다
+  const items = getItems()
+  if (await getServerSession()) return NextResponse.json(items)
+  return NextResponse.json(items.filter((i) => i.type !== 'project' || i.visible))
 }
 
 export async function POST(req: NextRequest) {
@@ -51,7 +56,7 @@ export async function PUT(req: NextRequest) {
   // 모르는 키나 잘못된 타입이 items.json에 그대로 들어가지 않게 POST와 같은 스키마로 거른다
   const result = ItemSchema.partial().safeParse(updates)
   if (!result.success) return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
-  updateItem(id, result.data)
+  if (!updateItem(id, result.data)) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json({ ok: true })
 }
 

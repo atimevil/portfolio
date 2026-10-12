@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { Prisma } from '@prisma/client'
 import { getAllTracks, createTrack, updateTrack, deleteTrack } from '@/lib/music'
+import { hiddenFromPublic } from '@/lib/publicGate'
 
 async function requireSession() {
   const session = await getServerSession()
@@ -23,6 +24,7 @@ const TrackSchema = z.object({
 })
 
 export async function GET() {
+  if (await hiddenFromPublic('music')) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json(await getAllTracks())
 }
 

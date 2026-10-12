@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import RichEditor from '@/components/admin/RichEditor'
 import { markdownToEditorHtml } from '@/lib/markdownToEditorHtml'
-import { excerptFromHtml } from '@/lib/excerpt'
+import { todayKST } from '@/lib/today'
 import {
   draftKey, saveDraft, loadDraft, clearDraft, draftDiffersFrom, type DraftData,
 } from '@/lib/draftStorage'
@@ -31,7 +31,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const [title, setTitle] = useState(initialPost?.title ?? '')
-  const [date, setDate] = useState(initialPost?.date ?? new Date().toISOString().slice(0, 10))
+  const [date, setDate] = useState(initialPost?.date ?? todayKST())
   const [tags, setTags] = useState(initialPost?.tags?.join(', ') ?? '')
   const [content, setContent] = useState(initialHtml)
   const [category, setCategory] = useState(initialPost?.category ?? '')
@@ -89,13 +89,14 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
 
     setLoading(true)
     // 본문은 에디터 네이티브 HTML로 저장한다 (마크다운 재직렬화 없음 → 무손실)
-    // 요약은 직접 쓴 것을 그대로 두고, 비어 있을 때만 본문 앞부분으로 만든다(예전엔 저장할 때마다 덮어썼다)
+    // 요약은 직접 쓴 것만 저장한다. 비워 두면 빈 값으로 저장해 보여줄 때마다 본문에서 만든다 —
+    // 저장 시점에 만들어 넣으면 그 요약이 굳어서 나중에 본문을 고쳐도 따라가지 않는다.
     const body = {
       title: title.trim(),
-      date: date.trim() || new Date().toISOString().slice(0, 10),
+      date: date.trim() || todayKST(),
       tags: tags.split(',').map((t) => t.trim()).filter(Boolean),
       category: category.trim(),
-      excerpt: excerpt.trim() || excerptFromHtml(content),
+      excerpt: excerpt.trim(),
       content,
       contentFormat: 'html' as const,
       status,

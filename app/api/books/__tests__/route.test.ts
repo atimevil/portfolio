@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 import { resetDb } from '@/lib/__tests__/helpers/resetDb'
 import { createBook } from '@/lib/books'
-import { GET, POST, PUT, DELETE } from '../route'
+import { GET, POST, PUT, PATCH, DELETE } from '../route'
 import { getServerSession } from 'next-auth'
 
 vi.mock('next-auth', () => ({
@@ -106,5 +106,57 @@ describe('인증', () => {
     } finally {
       settings.navVisibility.books = true
     }
+  })
+})
+
+function rawRequest(method: string, body: string): NextRequest {
+  return new NextRequest('http://localhost/api/books', {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body,
+  })
+}
+
+describe('PATCH /api/books (일괄)', () => {
+  it('상태를 한 번에 바꾼다', async () => {
+    const a = await createBook({ title: 'A', author: 'x' })
+    const b = await createBook({ title: 'B', author: 'y' })
+    const res = await PATCH(makeRequest('PATCH', { ids: [a.id, b.id], set: { status: 'done' } }))
+    expect(await res.json()).toEqual({ count: 2 })
+  })
+
+  it.each([
+    ['상태 값이 틀림', { ids: [1], set: { status: 'finished' } }],
+    ['허용 안 된 칸', { ids: [1], set: { rating: 5 } }],
+    ['set 비었음', { ids: [1], set: {} }],
+    ['ids 비었음', { ids: [], set: { status: 'done' } }],
+  ])('%s → 400', async (_name, body) => {
+    expect((await PATCH(makeRequest('PATCH', body))).status).toBe(400)
+  })
+
+  it('깨진 JSON → 400', async () => {
+    expect((await PATCH(rawRequest('PATCH', '{'))).status).toBe(400)
+  })
+
+  it('세션 없으면 401', async () => {
+    vi.mocked(getServerSession).mockResolvedValueOnce(null)
+    expect((await PATCH(makeRequest('PATCH', { ids: [1], set: { status: 'done' } }))).status).toBe(401)
+  })
+})
+
+describe('DELETE /api/books (일괄)', () => {
+  it('ids로 지우고 count', async () => {
+    const a = await createBook({ title: 'A', author: 'x' })
+    const res = await DELETE(makeRequest('DELETE', { ids: [a.id, 999999] }))
+    expect(await res.json()).toEqual({ count: 1 })
+  })
+
+  it('id 단건은 {ok:true}', async () => {
+    const a = await createBook({ title: 'A', author: 'x' })
+    expect(await (await DELETE(makeRequest('DELETE', { id: a.id }))).json()).toEqual({ ok: true })
+  })
+
+  it('id와 ids 동시 → 400', async () => {
+    expect((await DELETE(makeRequest('DELETE', { id: 1, ids: [1] }))).status).toBe(400)
   })
 })

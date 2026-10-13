@@ -13,29 +13,30 @@ interface Props {
   open: boolean
   focusKey: number
   title: string
-  dirty: boolean
+  isDirty: () => boolean
   onClose: () => void
   children: React.ReactNode
 }
 
 // 넓은 화면(≥1280px)에선 표 옆에 붙는 칸이라 뒤 화면을 막지 않는다. 그보다 좁으면 표 위에 겹치는
 // 대화상자(640px 미만은 아래 시트)라 Modal과 같은 규칙: 포커스 가두기, 스크롤 잠금, 닫으면 연 요소로 복귀.
-export default function AdminSidePanel({ open, focusKey, title, dirty, onClose, children }: Props) {
+export default function AdminSidePanel({ open, focusKey, title, isDirty, onClose, children }: Props) {
   const docked = useMediaQuery('(min-width: 1280px)')
   const panel = useRef<HTMLElement>(null)
   const opener = useRef<HTMLElement | null>(null)
   const closeRef = useRef(() => {})
   useEffect(() => {
     closeRef.current = () => {
-      if (confirmDiscard(dirty)) onClose()
+      if (confirmDiscard(isDirty())) onClose()
     }
-  }, [dirty, onClose])
+  }, [isDirty, onClose])
 
   // 열 때마다(패널이 열린 채 다른 줄을 눌러도) 누른 요소를 기억하고 첫 칸으로 포커스.
   useEffect(() => {
     if (!open) return
     const active = document.activeElement as HTMLElement | null
-    if (active && !panel.current?.contains(active)) opener.current = active
+    // 저장 직후엔 저장 버튼이 비활성으로 바뀌며 포커스가 body로 빠진 채 폼이 다시 그려진다 — body는 기억하지 않는다.
+    if (active && active !== document.body && !panel.current?.contains(active)) opener.current = active
     panel.current?.querySelector<HTMLElement>('input, select, textarea')?.focus()
   }, [open, focusKey])
 

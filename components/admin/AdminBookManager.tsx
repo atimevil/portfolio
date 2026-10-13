@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Book } from '@prisma/client'
 import AdminTable, { type Column, type FilterGroup } from './AdminTable'
@@ -20,7 +20,7 @@ const searchFields = (b: Book) => [b.title, b.author, b.memo]
 const columns: Column<Book>[] = [
   { key: 'title', label: '제목', sortValue: (b) => b.title, render: (b) => b.title },
   { key: 'author', label: '저자', sortValue: (b) => b.author, render: (b) => <span className="text-text-secondary">{b.author}</span> },
-  { key: 'genre', label: '장르', sortValue: (b) => b.genre, render: (b) => b.genre ?? <span className="text-text-muted">—</span> },
+  { key: 'genre', label: '장르', className: 'whitespace-nowrap', sortValue: (b) => b.genre, render: (b) => b.genre ?? <span className="text-text-muted">—</span> },
   { key: 'status', label: '상태', className: 'w-24', sortValue: (b) => STATUS_ORDER[b.status as Status], render: (b) => STATUS_LABEL[b.status as Status] },
   {
     key: 'rating',
@@ -55,7 +55,12 @@ export default function AdminBookManager({ initialBooks, initialQuery }: Props) 
 
   const [initialState] = useState(() => parseListState(initialQuery, GROUPS, SORT_KEYS, DEFAULT_SORT))
   const [panel, setPanel] = useState<{ open: boolean; item: Book | null; version: number }>({ open: false, item: null, version: 0 })
-  const [dirty, setDirty] = useState(false)
+  // 열린 폼이 건네준 '저장 안 한 수정 있음?' 함수. 이벤트 처리 중에만 부른다.
+  const dirtyCheck = useRef<() => boolean>(() => false)
+  const registerDirtyCheck = useCallback((check: () => boolean) => {
+    dirtyCheck.current = check
+  }, [])
+  const isDirty = useCallback(() => dirtyCheck.current(), [])
   const [flashId, setFlashId] = useState<number | null>(null)
 
   const genres = useMemo(() => genreCounts(books).map((g) => g.genre), [books])
@@ -85,19 +90,16 @@ export default function AdminBookManager({ initialBooks, initialQuery }: Props) 
   )
 
   function openPanel(item: Book | null) {
-    if (panel.open && !confirmDiscard(dirty)) return
-    setDirty(false)
+    if (panel.open && !confirmDiscard(isDirty())) return
     setPanel((p) => ({ open: true, item, version: p.version + 1 }))
   }
 
   const closePanel = useCallback(() => {
-    setDirty(false)
     setPanel((p) => ({ ...p, open: false, item: null }))
   }, [])
 
   function handleSaved(saved: Book) {
     setBooks((prev) => (prev.some((b) => b.id === saved.id) ? prev.map((b) => (b.id === saved.id ? saved : b)) : [saved, ...prev]))
-    setDirty(false)
     setPanel((p) => ({ open: true, item: saved, version: p.version + 1 }))
     setFlashId(saved.id)
     setTimeout(() => setFlashId((id) => (id === saved.id ? null : id)), 1500)
@@ -105,7 +107,7 @@ export default function AdminBookManager({ initialBooks, initialQuery }: Props) 
 
   // 열린 패널의 책이 일괄 대상이면: 저장 안 한 수정이 있으면 먼저 묻고, 끝나면 패널을 새 값으로 다시 채운다.
   function guardOpenItem(ids: number[]): boolean {
-    if (!panel.item || !ids.includes(panel.item.id) || !dirty) return true
+    if (!panel.item || !ids.includes(panel.item.id) || !isDirty()) return true
     return confirm('패널에서 고치던 내용은 사라집니다. 계속할까요?')
   }
 
@@ -122,7 +124,6 @@ export default function AdminBookManager({ initialBooks, initialQuery }: Props) 
         if (isDelete) return { open: false, item: null, version: p.version + 1 }
         return { ...p, item: apply([p.item])[0] ?? null, version: p.version + 1 }
       })
-      if (panel.item && ids.includes(panel.item.id)) setDirty(false)
       if (count !== ids.length) router.refresh()
     } catch (err) {
       alert(`일괄 작업 실패: ${(err as Error).message}`)
@@ -202,13 +203,13 @@ export default function AdminBookManager({ initialBooks, initialQuery }: Props) 
           unit="권"
         />
       </div>
-      <AdminSidePanel open={panel.open} focusKey={panel.version} title={panel.item ? '책 수정' : '책 추가'} dirty={dirty} onClose={closePanel}>
+      <AdminSidePanel open={panel.open} focusKey={panel.version} title={panel.item ? '책 수정' : '책 추가'} isDirty={isDirty} onClose={closePanel}>
         <BookForm
           key={`${panel.item?.id ?? 'new'}-${panel.version}`}
           item={panel.item}
           genres={genres}
           onSaved={handleSaved}
-          onDirtyChange={setDirty}
+          registerDirtyCheck={registerDirtyCheck}
         />
       </AdminSidePanel>
     </div>

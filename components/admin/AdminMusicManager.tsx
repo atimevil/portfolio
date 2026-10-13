@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Track } from '@prisma/client'
 import AdminTable, { type Column, type FilterGroup } from './AdminTable'
@@ -33,7 +33,12 @@ export default function AdminMusicManager({ initialTracks, initialQuery }: Props
 
   const [initialState] = useState(() => parseListState(initialQuery, GROUPS, SORT_KEYS, DEFAULT_SORT))
   const [panel, setPanel] = useState<{ open: boolean; item: Track | null; version: number }>({ open: false, item: null, version: 0 })
-  const [dirty, setDirty] = useState(false)
+  // 열린 폼이 건네준 '저장 안 한 수정 있음?' 함수. 이벤트 처리 중에만 부른다.
+  const dirtyCheck = useRef<() => boolean>(() => false)
+  const registerDirtyCheck = useCallback((check: () => boolean) => {
+    dirtyCheck.current = check
+  }, [])
+  const isDirty = useCallback(() => dirtyCheck.current(), [])
   const [flashId, setFlashId] = useState<number | null>(null)
 
   const genres = useMemo(() => genreCounts(tracks).map((g) => g.genre), [tracks])
@@ -70,7 +75,7 @@ export default function AdminMusicManager({ initialTracks, initialQuery }: Props
       },
       { key: 'title', label: '제목', sortValue: (t) => t.title, render: (t) => t.title },
       { key: 'artist', label: '아티스트', sortValue: (t) => t.artist, render: (t) => <span className="text-text-secondary">{t.artist}</span> },
-      { key: 'genre', label: '장르', sortValue: (t) => t.genre, render: (t) => t.genre ?? <span className="text-text-muted">—</span> },
+      { key: 'genre', label: '장르', className: 'whitespace-nowrap', sortValue: (t) => t.genre, render: (t) => t.genre ?? <span className="text-text-muted">—</span> },
       {
         key: 'favorite',
         label: '★',
@@ -119,19 +124,16 @@ export default function AdminMusicManager({ initialTracks, initialQuery }: Props
   )
 
   function openPanel(item: Track | null) {
-    if (panel.open && !confirmDiscard(dirty)) return
-    setDirty(false)
+    if (panel.open && !confirmDiscard(isDirty())) return
     setPanel((p) => ({ open: true, item, version: p.version + 1 }))
   }
 
   const closePanel = useCallback(() => {
-    setDirty(false)
     setPanel((p) => ({ ...p, open: false, item: null }))
   }, [])
 
   function handleSaved(saved: Track) {
     setTracks((prev) => (prev.some((t) => t.id === saved.id) ? prev.map((t) => (t.id === saved.id ? saved : t)) : [saved, ...prev]))
-    setDirty(false)
     setPanel((p) => ({ open: true, item: saved, version: p.version + 1 }))
     setFlashId(saved.id)
     setTimeout(() => setFlashId((id) => (id === saved.id ? null : id)), 1500)
@@ -139,7 +141,7 @@ export default function AdminMusicManager({ initialTracks, initialQuery }: Props
 
   // 열린 패널의 곡이 일괄 대상이면: 저장 안 한 수정이 있으면 먼저 묻고, 끝나면 패널을 새 값으로 다시 채운다.
   function guardOpenItem(ids: number[]): boolean {
-    if (!panel.item || !ids.includes(panel.item.id) || !dirty) return true
+    if (!panel.item || !ids.includes(panel.item.id) || !isDirty()) return true
     return confirm('패널에서 고치던 내용은 사라집니다. 계속할까요?')
   }
 
@@ -156,7 +158,6 @@ export default function AdminMusicManager({ initialTracks, initialQuery }: Props
         if (isDelete) return { open: false, item: null, version: p.version + 1 }
         return { ...p, item: apply([p.item])[0] ?? null, version: p.version + 1 }
       })
-      if (panel.item && ids.includes(panel.item.id)) setDirty(false)
       if (count !== ids.length) router.refresh()
     } catch (err) {
       alert(`일괄 작업 실패: ${(err as Error).message}`)
@@ -229,13 +230,13 @@ export default function AdminMusicManager({ initialTracks, initialQuery }: Props
           unit="곡"
         />
       </div>
-      <AdminSidePanel open={panel.open} focusKey={panel.version} title={panel.item ? '곡 수정' : '곡 추가'} dirty={dirty} onClose={closePanel}>
+      <AdminSidePanel open={panel.open} focusKey={panel.version} title={panel.item ? '곡 수정' : '곡 추가'} isDirty={isDirty} onClose={closePanel}>
         <TrackForm
           key={`${panel.item?.id ?? 'new'}-${panel.version}`}
           item={panel.item}
           genres={genres}
           onSaved={handleSaved}
-          onDirtyChange={setDirty}
+          registerDirtyCheck={registerDirtyCheck}
         />
       </AdminSidePanel>
     </div>

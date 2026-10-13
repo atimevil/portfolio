@@ -138,7 +138,8 @@ export default function AdminTable<T extends { id: number }>({
         >
           전체 <span className="text-text-muted">{items.length}</span>
         </button>
-        {filterGroups.map((g) => (
+        {/* 칩이 하나도 없는 묶음(장르가 아직 없는 책 등)은 이름표만 남지 않게 뺀다 */}
+        {filterGroups.filter((g) => g.filters.length > 0).map((g) => (
           <div key={g.group} className="flex flex-wrap items-center gap-1.5">
             {g.label && <span className="text-xs text-text-muted mr-1">{g.label}</span>}
             {g.filters.map((f) => {

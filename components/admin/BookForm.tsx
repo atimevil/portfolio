@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Book } from '@prisma/client'
 import GenreInput from './GenreInput'
 
@@ -24,20 +24,30 @@ interface Props {
   item: Book | null
   genres: string[]
   onSaved: (b: Book) => void
-  onDirtyChange: (dirty: boolean) => void
+  // 저장 안 한 수정이 있는지 묻는 함수를 부모에게 건넨다. 부모는 닫기·다른 줄 열기·일괄 작업 직전에 부른다.
+  registerDirtyCheck: (check: () => boolean) => void
 }
 
 // 패널 안 책 추가/수정 폼. 부모가 key를 바꿔 다시 마운트하면 새 항목 값으로 초기화된다.
-export default function BookForm({ item, genres, onSaved, onDirtyChange }: Props) {
+export default function BookForm({ item, genres, onSaved, registerDirtyCheck }: Props) {
   const [initial] = useState(() => toForm(item))
-  const [form, setForm] = useState(initial)
+  const [form, setFormState] = useState(initial)
+  // 최신 입력값을 렌더를 기다리지 않고 ref에 둔다. 상태(dirty)를 이펙트로 부모에 올리던 방식은 입력 직후 바로 Esc를
+  // 누르면 그 한 박자 사이에 '수정 없음'으로 보고 확인 없이 닫혀 고치던 내용이 사라졌다(브라우저 확인에서 재현).
+  const latest = useRef(initial)
+  function setForm(next: FormState | ((f: FormState) => FormState)) {
+    const value = typeof next === 'function' ? next(latest.current) : next
+    latest.current = value
+    setFormState(value)
+  }
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const dirty = JSON.stringify(form) !== JSON.stringify(initial)
   useEffect(() => {
-    onDirtyChange(dirty)
-  }, [dirty, onDirtyChange])
+    registerDirtyCheck(() => JSON.stringify(latest.current) !== JSON.stringify(initial))
+    return () => registerDirtyCheck(() => false)
+  }, [registerDirtyCheck, initial])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

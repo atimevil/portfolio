@@ -1,146 +1,45 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import type { Track } from '@prisma/client'
-import { uploadMusicCover } from '@/lib/uploadMusicCover'
+import AdminTable, { type Column, type FilterGroup } from './AdminTable'
+import AdminSidePanel, { confirmDiscard } from './AdminSidePanel'
+import GenreInput from './GenreInput'
+import TrackForm from './TrackForm'
+import { sendBulk } from '@/lib/adminFetch'
+import { dateValue, genreCounts, parseListState, type RawParams } from '@/lib/adminList'
 
-const GENRE_PRESETS = ['락', '힙합', '재즈', '팝', '알앤비', '인디']
+const DEFAULT_SORT = 'createdAt'
+const SORT_KEYS = ['title', 'artist', 'genre', 'favorite', 'createdAt']
+const GROUPS = ['flag', 'genre']
 
-// 자동으로 채운 커버인지 판별하는 접두사 — 직접 업로드한 /uploads/... 경로와 구분한다.
-const YOUTUBE_THUMB_PREFIX = 'https://img.youtube.com/vi/'
-
-type FormState = {
-  id: number | null
-  title: string
-  artist: string
-  genre: string
-  cover: string
-  link: string
-  memo: string
-}
-
-const EMPTY_FORM: FormState = {
-  id: null,
-  title: '',
-  artist: '',
-  genre: '',
-  cover: '',
-  link: '',
-  memo: '',
-}
-
-// youtube.com/watch?v=, youtu.be/, youtube.com/shorts/, /embed/ 형태에서 영상 ID를 뽑는다.
-function extractYoutubeId(url: string): string | null {
-  const match = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|shorts\/|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-  )
-  return match ? match[1] : null
-}
-
-// 영상 제목이 보통 "아티스트 - 곡명" 형태라 그걸 분리하고, 없으면 채널명을 아티스트로 대신 쓴다.
-function parseYoutubeTitle(rawTitle: string, channelName: string): { title: string; artist: string } {
-  const cleaned = rawTitle
-    .replace(/[([（【][^)\]）】]*(official|m\/?v|mv|audio|lyrics?|video|hd|4k)[^)\]）】]*[)\]）】]/gi, '')
-    .replace(/\s{2,}/g, ' ')
-    .trim()
-
-  const match = cleaned.match(/^(.+?)\s*[-–—]\s*(.+)$/)
-  if (match) return { artist: match[1].trim(), title: match[2].trim() }
-  return { title: cleaned, artist: channelName }
-}
+const searchFields = (t: Track) => [t.title, t.artist, t.memo]
 
 interface Props {
   initialTracks: Track[]
+  initialQuery: RawParams
 }
 
-export default function AdminMusicManager({ initialTracks }: Props) {
+export default function AdminMusicManager({ initialTracks, initialQuery }: Props) {
+  const router = useRouter()
   const [tracks, setTracks] = useState(initialTracks)
-  const [form, setForm] = useState<FormState>(EMPTY_FORM)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  function startEdit(track: Track) {
-    setForm({
-      id: track.id,
-      title: track.title,
-      artist: track.artist,
-      genre: track.genre ?? '',
-      cover: track.cover ?? '',
-      link: track.link ?? '',
-      memo: track.memo ?? '',
-    })
+  // router.refresh()로 서버 목록이 새로 오면 그걸로 바꾼다(렌더 중 이전 값 비교 — NavBar와 같은 패턴).
+  const [prevInitial, setPrevInitial] = useState(initialTracks)
+  if (prevInitial !== initialTracks) {
+    setPrevInitial(initialTracks)
+    setTracks(initialTracks)
   }
 
-  async function handleLinkBlur() {
-    const videoId = extractYoutubeId(form.link)
-    if (!videoId || (form.title.trim() && form.artist.trim())) return
-    try {
-      const res = await fetch(`https://www.youtube.com/oembed?url=${encodeURIComponent(form.link)}&format=json`)
-      if (!res.ok) return
-      const data = await res.json()
-      const parsed = parseYoutubeTitle(data.title, data.author_name)
-      setForm((f) => ({
-        ...f,
-        title: f.title.trim() ? f.title : parsed.title,
-        artist: f.artist.trim() ? f.artist : parsed.artist,
-      }))
-    } catch {
-      // 조회 실패해도 조용히 무시 — 어차피 직접 입력하면 됨
-    }
-  }
+  const [initialState] = useState(() => parseListState(initialQuery, GROUPS, SORT_KEYS, DEFAULT_SORT))
+  const [panel, setPanel] = useState<{ open: boolean; item: Track | null; version: number }>({ open: false, item: null, version: 0 })
+  const [dirty, setDirty] = useState(false)
+  const [flashId, setFlashId] = useState<number | null>(null)
 
-  async function handleCoverChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (!file) return
-    setBusy(true)
-    try {
-      const url = await uploadMusicCover(file)
-      setForm((f) => ({ ...f, cover: url }))
-    } catch {
-      setError('이미지 업로드에 실패했습니다.')
-    } finally {
-      setBusy(false)
-    }
-  }
+  const genres = useMemo(() => genreCounts(tracks).map((g) => g.genre), [tracks])
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!form.title.trim() || !form.artist.trim()) return
-    setBusy(true)
-    setError(null)
-
-    const payload = {
-      title: form.title,
-      artist: form.artist,
-      genre: form.genre,
-      cover: form.cover,
-      link: form.link,
-      memo: form.memo,
-    }
-
-    // 네트워크 오류로 fetch가 reject되면 busy가 안 풀려 저장 버튼이 영구히 잠긴다 — finally로 항상 해제.
-    try {
-      const res = await fetch('/api/music', {
-        method: form.id ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form.id ? { id: form.id, ...payload } : payload),
-      })
-
-      if (!res.ok) {
-        setError(res.status === 401 ? '저장 실패: 로그인이 만료됐습니다. 다른 탭에서 다시 로그인한 뒤 저장해 주세요 (입력한 내용은 그대로 둡니다).' : res.status === 400 ? '저장 실패: 입력값을 확인해 주세요.' : `저장에 실패했습니다 (오류 ${res.status}).`)
-        return
-      }
-      const saved: Track = await res.json()
-      setTracks((prev) => (form.id ? prev.map((t) => (t.id === saved.id ? saved : t)) : [saved, ...prev]))
-      setForm(EMPTY_FORM)
-    } catch {
-      setError('저장에 실패했습니다. 잠시 후 다시 시도해주세요.')
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  async function toggleFavorite(track: Track) {
+  // ★ 한 번 누르기는 지금처럼 먼저 바꾸고 실패하면 되돌린다(일괄 작업과 달리 즉시 반응이 중요).
+  const toggleFavorite = useCallback(async (track: Track) => {
     const favorite = !track.favorite
     setTracks((prev) => prev.map((t) => (t.id === track.id ? { ...t, favorite } : t)))
     try {
@@ -152,142 +51,217 @@ export default function AdminMusicManager({ initialTracks }: Props) {
       if (!res.ok) throw new Error(String(res.status))
     } catch (err) {
       setTracks((prev) => prev.map((t) => (t.id === track.id ? { ...t, favorite: track.favorite } : t)))
-      setError((err as Error).message === '401' ? '즐겨찾기 변경 실패: 로그인이 만료됐습니다. 다시 로그인해 주세요.' : '즐겨찾기 변경에 실패했습니다.')
+      alert((err as Error).message === '401' ? '즐겨찾기 변경 실패: 로그인이 만료됐습니다. 다시 로그인해 주세요.' : '즐겨찾기 변경에 실패했습니다.')
+    }
+  }, [])
+
+  const columns = useMemo<Column<Track>[]>(
+    () => [
+      {
+        key: 'cover',
+        label: '커버',
+        className: 'w-14',
+        render: (t) =>
+          t.cover ? (
+            <img src={t.cover} alt="" loading="lazy" className="w-10 h-10 rounded object-cover" />
+          ) : (
+            <span className="block w-10 h-10 rounded bg-surface" />
+          ),
+      },
+      { key: 'title', label: '제목', sortValue: (t) => t.title, render: (t) => t.title },
+      { key: 'artist', label: '아티스트', sortValue: (t) => t.artist, render: (t) => <span className="text-text-secondary">{t.artist}</span> },
+      { key: 'genre', label: '장르', sortValue: (t) => t.genre, render: (t) => t.genre ?? <span className="text-text-muted">—</span> },
+      {
+        key: 'favorite',
+        label: '★',
+        className: 'w-10',
+        sortValue: (t) => (t.favorite ? 1 : 0),
+        render: (t) => (
+          <button
+            type="button"
+            onClick={() => toggleFavorite(t)}
+            aria-pressed={t.favorite}
+            aria-label={t.favorite ? '즐겨찾기 해제' : '즐겨찾기'}
+            className={`w-8 h-8 text-lg leading-none ${t.favorite ? 'text-accent' : 'text-text-muted hover:text-text-primary'}`}
+          >
+            {t.favorite ? '★' : '☆'}
+          </button>
+        ),
+      },
+      {
+        key: 'createdAt',
+        label: '추가한 날',
+        className: 'w-24 text-text-muted',
+        sortValue: (t) => dateValue(t.createdAt),
+        render: (t) => new Date(t.createdAt).toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul', month: '2-digit', day: '2-digit' }),
+      },
+    ],
+    [toggleFavorite]
+  )
+
+  const filterGroups = useMemo<FilterGroup<Track>[]>(
+    () => [
+      {
+        group: 'flag',
+        filters: [
+          { group: 'flag', id: 'favorite', label: '즐겨찾기', test: (t) => t.favorite },
+          { group: 'flag', id: 'nogenre', label: '장르 없음', test: (t) => !t.genre },
+          { group: 'flag', id: 'nocover', label: '커버 없음', test: (t) => !t.cover },
+        ],
+      },
+      {
+        group: 'genre',
+        label: '장르:',
+        filters: genres.map((g) => ({ group: 'genre', id: g, label: g, test: (t: Track) => t.genre === g })),
+      },
+    ],
+    [genres]
+  )
+
+  function openPanel(item: Track | null) {
+    if (panel.open && !confirmDiscard(dirty)) return
+    setDirty(false)
+    setPanel((p) => ({ open: true, item, version: p.version + 1 }))
+  }
+
+  const closePanel = useCallback(() => {
+    setDirty(false)
+    setPanel((p) => ({ ...p, open: false, item: null }))
+  }, [])
+
+  function handleSaved(saved: Track) {
+    setTracks((prev) => (prev.some((t) => t.id === saved.id) ? prev.map((t) => (t.id === saved.id ? saved : t)) : [saved, ...prev]))
+    setDirty(false)
+    setPanel((p) => ({ open: true, item: saved, version: p.version + 1 }))
+    setFlashId(saved.id)
+    setTimeout(() => setFlashId((id) => (id === saved.id ? null : id)), 1500)
+  }
+
+  // 열린 패널의 곡이 일괄 대상이면: 저장 안 한 수정이 있으면 먼저 묻고, 끝나면 패널을 새 값으로 다시 채운다.
+  function guardOpenItem(ids: number[]): boolean {
+    if (!panel.item || !ids.includes(panel.item.id) || !dirty) return true
+    return confirm('패널에서 고치던 내용은 사라집니다. 계속할까요?')
+  }
+
+  // 응답을 기다리는 동안 ★ 토글·패널 저장·다른 줄 열기가 끼어들 수 있다 — 클릭 당시 값이 아니라
+  // 함수형 갱신으로 그때의 최신 목록·패널에 적용한다.
+  async function runBulk(ids: number[], clear: () => void, body: object, apply: (prev: Track[]) => Track[], isDelete = false) {
+    if (!guardOpenItem(ids)) return
+    try {
+      const count = await sendBulk('/api/music', isDelete ? 'DELETE' : 'PATCH', { ids, ...body })
+      setTracks((prev) => apply(prev))
+      clear()
+      setPanel((p) => {
+        if (!p.item || !ids.includes(p.item.id)) return p
+        if (isDelete) return { open: false, item: null, version: p.version + 1 }
+        return { ...p, item: apply([p.item])[0] ?? null, version: p.version + 1 }
+      })
+      if (panel.item && ids.includes(panel.item.id)) setDirty(false)
+      if (count !== ids.length) router.refresh()
+    } catch (err) {
+      alert(`일괄 작업 실패: ${(err as Error).message}`)
     }
   }
 
-  async function handleDelete(id: number) {
-    if (!confirm('이 트랙을 삭제하시겠습니까?')) return
-    const res = await fetch('/api/music', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    })
-    if (res.ok) setTracks((prev) => prev.filter((t) => t.id !== id))
-    else alert(res.status === 401 ? '삭제 실패: 로그인이 만료됐습니다. 다시 로그인해 주세요.' : `삭제 실패 (오류 ${res.status})`)
+  function bulkActions(ids: number[], clear: () => void) {
+    return (
+      <>
+        <BulkGenre
+          genres={genres}
+          onApply={(genre) =>
+            runBulk(ids, clear, { set: { genre } }, (prev) => {
+              const canonical = genres.find((g) => g.toLowerCase() === genre.trim().toLowerCase()) ?? (genre.trim() || null)
+              return prev.map((t) => (ids.includes(t.id) ? { ...t, genre: canonical } : t))
+            })
+          }
+        />
+        <button type="button" className="px-2.5 py-1.5 rounded-md border border-border" onClick={() => runBulk(ids, clear, { set: { favorite: true } }, (prev) => prev.map((t) => (ids.includes(t.id) ? { ...t, favorite: true } : t)))}>
+          즐겨찾기 켜기
+        </button>
+        <button type="button" className="px-2.5 py-1.5 rounded-md border border-border" onClick={() => runBulk(ids, clear, { set: { favorite: false } }, (prev) => prev.map((t) => (ids.includes(t.id) ? { ...t, favorite: false } : t)))}>
+          즐겨찾기 끄기
+        </button>
+        <button
+          type="button"
+          className="px-2.5 py-1.5 rounded-md border border-red-500/50 text-red-500"
+          onClick={() => {
+            const titles = tracks.filter((t) => ids.includes(t.id)).map((t) => t.title)
+            const rest = titles.length - 3
+            const msg = `${titles.length}곡 삭제: ${titles.slice(0, 3).join(', ')}${rest > 0 ? ` 외 ${rest}곡` : ''} — 되돌릴 수 없습니다.`
+            if (confirm(msg)) runBulk(ids, clear, {}, (prev) => prev.filter((t) => !ids.includes(t.id)), true)
+          }}
+        >
+          삭제
+        </button>
+      </>
+    )
   }
 
   return (
-    <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="border border-border rounded-xl p-4 space-y-3 bg-bg-secondary">
-        <div className="grid grid-cols-2 gap-3">
-          <input
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            placeholder="곡 제목"
-            className="border border-border rounded-md px-3 py-2 text-sm bg-bg"
-          />
-          <input
-            value={form.artist}
-            onChange={(e) => setForm({ ...form, artist: e.target.value })}
-            placeholder="아티스트"
-            className="border border-border rounded-md px-3 py-2 text-sm bg-bg"
-          />
-        </div>
-
-        <div className="flex flex-wrap gap-1.5">
-          {GENRE_PRESETS.map((g) => (
-            <button
-              type="button"
-              key={g}
-              onClick={() => setForm({ ...form, genre: g })}
-              className={`text-xs px-2 py-1 rounded-full border transition-colors ${
-                form.genre === g
-                  ? 'border-accent text-accent'
-                  : 'border-border text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              {g}
-            </button>
-          ))}
-          <input
-            value={form.genre}
-            onChange={(e) => setForm({ ...form, genre: e.target.value })}
-            placeholder="직접 입력"
-            className="text-xs border border-border rounded-full px-2 py-1 bg-bg w-24"
-          />
-        </div>
-
-        <input
-          value={form.link}
-          onChange={(e) => {
-            const link = e.target.value
-            const videoId = extractYoutubeId(link)
-            // 커버가 비어있거나, 이전에 자동으로 채운 유튜브 썸네일일 때만 갱신한다.
-            // (직접 올린 이미지는 덮어쓰지 않고, 링크를 고쳐도 옛 영상 썸네일이 남지 않게)
-            const autoFilled = form.cover.startsWith(YOUTUBE_THUMB_PREFIX)
-            const cover =
-              videoId && (!form.cover || autoFilled)
-                ? `${YOUTUBE_THUMB_PREFIX}${videoId}/hqdefault.jpg`
-                : form.cover
-            setForm({ ...form, link, cover })
-          }}
-          onBlur={handleLinkBlur}
-          placeholder="재생 링크 (Spotify/YouTube 등 — 유튜브 링크면 제목·아티스트·썸네일 자동 채움)"
-          className="w-full border border-border rounded-md px-3 py-2 text-sm bg-bg"
-        />
-
-        <textarea
-          value={form.memo}
-          onChange={(e) => setForm({ ...form, memo: e.target.value })}
-          placeholder="설명/감상 메모 (목록에서 곡에 마우스를 올리면 보임)"
-          rows={2}
-          className="w-full border border-border rounded-md px-3 py-2 text-sm bg-bg resize-none"
-        />
-
-        <div className="flex items-center gap-3">
-          <input type="file" accept="image/*" onChange={handleCoverChange} className="text-sm" />
-          {form.cover && (
-            <img src={form.cover} alt="" className="w-10 h-10 rounded object-cover" />
-          )}
-        </div>
-
-        {error && <p className="text-xs text-red-500">{error}</p>}
-
-        <div className="flex gap-2">
-          <button
-            type="submit"
-            disabled={busy}
-            className="px-3 py-1.5 bg-text-primary text-bg text-sm rounded-md disabled:opacity-50"
-          >
-            {form.id ? '수정 저장' : '추가'}
+    <div className="xl:flex xl:gap-4 xl:items-start">
+      <div className="flex-1 min-w-0">
+        <div className="flex justify-end mb-3">
+          <button type="button" onClick={() => openPanel(null)} className="px-3 py-1.5 bg-text-primary text-bg text-sm rounded-md">
+            + 추가
           </button>
-          {form.id && (
-            <button type="button" onClick={() => setForm(EMPTY_FORM)} className="text-sm text-text-secondary">
-              취소
-            </button>
-          )}
         </div>
-      </form>
-
-      <div className="border border-border rounded-xl divide-y divide-border">
-        {tracks.length === 0 && <p className="text-center text-text-secondary py-10 text-sm">트랙이 없습니다.</p>}
-        {tracks.map((track) => (
-          <div key={track.id} className="flex items-center justify-between px-5 py-4">
-            <button
-              type="button"
-              onClick={() => toggleFavorite(track)}
-              aria-pressed={track.favorite}
-              aria-label={track.favorite ? '즐겨찾기 해제' : '즐겨찾기'}
-              className={`mr-3 shrink-0 text-lg leading-none ${track.favorite ? 'text-accent' : 'text-text-muted hover:text-text-primary'}`}
-            >
-              {track.favorite ? '★' : '☆'}
-            </button>
-            <div className="min-w-0 flex-1">
-              <p className="font-medium text-text-primary text-sm truncate">{track.title}</p>
-              <p className="text-xs text-text-muted mt-0.5">{track.artist}</p>
-            </div>
-            <div className="flex items-center gap-4 ml-4 shrink-0">
-              <button onClick={() => startEdit(track)} className="text-xs text-text-secondary hover:text-text-primary">
-                수정
-              </button>
-              <button onClick={() => handleDelete(track.id)} className="text-xs text-text-secondary hover:text-red-500">
-                삭제
-              </button>
-            </div>
-          </div>
-        ))}
+        <AdminTable
+          items={tracks}
+          columns={columns}
+          filterGroups={filterGroups}
+          searchFields={searchFields}
+          searchPlaceholder="제목·아티스트·메모 검색"
+          initialState={initialState}
+          defaultSort={DEFAULT_SORT}
+          card={(t) => (
+            <span className="flex items-center gap-3">
+              {t.cover ? <img src={t.cover} alt="" loading="lazy" className="w-10 h-10 rounded object-cover shrink-0" /> : <span className="w-10 h-10 rounded bg-surface shrink-0" />}
+              <span className="min-w-0">
+                <span className="block text-sm text-text-primary truncate">{t.favorite && <span className="text-accent">★ </span>}{t.title}</span>
+                <span className="block text-xs text-text-muted truncate">{t.artist} · {t.genre ?? '장르 없음'}</span>
+              </span>
+            </span>
+          )}
+          onOpen={openPanel}
+          activeId={panel.open ? panel.item?.id ?? null : null}
+          flashId={flashId}
+          bulkActions={bulkActions}
+          unit="곡"
+        />
       </div>
+      <AdminSidePanel open={panel.open} focusKey={panel.version} title={panel.item ? '곡 수정' : '곡 추가'} dirty={dirty} onClose={closePanel}>
+        <TrackForm
+          key={`${panel.item?.id ?? 'new'}-${panel.version}`}
+          item={panel.item}
+          genres={genres}
+          onSaved={handleSaved}
+          onDirtyChange={setDirty}
+        />
+      </AdminSidePanel>
     </div>
+  )
+}
+
+// 일괄 장르 바꾸기: 작은 펼침 상자 안에서 장르를 고르거나 입력하고 적용.
+function BulkGenre({ genres, onApply }: { genres: string[]; onApply: (genre: string) => void }) {
+  const [value, setValue] = useState('')
+  return (
+    <details className="relative">
+      <summary className="list-none cursor-pointer px-2.5 py-1.5 rounded-md border border-border">장르 바꾸기 ▾</summary>
+      <div className="absolute bottom-full mb-2 left-0 w-72 p-3 rounded-lg border border-border bg-bg-secondary shadow-lg space-y-2">
+        <GenreInput value={value} onChange={setValue} genres={genres} />
+        <button
+          type="button"
+          onClick={(e) => {
+            onApply(value)
+            setValue('')
+            ;(e.currentTarget.closest('details') as HTMLDetailsElement).open = false
+          }}
+          className="w-full px-3 py-1.5 bg-text-primary text-bg text-sm rounded-md"
+        >
+          {value.trim() ? `‘${value.trim()}’ 적용` : '장르 없음으로 되돌리기'}
+        </button>
+      </div>
+    </details>
   )
 }

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { Track } from '@prisma/client'
 import AdminTable, { type Column, type FilterGroup } from './AdminTable'
 import AdminSidePanel, { confirmDiscard } from './AdminSidePanel'
-import GenreInput from './GenreInput'
+import BulkGenre from './BulkGenre'
 import TrackForm from './TrackForm'
 import { sendBulk } from '@/lib/adminFetch'
 import { dateValue, genreCounts, parseListState, type RawParams } from '@/lib/adminList'
@@ -239,29 +239,5 @@ export default function AdminMusicManager({ initialTracks, initialQuery }: Props
         />
       </AdminSidePanel>
     </div>
-  )
-}
-
-// 일괄 장르 바꾸기: 작은 펼침 상자 안에서 장르를 고르거나 입력하고 적용.
-function BulkGenre({ genres, onApply }: { genres: string[]; onApply: (genre: string) => void }) {
-  const [value, setValue] = useState('')
-  return (
-    <details className="relative">
-      <summary className="list-none cursor-pointer px-2.5 py-1.5 rounded-md border border-border">장르 바꾸기 ▾</summary>
-      <div className="absolute bottom-full mb-2 left-0 w-72 p-3 rounded-lg border border-border bg-bg-secondary shadow-lg space-y-2">
-        <GenreInput value={value} onChange={setValue} genres={genres} />
-        <button
-          type="button"
-          onClick={(e) => {
-            onApply(value)
-            setValue('')
-            ;(e.currentTarget.closest('details') as HTMLDetailsElement).open = false
-          }}
-          className="w-full px-3 py-1.5 bg-text-primary text-bg text-sm rounded-md"
-        >
-          {value.trim() ? `‘${value.trim()}’ 적용` : '장르 없음으로 되돌리기'}
-        </button>
-      </div>
-    </details>
   )
 }

@@ -1,210 +1,216 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import type { Book } from '@prisma/client'
+import AdminTable, { type Column, type FilterGroup } from './AdminTable'
+import AdminSidePanel, { confirmDiscard } from './AdminSidePanel'
+import BulkGenre from './BulkGenre'
+import BookForm, { STATUS_LABEL, type Status } from './BookForm'
+import { sendBulk } from '@/lib/adminFetch'
+import { dateValue, genreCounts, parseListState, type RawParams } from '@/lib/adminList'
 
-const GENRE_PRESETS = ['소설', '자기계발', '에세이', '인문', '과학']
-const STATUS_LABEL = { reading: '읽는 중', done: '다 읽음', want: '읽고 싶음' } as const
+const DEFAULT_SORT = 'createdAt'
+const SORT_KEYS = ['title', 'author', 'genre', 'status', 'rating', 'createdAt']
+const GROUPS = ['status', 'flag', 'genre']
+const STATUS_ORDER: Record<Status, number> = { reading: 0, want: 1, done: 2 }
 
-type FormState = {
-  id: number | null
-  title: string
-  author: string
-  genre: string
-  status: 'reading' | 'done' | 'want'
-  rating: number
-  memo: string
-}
+const searchFields = (b: Book) => [b.title, b.author, b.memo]
 
-const EMPTY_FORM: FormState = { id: null, title: '', author: '', genre: '', status: 'want', rating: 0, memo: '' }
+const columns: Column<Book>[] = [
+  { key: 'title', label: '제목', sortValue: (b) => b.title, render: (b) => b.title },
+  { key: 'author', label: '저자', sortValue: (b) => b.author, render: (b) => <span className="text-text-secondary">{b.author}</span> },
+  { key: 'genre', label: '장르', sortValue: (b) => b.genre, render: (b) => b.genre ?? <span className="text-text-muted">—</span> },
+  { key: 'status', label: '상태', className: 'w-24', sortValue: (b) => STATUS_ORDER[b.status as Status], render: (b) => STATUS_LABEL[b.status as Status] },
+  {
+    key: 'rating',
+    label: '별점',
+    className: 'w-24',
+    sortValue: (b) => (b.status === 'done' ? b.rating : null),
+    render: (b) => (b.status === 'done' && b.rating ? <span className="text-accent">{'★'.repeat(b.rating)}</span> : <span className="text-text-muted">—</span>),
+  },
+  {
+    key: 'createdAt',
+    label: '추가한 날',
+    className: 'w-24 text-text-muted',
+    sortValue: (b) => dateValue(b.createdAt),
+    render: (b) => new Date(b.createdAt).toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul', month: '2-digit', day: '2-digit' }),
+  },
+]
 
 interface Props {
   initialBooks: Book[]
+  initialQuery: RawParams
 }
 
-export default function AdminBookManager({ initialBooks }: Props) {
+export default function AdminBookManager({ initialBooks, initialQuery }: Props) {
+  const router = useRouter()
   const [books, setBooks] = useState(initialBooks)
-  const [form, setForm] = useState<FormState>(EMPTY_FORM)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  function startEdit(book: Book) {
-    setForm({
-      id: book.id,
-      title: book.title,
-      author: book.author,
-      genre: book.genre ?? '',
-      status: book.status as FormState['status'],
-      rating: book.rating ?? 0,
-      memo: book.memo ?? '',
-    })
+  // router.refresh()로 서버 목록이 새로 오면 그걸로 바꾼다(렌더 중 이전 값 비교 — NavBar와 같은 패턴).
+  const [prevInitial, setPrevInitial] = useState(initialBooks)
+  if (prevInitial !== initialBooks) {
+    setPrevInitial(initialBooks)
+    setBooks(initialBooks)
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    if (!form.title.trim() || !form.author.trim()) return
-    setBusy(true)
-    setError(null)
+  const [initialState] = useState(() => parseListState(initialQuery, GROUPS, SORT_KEYS, DEFAULT_SORT))
+  const [panel, setPanel] = useState<{ open: boolean; item: Book | null; version: number }>({ open: false, item: null, version: 0 })
+  const [dirty, setDirty] = useState(false)
+  const [flashId, setFlashId] = useState<number | null>(null)
 
-    const payload = {
-      title: form.title,
-      author: form.author,
-      genre: form.genre,
-      status: form.status,
-      rating: form.status === 'done' && form.rating > 0 ? form.rating : null,
-      memo: form.memo,
-    }
+  const genres = useMemo(() => genreCounts(books).map((g) => g.genre), [books])
 
-    // 네트워크 오류로 fetch가 reject되면 busy가 안 풀려 저장 버튼이 영구히 잠긴다 — finally로 항상 해제.
+  const filterGroups = useMemo<FilterGroup<Book>[]>(
+    () => [
+      {
+        group: 'status',
+        filters: (Object.keys(STATUS_LABEL) as Status[]).map((s) => ({
+          group: 'status', id: s, label: STATUS_LABEL[s], test: (b: Book) => b.status === s,
+        })),
+      },
+      {
+        group: 'flag',
+        filters: [
+          { group: 'flag', id: 'nogenre', label: '장르 없음', test: (b) => !b.genre },
+          { group: 'flag', id: 'norating', label: '별점 없음', test: (b) => b.status === 'done' && b.rating == null },
+        ],
+      },
+      {
+        group: 'genre',
+        label: '장르:',
+        filters: genres.map((g) => ({ group: 'genre', id: g, label: g, test: (b: Book) => b.genre === g })),
+      },
+    ],
+    [genres]
+  )
+
+  function openPanel(item: Book | null) {
+    if (panel.open && !confirmDiscard(dirty)) return
+    setDirty(false)
+    setPanel((p) => ({ open: true, item, version: p.version + 1 }))
+  }
+
+  const closePanel = useCallback(() => {
+    setDirty(false)
+    setPanel((p) => ({ ...p, open: false, item: null }))
+  }, [])
+
+  function handleSaved(saved: Book) {
+    setBooks((prev) => (prev.some((b) => b.id === saved.id) ? prev.map((b) => (b.id === saved.id ? saved : b)) : [saved, ...prev]))
+    setDirty(false)
+    setPanel((p) => ({ open: true, item: saved, version: p.version + 1 }))
+    setFlashId(saved.id)
+    setTimeout(() => setFlashId((id) => (id === saved.id ? null : id)), 1500)
+  }
+
+  // 열린 패널의 책이 일괄 대상이면: 저장 안 한 수정이 있으면 먼저 묻고, 끝나면 패널을 새 값으로 다시 채운다.
+  function guardOpenItem(ids: number[]): boolean {
+    if (!panel.item || !ids.includes(panel.item.id) || !dirty) return true
+    return confirm('패널에서 고치던 내용은 사라집니다. 계속할까요?')
+  }
+
+  // 응답을 기다리는 동안 ★ 토글·패널 저장·다른 줄 열기가 끼어들 수 있다 — 클릭 당시 값이 아니라
+  // 함수형 갱신으로 그때의 최신 목록·패널에 적용한다.
+  async function runBulk(ids: number[], clear: () => void, body: object, apply: (prev: Book[]) => Book[], isDelete = false) {
+    if (!guardOpenItem(ids)) return
     try {
-      const res = await fetch('/api/books', {
-        method: form.id ? 'PUT' : 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form.id ? { id: form.id, ...payload } : payload),
+      const count = await sendBulk('/api/books', isDelete ? 'DELETE' : 'PATCH', { ids, ...body })
+      setBooks((prev) => apply(prev))
+      clear()
+      setPanel((p) => {
+        if (!p.item || !ids.includes(p.item.id)) return p
+        if (isDelete) return { open: false, item: null, version: p.version + 1 }
+        return { ...p, item: apply([p.item])[0] ?? null, version: p.version + 1 }
       })
-
-      if (!res.ok) {
-        setError(res.status === 401 ? '저장 실패: 로그인이 만료됐습니다. 다른 탭에서 다시 로그인한 뒤 저장해 주세요 (입력한 내용은 그대로 둡니다).' : res.status === 400 ? '저장 실패: 입력값을 확인해 주세요.' : `저장에 실패했습니다 (오류 ${res.status}).`)
-        return
-      }
-      const saved: Book = await res.json()
-      setBooks((prev) => (form.id ? prev.map((b) => (b.id === saved.id ? saved : b)) : [saved, ...prev]))
-      setForm(EMPTY_FORM)
-    } catch {
-      setError('저장에 실패했습니다. 잠시 후 다시 시도해주세요.')
-    } finally {
-      setBusy(false)
+      if (panel.item && ids.includes(panel.item.id)) setDirty(false)
+      if (count !== ids.length) router.refresh()
+    } catch (err) {
+      alert(`일괄 작업 실패: ${(err as Error).message}`)
     }
   }
 
-  async function handleDelete(id: number) {
-    if (!confirm('이 책을 삭제하시겠습니까?')) return
-    const res = await fetch('/api/books', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id }),
-    })
-    if (res.ok) setBooks((prev) => prev.filter((b) => b.id !== id))
-    else alert(res.status === 401 ? '삭제 실패: 로그인이 만료됐습니다. 다시 로그인해 주세요.' : `삭제 실패 (오류 ${res.status})`)
+  function bulkActions(ids: number[], clear: () => void) {
+    return (
+      <>
+        <BulkGenre
+          genres={genres}
+          onApply={(genre) =>
+            runBulk(ids, clear, { set: { genre } }, (prev) => {
+              const canonical = genres.find((g) => g.toLowerCase() === genre.trim().toLowerCase()) ?? (genre.trim() || null)
+              return prev.map((b) => (ids.includes(b.id) ? { ...b, genre: canonical } : b))
+            })
+          }
+        />
+        <select
+          aria-label="상태 바꾸기"
+          value=""
+          onChange={(e) => {
+            const status = e.target.value as Status
+            if (status) runBulk(ids, clear, { set: { status } }, (prev) => prev.map((b) => (ids.includes(b.id) ? { ...b, status } : b)))
+          }}
+          className="px-2 py-1.5 rounded-md border border-border bg-bg"
+        >
+          <option value="">상태 바꾸기…</option>
+          {(Object.keys(STATUS_LABEL) as Status[]).map((s) => (
+            <option key={s} value={s}>{STATUS_LABEL[s]}</option>
+          ))}
+        </select>
+        <button
+          type="button"
+          className="px-2.5 py-1.5 rounded-md border border-red-500/50 text-red-500"
+          onClick={() => {
+            const titles = books.filter((b) => ids.includes(b.id)).map((b) => b.title)
+            const rest = titles.length - 3
+            const msg = `${titles.length}권 삭제: ${titles.slice(0, 3).join(', ')}${rest > 0 ? ` 외 ${rest}권` : ''} — 되돌릴 수 없습니다.`
+            if (confirm(msg)) runBulk(ids, clear, {}, (prev) => prev.filter((b) => !ids.includes(b.id)), true)
+          }}
+        >
+          삭제
+        </button>
+      </>
+    )
   }
 
   return (
-    <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="border border-border rounded-xl p-4 space-y-3 bg-bg-secondary">
-        <div className="grid grid-cols-2 gap-3">
-          <input
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            placeholder="제목"
-            className="border border-border rounded-md px-3 py-2 text-sm bg-bg"
-          />
-          <input
-            value={form.author}
-            onChange={(e) => setForm({ ...form, author: e.target.value })}
-            placeholder="저자"
-            className="border border-border rounded-md px-3 py-2 text-sm bg-bg"
-          />
-        </div>
-
-        <div className="flex flex-wrap gap-1.5">
-          {GENRE_PRESETS.map((g) => (
-            <button
-              type="button"
-              key={g}
-              onClick={() => setForm({ ...form, genre: g })}
-              className={`text-xs px-2 py-1 rounded-full border transition-colors ${
-                form.genre === g
-                  ? 'border-accent text-accent'
-                  : 'border-border text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              {g}
-            </button>
-          ))}
-          <input
-            value={form.genre}
-            onChange={(e) => setForm({ ...form, genre: e.target.value })}
-            placeholder="직접 입력"
-            className="text-xs border border-border rounded-full px-2 py-1 bg-bg w-24"
-          />
-        </div>
-
-        <div className="flex items-center gap-4">
-          <select
-            value={form.status}
-            onChange={(e) => setForm({ ...form, status: e.target.value as FormState['status'] })}
-            className="border border-border rounded-md px-2 py-1.5 text-sm bg-bg"
-          >
-            {(Object.keys(STATUS_LABEL) as (keyof typeof STATUS_LABEL)[]).map((s) => (
-              <option key={s} value={s}>
-                {STATUS_LABEL[s]}
-              </option>
-            ))}
-          </select>
-
-          {form.status === 'done' && (
-            <div className="flex gap-0.5">
-              {[1, 2, 3, 4, 5].map((n) => (
-                <button
-                  type="button"
-                  key={n}
-                  onClick={() => setForm({ ...form, rating: n })}
-                  className={n <= form.rating ? 'text-accent' : 'text-text-muted'}
-                  aria-label={`${n}점`}
-                >
-                  ★
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <input
-          value={form.memo}
-          onChange={(e) => setForm({ ...form, memo: e.target.value })}
-          placeholder="한줄 메모"
-          className="w-full border border-border rounded-md px-3 py-2 text-sm bg-bg"
-        />
-
-        {error && <p className="text-xs text-red-500">{error}</p>}
-
-        <div className="flex gap-2">
-          <button
-            type="submit"
-            disabled={busy}
-            className="px-3 py-1.5 bg-text-primary text-bg text-sm rounded-md disabled:opacity-50"
-          >
-            {form.id ? '수정 저장' : '추가'}
+    <div className="xl:flex xl:gap-4 xl:items-start">
+      <div className="flex-1 min-w-0">
+        <div className="flex justify-end mb-3">
+          <button type="button" onClick={() => openPanel(null)} className="px-3 py-1.5 bg-text-primary text-bg text-sm rounded-md">
+            + 추가
           </button>
-          {form.id && (
-            <button type="button" onClick={() => setForm(EMPTY_FORM)} className="text-sm text-text-secondary">
-              취소
-            </button>
-          )}
         </div>
-      </form>
-
-      <div className="border border-border rounded-xl divide-y divide-border">
-        {books.length === 0 && <p className="text-center text-text-secondary py-10 text-sm">책이 없습니다.</p>}
-        {books.map((book) => (
-          <div key={book.id} className="flex items-center justify-between px-5 py-4">
-            <div className="min-w-0 flex-1">
-              <p className="font-medium text-text-primary text-sm truncate">{book.title}</p>
-              <p className="text-xs text-text-muted mt-0.5">
-                {book.author} · {STATUS_LABEL[book.status as keyof typeof STATUS_LABEL]}
-              </p>
-            </div>
-            <div className="flex items-center gap-4 ml-4 shrink-0">
-              <button onClick={() => startEdit(book)} className="text-xs text-text-secondary hover:text-text-primary">
-                수정
-              </button>
-              <button onClick={() => handleDelete(book.id)} className="text-xs text-text-secondary hover:text-red-500">
-                삭제
-              </button>
-            </div>
-          </div>
-        ))}
+        <AdminTable
+          items={books}
+          columns={columns}
+          filterGroups={filterGroups}
+          searchFields={searchFields}
+          searchPlaceholder="제목·저자·메모 검색"
+          initialState={initialState}
+          defaultSort={DEFAULT_SORT}
+          card={(b) => (
+            <span className="block min-w-0">
+              <span className="block text-sm text-text-primary truncate">{b.title}</span>
+              <span className="block text-xs text-text-muted truncate">
+                {b.author} · {STATUS_LABEL[b.status as Status]}{b.genre ? ` · ${b.genre}` : ''}
+              </span>
+            </span>
+          )}
+          onOpen={openPanel}
+          activeId={panel.open ? panel.item?.id ?? null : null}
+          flashId={flashId}
+          bulkActions={bulkActions}
+          unit="권"
+        />
       </div>
+      <AdminSidePanel open={panel.open} focusKey={panel.version} title={panel.item ? '책 수정' : '책 추가'} dirty={dirty} onClose={closePanel}>
+        <BookForm
+          key={`${panel.item?.id ?? 'new'}-${panel.version}`}
+          item={panel.item}
+          genres={genres}
+          onSaved={handleSaved}
+          onDirtyChange={setDirty}
+        />
+      </AdminSidePanel>
     </div>
   )
 }

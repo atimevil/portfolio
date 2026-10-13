@@ -6,6 +6,8 @@ import { signOut } from 'next-auth/react'
 
 interface AdminLayoutProps {
   children: React.ReactNode
+  // 음악·책 표처럼 열이 많은 화면만 넓힌다. 다른 관리자 화면은 읽기 좋은 폭(max-w-3xl) 그대로.
+  wide?: boolean
 }
 
 const navItems = [
@@ -19,7 +21,7 @@ const navItems = [
   { href: '/admin/settings', label: '설정' },
 ]
 
-export default function AdminLayout({ children }: AdminLayoutProps) {
+export default function AdminLayout({ children, wide = false }: AdminLayoutProps) {
   const pathname = usePathname()
 
   function isActive(href: string, exact = false) {
@@ -79,8 +81,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </div>
       </nav>
 
-      <main className="flex-1 min-w-0 overflow-auto">
-        <div className="max-w-3xl mx-auto px-4 py-5 md:px-8 md:py-8">
+      {/* 넓은 화면은 overflow-x-clip — overflow-auto는 스크롤 컨테이너를 만들어 옆 패널의 sticky가 죽는다(실제 스크롤은 window) */}
+      <main className={`flex-1 min-w-0 ${wide ? 'overflow-x-clip' : 'overflow-auto'}`}>
+        <div className={`${wide ? 'max-w-6xl' : 'max-w-3xl'} mx-auto px-4 py-5 md:px-8 md:py-8`}>
           {children}
         </div>
       </main>

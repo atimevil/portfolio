@@ -8,7 +8,7 @@ export default async function AdminItemsPage() {
   const session = await getServerSession()
   if (!session) redirect('/admin/login')
   return (
-    <AdminLayout>
+    <AdminLayout wide>
       <AdminItemManager initialItems={getItems()} />
     </AdminLayout>
   )

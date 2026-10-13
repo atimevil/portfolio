@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import {
-  applyFilters, listStateToQuery, matchesQuery, paginate, sortItems,
+  applyFilters, listStateToQuery, matchesQuery, paginate, sortItems, visibleSelection,
   type FilterDef, type ListState, type SortValue,
 } from '@/lib/adminList'
 
@@ -90,11 +90,8 @@ export default function AdminTable<T extends { id: number }>({
     }))
   }
 
-  // 목록에서 사라진 항목(삭제됨)은 선택에서도 뺀다.
-  const liveSelected = useMemo(() => {
-    const ids = new Set(items.map((i) => i.id))
-    return [...selected].filter((id) => ids.has(id))
-  }, [selected, items])
+  // 일괄 대상은 지금 걸러진 목록에 남은 선택만(삭제됐거나 패널에서 고쳐 필터에서 빠진 항목 제외).
+  const liveSelected = useMemo(() => visibleSelection(selected, filtered), [selected, filtered])
 
   const allFilteredSelected = filtered.length > 0 && filtered.every((i) => selected.has(i.id))
 

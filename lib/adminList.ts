@@ -83,6 +83,13 @@ export function canonicalGenre(input: string, existing: string[]): string {
   return existing.find((e) => e.toLowerCase() === g.toLowerCase()) ?? g
 }
 
+// 일괄 작업 대상은 '선택했고 지금 보이는(걸러진) 항목'. 선택한 뒤 패널에서 고쳐 필터에서 빠졌거나 삭제된 항목은
+// 빠진다 — 안 보이는 항목에 일괄 작업이 걸리는 사고를 막는다(스펙). 걸러진 목록은 쪽과 무관해 쪽을 넘은 선택은 유지된다.
+export function visibleSelection(selected: Set<number>, filtered: { id: number }[]): number[] {
+  const visible = new Set(filtered.map((i) => i.id))
+  return [...selected].filter((id) => visible.has(id))
+}
+
 function first(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v
 }

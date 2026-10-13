@@ -58,10 +58,13 @@ function normalize<T extends Partial<BookInput>>(data: T): T {
 async function withCanonicalGenre<T extends { genre?: string | null }>(data: T): Promise<T> {
   if (typeof data.genre !== 'string') return data
   const genre = data.genre.trim()
-  const hit = await prisma.book.findFirst({
-    where: { genre: { equals: genre, mode: 'insensitive' } },
+  // mode: 'insensitive'는 ILIKE로 나가 %·_가 와일드카드가 된다('Lo_fi' → 'Lo-fi'). 장르는 수십 개라 목록을 받아 비교한다.
+  const rows = await prisma.book.findMany({
+    where: { genre: { not: null } },
+    distinct: ['genre'],
     select: { genre: true },
     orderBy: { id: 'asc' },
   })
+  const hit = rows.find((r) => r.genre!.toLowerCase() === genre.toLowerCase())
   return { ...data, genre: hit?.genre ?? genre }
 }

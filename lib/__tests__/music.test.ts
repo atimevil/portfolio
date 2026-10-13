@@ -93,3 +93,11 @@ describe('updateTracks / deleteTracks', () => {
     expect(await getAllTracks()).toHaveLength(0)
   })
 })
+
+describe('장르 대소문자 맞추기 — 특수 문자', () => {
+  it('% 와 _ 는 와일드카드가 아니라 글자 그대로 비교한다', async () => {
+    await createTrack({ title: 'A', artist: 'x', genre: 'Lo-fi' })
+    expect((await createTrack({ title: 'B', artist: 'y', genre: 'Lo_fi' })).genre).toBe('Lo_fi')
+    expect((await createTrack({ title: 'C', artist: 'z', genre: '%' })).genre).toBe('%')
+  })
+})

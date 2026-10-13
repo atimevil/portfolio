@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   normalizeQuery, matchesQuery, applyFilters, sortItems, dateValue, paginate,
-  genreCounts, canonicalGenre, parseListState, listStateToQuery, type FilterDef,
+  genreCounts, canonicalGenre, parseListState, listStateToQuery, visibleSelection, type FilterDef,
 } from '@/lib/adminList'
 
 describe('검색', () => {
@@ -109,5 +109,15 @@ describe('주소 상태', () => {
   })
   it('기본값은 주소에 쓰지 않는다', () => {
     expect(listStateToQuery({ q: '', filters: {}, sort: 'createdAt', dir: 'desc', page: 1 }, 'createdAt')).toBe('')
+  })
+})
+
+describe('visibleSelection', () => {
+  it('지금 걸러진 목록에 남아 있는 선택만 돌려준다(패널에서 고쳐 필터에서 빠진 항목은 제외)', () => {
+    const filtered = [{ id: 1 }, { id: 3 }]
+    expect(visibleSelection(new Set([1, 2, 3]), filtered)).toEqual([1, 3])
+  })
+  it('걸러진 목록 순서와 상관없이 선택한 순서를 유지한다', () => {
+    expect(visibleSelection(new Set([3, 1]), [{ id: 1 }, { id: 3 }])).toEqual([3, 1])
   })
 })

@@ -14,6 +14,8 @@ export default function BulkGenre({ genres, onApply }: { genres: string[]; onApp
         <button
           type="button"
           onClick={(e) => {
+            // 비운 채 누르면 고른 항목의 장르를 전부 지운다. 되돌릴 수 없어 삭제처럼 한 번 묻는다.
+            if (!value.trim() && !confirm('고른 항목의 장르를 지웁니다(장르 없음). 되돌릴 수 없습니다. 계속할까요?')) return
             onApply(value)
             setValue('')
             ;(e.currentTarget.closest('details') as HTMLDetailsElement).open = false

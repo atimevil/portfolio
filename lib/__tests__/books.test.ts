@@ -67,3 +67,11 @@ describe('updateBooks / deleteBooks', () => {
     expect(await deleteBooks([a.id, 999999])).toBe(1)
   })
 })
+
+describe('장르 대소문자 맞추기 (책) — 특수 문자', () => {
+  it('% 와 _ 는 와일드카드가 아니라 글자 그대로 비교한다', async () => {
+    await createBook({ title: 'A', author: 'x', genre: 'Lo-fi' })
+    expect((await createBook({ title: 'B', author: 'y', genre: 'Lo_fi' })).genre).toBe('Lo_fi')
+    expect((await createBook({ title: 'C', author: 'z', genre: '%' })).genre).toBe('%')
+  })
+})

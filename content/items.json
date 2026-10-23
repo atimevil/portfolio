@@ -240,7 +240,7 @@
       "AWS EC2",
       "GitHub Actions"
     ],
-    "github": "https://github.com/pallows",
+    "github": "https://github.com/pallows/pallow",
     "thumbnail": "/figures/pallow-architecture.svg",
     "slug": "pallow",
     "title_en": "PALLOW: Friend recommendations by region and MBTI",

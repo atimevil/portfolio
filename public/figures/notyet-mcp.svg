@@ -28,9 +28,9 @@
   <path class="ar" d="M200 159 H248 V132 H286" marker-end="url(#a)"/>
 
   <rect class="acc" x="290" y="95" width="196" height="60" rx="8"/>
-  <text class="lb" x="388" y="118" text-anchor="middle">MCP SERVER</text>
-  <text class="t" x="388" y="138" text-anchor="middle">Not-Yet</text>
-  <text class="s" x="388" y="152" text-anchor="middle">Python · Flask</text>
+  <text class="lb" x="388" y="112" text-anchor="middle">MCP SERVER</text>
+  <text class="t" x="388" y="131" text-anchor="middle">Not-Yet</text>
+  <text class="s" x="388" y="146" text-anchor="middle">Python · Flask</text>
 
   <path class="ar" d="M486 125 H534" marker-end="url(#a)"/>
   <rect class="box" x="538" y="100" width="130" height="50" rx="8"/>

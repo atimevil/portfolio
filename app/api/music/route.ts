@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { Prisma } from '@prisma/client'
 import { getAllTracks, createTrack, updateTrack, deleteTrack, updateTracks, deleteTracks } from '@/lib/music'
-import { IdsSchema, parseJsonBody } from '@/lib/bulkSchema'
+import { IdsSchema, parseJsonBody, parseJsonObject, badJson } from '@/lib/bulkSchema'
 import { hiddenFromPublic } from '@/lib/publicGate'
 
 async function requireSession() {
@@ -39,7 +39,9 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   if (!(await requireSession())) return unauthorized()
-  const result = TrackSchema.safeParse(await req.json())
+  const body = await parseJsonObject(req)
+  if (!body) return badJson()
+  const result = TrackSchema.safeParse(body)
   if (!result.success) {
     return NextResponse.json({ error: result.error.flatten() }, { status: 400 })
   }
@@ -50,7 +52,9 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   if (!(await requireSession())) return unauthorized()
-  const { id, ...updates } = await req.json()
+  const body = await parseJsonObject(req)
+  if (!body) return badJson()
+  const { id, ...updates } = body
   if (typeof id !== 'number') {
     return NextResponse.json({ error: 'id required' }, { status: 400 })
   }

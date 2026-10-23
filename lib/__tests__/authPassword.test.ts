@@ -40,4 +40,14 @@ describe('auth-password', () => {
     expect(stored()).toMatch(/^scrypt\$/)
     expect(verifyPassword('legacy-pass')).toBe(true)
   })
+
+  it('해시가 없으면 ADMIN_PASSWORD 환경변수로 검증한다(길이가 달라도 거부)', async () => {
+    vi.stubEnv('ADMIN_PASSWORD', 'env-secret-pw')
+    const { verifyPassword } = await load()
+    expect(verifyPassword('env-secret-pw')).toBe(true)
+    expect(verifyPassword('env-secret-pX')).toBe(false)
+    expect(verifyPassword('env')).toBe(false)
+    expect(verifyPassword('')).toBe(false)
+    vi.unstubAllEnvs()
+  })
 })

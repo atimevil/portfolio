@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { scryptSync, randomBytes, timingSafeEqual } from 'crypto'
+import { scryptSync, randomBytes, timingSafeEqual, createHash } from 'crypto'
 import { writeJsonAtomic } from '@/lib/jsonFile'
 
 // Stored in the content volume, NOT exposed by any route (unlike settings.json,
@@ -24,7 +24,10 @@ export function verifyPassword(input: string): boolean {
   const stored = readHash()
   if (!stored) {
     const envPw = process.env.ADMIN_PASSWORD
-    return !!envPw && !!input && input === envPw
+    if (!envPw || !input) return false
+    // 길이가 달라도 같은 시간에 비교하려고 SHA-256 다이제스트끼리 비교한다
+    const digest = (v: string) => createHash('sha256').update(v).digest()
+    return timingSafeEqual(digest(input), digest(envPw))
   }
   const ok = verifyHash(input, stored)
   // 예전 형식(기본 강도)으로 저장된 해시는 맞았을 때 지금 강도로 다시 저장한다

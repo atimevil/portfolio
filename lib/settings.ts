@@ -42,7 +42,13 @@ export function getSettings(): SiteSettings {
   }
 }
 
-export function updateSettings(updates: Partial<SiteSettings>): SiteSettings {
+// 중첩 칸(navVisibility·profile)도 일부만 받는다 — 아래에서 현재 값에 병합한다.
+export type SettingsUpdate = Partial<Omit<SiteSettings, 'navVisibility' | 'profile'>> & {
+  navVisibility?: Partial<SiteSettings['navVisibility']>
+  profile?: Partial<SiteSettings['profile']>
+}
+
+export function updateSettings(updates: SettingsUpdate): SiteSettings {
   // 깨진 파일이면 예외 — 기본값(이름 '이름' 등)으로 실제 프로필을 덮어쓰지 않는다
   const current = withDefaults(readJsonFile<Partial<SiteSettings>>(FILE, {}))
   const merged: SiteSettings = {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { parseJsonObject, badJson } from '@/lib/bulkSchema'
 import { getServerSession } from 'next-auth'
 import { getGalleryImages, saveGalleryImage, deleteGalleryImage } from '@/lib/gallery'
 import { hiddenFromPublic } from '@/lib/publicGate'
@@ -49,8 +50,10 @@ export async function POST(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
   const session = await getServerSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const { id } = await req.json()
-  if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+  const body = await parseJsonObject(req)
+  if (!body) return badJson()
+  const { id } = body
+  if (typeof id !== 'string' || !id) return NextResponse.json({ error: 'id required' }, { status: 400 })
   if (!deleteGalleryImage(id)) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   return NextResponse.json({ ok: true })
 }

@@ -41,6 +41,14 @@ export function applyFilters<T>(items: T[], defs: FilterDef<T>[], active: Record
   return tests.length ? items.filter((item) => tests.every((t) => t(item))) : items
 }
 
+// 필터 정의에서 사라진 id(그 장르의 마지막 항목을 고쳐 장르가 없어졌을 때 등). applyFilters는 이런 필터를 말없이
+// 건너뛰어 목록이 갑자기 넓어지므로, 화면이 이걸로 필터를 풀고 알린다.
+export function staleFilters<T>(defs: FilterDef<T>[], active: Record<string, string>): { group: string; id: string }[] {
+  return Object.entries(active)
+    .filter(([group, id]) => !defs.some((d) => d.group === group && d.id === id))
+    .map(([group, id]) => ({ group, id }))
+}
+
 const collator = new Intl.Collator('ko', { sensitivity: 'base', numeric: true })
 
 // 빈 값(장르 없음 등)은 방향과 상관없이 맨 뒤 — 채워야 할 항목이 정렬 때마다 위아래로 튀지 않게.

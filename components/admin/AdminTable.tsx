@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import {
-  applyFilters, listStateToQuery, matchesQuery, paginate, sortItems, visibleSelection,
+  applyFilters, listStateToQuery, matchesQuery, paginate, sortItems, staleFilters, visibleSelection,
   type FilterDef, type ListState, type SortValue,
 } from '@/lib/adminList'
 
@@ -50,6 +50,16 @@ export default function AdminTable<T extends { id: number }>({
   const [selected, setSelected] = useState<Set<number>>(new Set())
 
   const allDefs = useMemo(() => filterGroups.flatMap((g) => g.filters), [filterGroups])
+
+  // 고른 필터가 정의에서 사라지면(그 장르의 마지막 항목이 바뀜 등) 말없이 목록이 넓어지지 않게 풀고 알린다.
+  const [notice, setNotice] = useState('')
+  const stale = useMemo(() => staleFilters(allDefs, state.filters), [allDefs, state.filters])
+  if (stale.length > 0) {
+    const next = { ...state.filters }
+    for (const f of stale) delete next[f.group]
+    setState((s) => ({ ...s, filters: next, page: 1 }))
+    setNotice(`${stale.map((f) => `‘${f.id}’`).join(', ')} 필터를 풀었습니다(해당 항목이 없어졌습니다).`)
+  }
   const filtered = useMemo(() => {
     const searched = items.filter((it) => matchesQuery(searchFields(it), state.q))
     return applyFilters(searched, allDefs, state.filters)
@@ -74,6 +84,7 @@ export default function AdminTable<T extends { id: number }>({
 
   // 검색·필터가 바뀌면 선택을 비운다 — 안 보이는 항목에 일괄 작업이 걸리는 사고 방지. 쪽은 1쪽으로.
   function changeQuery(patch: Partial<Pick<ListState, 'q' | 'filters'>>) {
+    setNotice('')
     setState((s) => ({ ...s, ...patch, page: 1 }))
     setSelected(new Set())
   }
@@ -137,6 +148,7 @@ export default function AdminTable<T extends { id: number }>({
         aria-label="검색"
         className="w-full border border-border rounded-md px-3 py-2 text-sm bg-bg"
       />
+      {notice && <p role="status" className="text-xs text-text-muted">{notice}</p>}
 
       <div className="space-y-1.5">
         <button

@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   normalizeQuery, matchesQuery, applyFilters, sortItems, dateValue, paginate,
-  genreCounts, canonicalGenre, parseListState, listStateToQuery, visibleSelection, type FilterDef,
+  genreCounts, canonicalGenre, staleFilters, parseListState, listStateToQuery, visibleSelection, type FilterDef,
 } from '@/lib/adminList'
 
 describe('검색', () => {
@@ -36,6 +36,20 @@ describe('필터', () => {
   })
   it('없는 필터 id는 무시한다(주소에 이상한 값)', () => {
     expect(applyFilters(rows, defs, { genre: '없는장르' })).toHaveLength(3)
+  })
+})
+
+describe('사라진 필터', () => {
+  const defs: FilterDef<{ g: string }>[] = [{ group: 'genre', id: 'rock', label: 'rock', test: (i) => i.g === 'rock' }]
+  it('정의에서 사라진 id만 돌려준다', () => {
+    expect(staleFilters(defs, { genre: 'rock' })).toEqual([])
+    expect(staleFilters(defs, { genre: 'jazz', flag: 'favorite' })).toEqual([
+      { group: 'genre', id: 'jazz' },
+      { group: 'flag', id: 'favorite' },
+    ])
+  })
+  it('필터가 없으면 빈 배열', () => {
+    expect(staleFilters(defs, {})).toEqual([])
   })
 })
 

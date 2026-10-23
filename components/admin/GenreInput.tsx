@@ -1,6 +1,6 @@
 'use client'
 
-import { useId } from 'react'
+import { useId, useRef } from 'react'
 import { canonicalGenre } from '@/lib/adminList'
 
 interface Props {
@@ -16,6 +16,9 @@ const CHIP_LIMIT = 8
 // 직접 입력은 기존 장르를 자동완성으로 권하고, 대소문자만 다르면 어떤 값으로 저장될지 미리 보여준다.
 export default function GenreInput({ value, onChange, genres, id }: Props) {
   const listId = useId()
+  // 브라우저는 자동완성 목록이 열려 있는지 알려 주지 않는다. 입력·↓·클릭으로 열렸을 수 있다고 보고,
+  // 그동안의 첫 Esc는 목록만 닫게 한다(패널의 'Esc로 닫기'까지 번져 저장 안 한 수정 확인창이 뜨지 않게).
+  const listMaybeOpen = useRef(false)
   const canonical = canonicalGenre(value, genres)
   return (
     <div className="space-y-1.5">
@@ -37,7 +40,20 @@ export default function GenreInput({ value, onChange, genres, id }: Props) {
       <input
         id={id}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          // 목록에서 항목을 골라 값이 바뀐 경우(insertReplacementText)는 목록이 이미 닫혔다
+          listMaybeOpen.current = (e.nativeEvent as InputEvent).inputType !== 'insertReplacementText'
+          onChange(e.target.value)
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'ArrowDown') listMaybeOpen.current = true
+          else if (e.key === 'Escape' && listMaybeOpen.current) {
+            listMaybeOpen.current = false
+            e.stopPropagation()
+          }
+        }}
+        onClick={() => { listMaybeOpen.current = true }}
+        onBlur={() => { listMaybeOpen.current = false }}
         list={listId}
         placeholder="장르 (비우면 장르 없음)"
         className="w-full border border-border rounded-md px-3 py-2 text-sm bg-bg"

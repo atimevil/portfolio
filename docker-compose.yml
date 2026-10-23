@@ -1,3 +1,11 @@
+# 컨테이너 로그가 디스크를 채우지 않게 크기를 제한한다. 적용은 컨테이너를 새로 만들 때(app은 배포 때,
+# nginx·postgres는 수동 재생성 때)다.
+x-logging: &default-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -13,6 +21,7 @@ services:
       - "127.0.0.1:5433:5432"
     networks:
       - portfolio-net
+    logging: *default-logging
 
   app:
     build:
@@ -33,6 +42,14 @@ services:
       - ./public/uploads:/app/public/uploads
     expose:
       - "3000"
+    # 응답 없이 떠 있는 상태를 `docker ps`에서 볼 수 있게 한다(재시작은 하지 않는다). 컨테이너 안에서 직접 확인한다.
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/robots.txt"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    logging: *default-logging
     networks:
       - portfolio-net
 
@@ -54,6 +71,7 @@ services:
     networks:
       - portfolio-net
       - contalk-net
+    logging: *default-logging
 
 volumes:
   pgdata:

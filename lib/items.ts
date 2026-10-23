@@ -74,6 +74,20 @@ function dropEmpty<T extends object>(item: T): T {
   return Object.fromEntries(Object.entries(item).filter(([, v]) => v !== '')) as T
 }
 
+// 프로젝트에서만 쓰는 칸. 종류를 활동·수상으로 바꿀 때 서버가 지운다 — 폼은 이 칸들을 undefined로 보내서
+// (JSON에서 키가 빠진다) 병합하면 옛 값이 남고, 화면에는 지워진 것처럼 보여 새로고침하면 되살아났다.
+const PROJECT_ONLY_KEYS = [
+  'problem', 'contribution', 'result', 'metrics',
+  'problem_en', 'contribution_en', 'result_en', 'metrics_en',
+  'skills', 'github', 'paper', 'slug', 'link', 'thumbnail', 'order', 'visible', 'featured',
+] as const
+
+function stripProjectOnly(item: PortfolioItem): PortfolioItem {
+  const copy: Record<string, unknown> = { ...item }
+  for (const key of PROJECT_ONLY_KEYS) delete copy[key]
+  return copy as unknown as PortfolioItem
+}
+
 /**
  * slug가 다른 프로젝트의 주소(slug 또는 id)와 겹치는지. 겹치면 상세 페이지가 먼저 찾은 쪽만 열린다.
  * selfId는 수정 중인 항목(자기 자신과는 비교하지 않는다).
@@ -96,7 +110,9 @@ export function updateItem(id: string, updates: Partial<PortfolioItem>): boolean
   const data = readForWrite()
   const idx = data.findIndex((i) => i.id === id)
   if (idx === -1) return false
-  data[idx] = dropEmpty({ ...data[idx], ...updates })
+  const merged = dropEmpty({ ...data[idx], ...updates })
+  // 원래 프로젝트였던 항목이 다른 종류로 바뀔 때만 지운다(원래 수상인 항목의 지표 등은 그대로 둔다)
+  data[idx] = data[idx].type === 'project' && merged.type !== 'project' ? stripProjectOnly(merged) : merged
   write(data)
   return true
 }

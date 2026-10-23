@@ -31,6 +31,22 @@ describe('items', () => {
     expect(created).not.toHaveProperty('description')
   })
 
+  it('프로젝트를 활동·수상으로 바꾸면 프로젝트 전용 칸을 서버에서 지운다', () => {
+    store[0] = { ...store[0], problem: 'p', result: 'r', skills: ['A'], featured: true, order: 3, title_en: 'A-en' } as PortfolioItem
+    updateItem('1', { type: 'activity' })
+    for (const key of ['problem', 'result', 'skills', 'featured', 'order', 'slug', 'link', 'visible']) {
+      expect(store[0]).not.toHaveProperty(key)
+    }
+    expect(store[0].title_en).toBe('A-en') // 활동·수상도 쓰는 칸은 남는다
+    expect(store[0].type).toBe('activity')
+  })
+
+  it('원래 수상인 항목을 같은 종류로 저장하면 지표는 건드리지 않는다', () => {
+    store[1] = { id: '3', type: 'award', year: '2026', title: 'W', metrics: '8강 | 진출' } as PortfolioItem
+    updateItem('3', { type: 'award', title: 'W2' })
+    expect(store[1].metrics).toBe('8강 | 진출')
+  })
+
   it('다른 프로젝트의 slug·id와 겹치면 사용 중', () => {
     expect(slugTaken('alpha')).toBe(true)
     expect(slugTaken('2')).toBe(true) // slug 없는 프로젝트는 id가 주소

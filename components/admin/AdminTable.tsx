@@ -259,7 +259,7 @@ export default function AdminTable<T extends { id: number }>({
                         <button
                           type="button"
                           onClick={() => onOpen(item)}
-                          className="text-left text-text-primary hover:text-accent font-medium"
+                          className="text-left text-text-primary hover:text-accent font-medium [overflow-wrap:anywhere]"
                         >
                           {c.render(item)}
                         </button>
@@ -273,7 +273,16 @@ export default function AdminTable<T extends { id: number }>({
             </tbody>
           </table>
 
-          {/* 640px 미만: 한 줄 카드 */}
+          {/* 640px 미만: 한 줄 카드. 표의 머리 체크박스가 없어서 전체 선택은 목록 위에 따로 둔다. */}
+          <label className="sm:hidden flex items-center gap-3 px-3 py-2 text-sm text-text-secondary">
+            <input
+              type="checkbox"
+              checked={allFilteredSelected}
+              onChange={toggleAll}
+              className="w-5 h-5 shrink-0"
+            />
+            {`걸러진 ${filtered.length}${unit} 모두 선택`}
+          </label>
           <ul className="sm:hidden border border-border rounded-xl divide-y divide-border">
             {pageData.items.map((item) => (
               <li

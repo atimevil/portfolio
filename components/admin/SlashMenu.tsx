@@ -45,12 +45,13 @@ const SlashMenuList = forwardRef<SlashMenuListRef, SlashMenuListProps>(({ items,
         return true
       }
       if (event.key === 'Enter') {
-        selectItem(selectedIndex)
+        const item = items[selectedIndex]
+        if (item) command(item)
         return true
       }
       return false
     },
-  }), [items, selectedIndex])
+  }), [items, selectedIndex, command])
 
   if (items.length === 0) {
     return (

@@ -18,7 +18,7 @@ const TYPE_LABEL: Record<PortfolioItem['type'], string> = {
 
 export default function AdminItemManager({ initialItems }: Props) {
   const [items, setItems] = useState(initialItems)
-  const [panel, setPanel] = useState<{ open: boolean; item: PortfolioItem | null; version: number }>({ open: false, item: null, version: 0 })
+  const [panel, setPanel] = useState<{ open: boolean; item: PortfolioItem | null; version: number; focus: number; notice: string }>({ open: false, item: null, version: 0, focus: 0, notice: '' })
   // 열린 폼이 건네준 '저장 안 한 수정 있음?' 함수(음악·책 화면과 같은 방식). 이벤트 처리 중에만 부른다.
   const dirtyCheck = useRef<() => boolean>(() => false)
   const registerDirtyCheck = useCallback((check: () => boolean) => {
@@ -28,18 +28,22 @@ export default function AdminItemManager({ initialItems }: Props) {
 
   function openPanel(item: PortfolioItem | null) {
     if (panel.open && !confirmDiscard(isDirty())) return
-    setPanel((p) => ({ open: true, item, version: p.version + 1 }))
+    setPanel((p) => ({ open: true, item, version: p.version + 1, focus: p.focus + 1, notice: '' }))
   }
 
   const closePanel = useCallback(() => {
-    setPanel((p) => ({ ...p, open: false, item: null }))
+    setPanel((p) => ({ ...p, open: false, item: null, notice: '' }))
   }, [])
 
+  // 저장 버튼을 누른 렌더의 클로저에서 불린다 — panel.version·panel.item은 그 폼을 열었을 때의 값이다.
   function handleSaved(saved: PortfolioItem) {
     const isNew = !panel.item
+    const formVersion = panel.version
     setItems((prev) => (isNew ? [...prev, saved] : prev.map((i) => (i.id === saved.id ? saved : i))))
     // 저장 뒤에도 패널을 열어 둔다 — 저장된 값으로 다시 채워 '수정 저장'이 다시 잠긴다(음악·책과 같다).
-    setPanel((p) => ({ open: true, item: saved, version: p.version + 1 }))
+    // 단, 응답을 기다리는 동안 패널을 닫았거나 다른 줄을 열었다면(version이 달라졌다면) 건드리지 않는다.
+    // 같은 문구가 이어서 나오면 스크린리더가 다시 읽지 않아 끝에 공백을 번갈아 붙인다.
+    setPanel((p) => (p.open && p.version === formVersion ? { ...p, item: saved, version: p.version + 1, notice: p.notice === '저장했습니다.' ? '저장했습니다. ' : '저장했습니다.' } : p))
   }
 
   async function handleDelete(id: string) {
@@ -51,7 +55,7 @@ export default function AdminItemManager({ initialItems }: Props) {
     if (!res?.ok) { alert(res ? deleteErrorMessage(res.status) : '삭제 실패: 네트워크 오류'); return }
     setItems((prev) => prev.filter((i) => i.id !== id))
     // 열어 둔 항목을 지웠으면 패널도 닫는다
-    setPanel((p) => (p.item?.id === id ? { open: false, item: null, version: p.version + 1 } : p))
+    setPanel((p) => (p.item?.id === id ? { ...p, open: false, item: null, version: p.version + 1, notice: '' } : p))
   }
 
   return (
@@ -102,7 +106,7 @@ export default function AdminItemManager({ initialItems }: Props) {
         ))}
         </div>
       </div>
-      <AdminSidePanel open={panel.open} focusKey={panel.version} title={panel.item ? '항목 수정' : '새 항목 추가'} isDirty={isDirty} onClose={closePanel}>
+      <AdminSidePanel open={panel.open} focusKey={panel.focus} version={panel.version} notice={panel.notice} title={panel.item ? '항목 수정' : '새 항목 추가'} isDirty={isDirty} onClose={closePanel}>
         <ItemForm
           key={`${panel.item?.id ?? 'new'}-${panel.version}`}
           item={panel.item}

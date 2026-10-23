@@ -7,7 +7,16 @@ import GenreInput from './GenreInput'
 export default function BulkGenre({ genres, onApply }: { genres: string[]; onApply: (genre: string) => void }) {
   const [value, setValue] = useState('')
   return (
-    <details className="relative">
+    <details
+      className="relative"
+      onKeyDown={(e) => {
+        // Esc로 펼침 상자만 닫는다(패널의 Esc 닫기까지 번지지 않게 막고, 포커스는 열었던 글자로 돌려준다).
+        if (e.key !== 'Escape' || !e.currentTarget.open) return
+        e.stopPropagation()
+        e.currentTarget.open = false
+        e.currentTarget.querySelector('summary')?.focus()
+      }}
+    >
       <summary className="list-none cursor-pointer px-2.5 py-1.5 rounded-md border border-border">장르 바꾸기 ▾</summary>
       <div className="absolute bottom-full mb-2 left-0 w-72 p-3 rounded-lg border border-border bg-bg-secondary shadow-lg space-y-2">
         <GenreInput value={value} onChange={setValue} genres={genres} />

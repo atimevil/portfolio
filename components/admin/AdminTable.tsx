@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   applyFilters, listStateToQuery, matchesQuery, paginate, sortItems, visibleSelection,
   type FilterDef, type ListState, type SortValue,
@@ -34,13 +34,17 @@ interface Props<T extends { id: number }> {
   flashId: number | null
   bulkActions: (ids: number[], clear: () => void) => React.ReactNode
   unit: string
+  /** 행 체크박스의 이름으로 쓸 글자(보통 제목). 없으면 모든 체크박스가 그냥 '선택'으로 읽힌다. */
+  rowLabel?: (item: T) => string
+  /** 일괄 작업 요청 중. 일괄 작업 버튼을 잠가 중복 요청을 막는다. */
+  bulkBusy?: boolean
 }
 
 // 관리자 음악·책 공용 목록. 거르기·정렬·쪽 계산은 lib/adminList 순수 함수가 하고, 여기는 화면과 상태만.
 // 상태는 주소에도 남기되 history.replaceState로만 — router.replace는 서버 왕복이라 글자마다 목록을 다시 받는다.
 export default function AdminTable<T extends { id: number }>({
   items, columns, filterGroups, searchFields, searchPlaceholder, initialState, defaultSort,
-  card, onOpen, activeId, flashId, bulkActions, unit,
+  card, onOpen, activeId, flashId, bulkActions, unit, rowLabel, bulkBusy,
 }: Props<T>) {
   const [state, setState] = useState<ListState>(initialState)
   const [selected, setSelected] = useState<Set<number>>(new Set())
@@ -111,8 +115,20 @@ export default function AdminTable<T extends { id: number }>({
   const clear = () => setSelected(new Set())
   const sortableColumns = columns.filter((c) => c.sortValue)
 
+  // 일괄 작업이 끝나 하단 바가 사라지면, 눌렀던 버튼과 함께 포커스가 body로 빠진다 — 목록 위로 되돌린다.
+  const root = useRef<HTMLDivElement>(null)
+  const hadSelection = useRef(false)
+  useEffect(() => {
+    const has = liveSelected.length > 0
+    if (hadSelection.current && !has) {
+      const active = document.activeElement
+      if (!active || active === document.body) root.current?.focus()
+    }
+    hadSelection.current = has
+  }, [liveSelected.length])
+
   return (
-    <div className="space-y-3 pb-20">
+    <div ref={root} tabIndex={-1} className="space-y-3 pb-20 outline-none">
       <input
         type="search"
         value={state.q}
@@ -224,6 +240,7 @@ export default function AdminTable<T extends { id: number }>({
               {pageData.items.map((item) => (
                 <tr
                   key={item.id}
+                  aria-current={item.id === activeId ? 'true' : undefined}
                   className={`transition-colors ${item.id === activeId ? 'bg-surface' : ''} ${
                     item.id === flashId ? 'bg-accent-soft' : ''
                   }`}
@@ -233,7 +250,7 @@ export default function AdminTable<T extends { id: number }>({
                       type="checkbox"
                       checked={selected.has(item.id)}
                       onChange={() => toggleOne(item.id)}
-                      aria-label="선택"
+                      aria-label={rowLabel ? `${rowLabel(item)} 선택` : '선택'}
                     />
                   </td>
                   {columns.map((c, i) => (
@@ -261,6 +278,7 @@ export default function AdminTable<T extends { id: number }>({
             {pageData.items.map((item) => (
               <li
                 key={item.id}
+                aria-current={item.id === activeId ? 'true' : undefined}
                 className={`flex items-center gap-3 px-3 py-2 ${item.id === activeId ? 'bg-surface' : ''} ${
                   item.id === flashId ? 'bg-accent-soft' : ''
                 }`}
@@ -269,7 +287,7 @@ export default function AdminTable<T extends { id: number }>({
                   type="checkbox"
                   checked={selected.has(item.id)}
                   onChange={() => toggleOne(item.id)}
-                  aria-label="선택"
+                  aria-label={rowLabel ? `${rowLabel(item)} 선택` : '선택'}
                   className="w-5 h-5 shrink-0"
                 />
                 <button type="button" onClick={() => onOpen(item)} className="flex-1 min-w-0 text-left">
@@ -302,12 +320,15 @@ export default function AdminTable<T extends { id: number }>({
       {liveSelected.length > 0 && (
         <div className="fixed bottom-0 inset-x-0 z-30 border-t border-border bg-bg-secondary/95 backdrop-blur">
           <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap items-center gap-2 text-sm">
-            <span className="text-text-primary mr-2">
+            <span role="status" className="text-text-primary mr-2">
               {allFilteredSelected && filtered.length === liveSelected.length
                 ? `걸러진 ${filtered.length}${unit} 모두 선택됨`
                 : `${liveSelected.length}${unit} 선택됨`}
             </span>
-            {bulkActions(liveSelected, clear)}
+            {/* 비활성 fieldset은 안의 버튼·입력을 한꺼번에 잠근다. contents라서 배치는 그대로. */}
+            <fieldset disabled={bulkBusy} className="contents">
+              {bulkActions(liveSelected, clear)}
+            </fieldset>
             <button type="button" onClick={clear} className="ml-auto text-text-secondary hover:text-text-primary">
               선택 해제
             </button>

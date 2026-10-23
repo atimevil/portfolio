@@ -11,7 +11,12 @@ export function confirmDiscard(dirty: boolean): boolean {
 
 interface Props {
   open: boolean
+  /** 새로 열 때만 올린다 — 값이 바뀌면 첫 칸으로 포커스를 옮긴다(저장 뒤 다시 그릴 때는 올리지 않는다). */
   focusKey: number
+  /** 패널 내용이 다시 그려질 때마다 올린다(저장·일괄 작업). 포커스가 body로 빠졌으면 패널로 되돌린다. */
+  version?: number
+  /** 스크린리더에 알릴 결과 문구(예: 저장했습니다.) */
+  notice?: string
   title: string
   isDirty: () => boolean
   onClose: () => void
@@ -20,7 +25,7 @@ interface Props {
 
 // 넓은 화면(≥1280px)에선 표 옆에 붙는 칸이라 뒤 화면을 막지 않는다. 그보다 좁으면 표 위에 겹치는
 // 대화상자(640px 미만은 아래 시트)라 Modal과 같은 규칙: 포커스 가두기, 스크롤 잠금, 닫으면 연 요소로 복귀.
-export default function AdminSidePanel({ open, focusKey, title, isDirty, onClose, children }: Props) {
+export default function AdminSidePanel({ open, focusKey, version, notice, title, isDirty, onClose, children }: Props) {
   const docked = useMediaQuery('(min-width: 1280px)')
   const panel = useRef<HTMLElement>(null)
   const opener = useRef<HTMLElement | null>(null)
@@ -39,6 +44,13 @@ export default function AdminSidePanel({ open, focusKey, title, isDirty, onClose
     if (active && active !== document.body && !panel.current?.contains(active)) opener.current = active
     panel.current?.querySelector<HTMLElement>('input, select, textarea')?.focus()
   }, [open, focusKey])
+
+  // 저장하면 폼이 새 값으로 다시 그려져 눌렀던 버튼이 사라지고 포커스가 body로 빠진다 — 패널 안에 붙잡아 둔다.
+  useEffect(() => {
+    if (!open) return
+    const active = document.activeElement
+    if (!active || active === document.body) panel.current?.focus()
+  }, [open, version])
 
   useEffect(() => {
     if (!open) return
@@ -87,10 +99,12 @@ export default function AdminSidePanel({ open, focusKey, title, isDirty, onClose
       role="dialog"
       aria-modal={docked ? undefined : true}
       aria-label={title}
+      tabIndex={-1}
       className={
-        docked
+        'outline-none ' +
+        (docked
           ? 'w-[400px] shrink-0 self-start sticky top-4 max-h-[calc(100vh-2rem)] overflow-auto border border-border rounded-xl bg-bg-secondary'
-          : 'fixed z-50 bg-bg-secondary border-border overflow-auto inset-x-0 bottom-0 max-h-[85vh] rounded-t-2xl border-t sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[400px] sm:max-h-none sm:rounded-none sm:border-l sm:border-t-0'
+          : 'fixed z-50 bg-bg-secondary border-border overflow-auto inset-x-0 bottom-0 max-h-[85vh] rounded-t-2xl border-t sm:inset-y-0 sm:left-auto sm:right-0 sm:w-[400px] sm:max-h-none sm:rounded-none sm:border-l sm:border-t-0')
       }
     >
       <div className="flex items-center justify-between px-4 h-12 border-b border-border sticky top-0 bg-bg-secondary z-10">
@@ -105,6 +119,7 @@ export default function AdminSidePanel({ open, focusKey, title, isDirty, onClose
         </button>
       </div>
       <div className="p-4">{children}</div>
+      <p role="status" className="sr-only">{notice}</p>
     </section>
   )
 

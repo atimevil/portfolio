@@ -54,7 +54,8 @@ export default function AdminBookManager({ initialBooks, initialQuery }: Props) 
   }
 
   const [initialState] = useState(() => parseListState(initialQuery, GROUPS, SORT_KEYS, DEFAULT_SORT))
-  const [panel, setPanel] = useState<{ open: boolean; item: Book | null; version: number }>({ open: false, item: null, version: 0 })
+  const [panel, setPanel] = useState<{ open: boolean; item: Book | null; version: number; focus: number; notice: string }>({ open: false, item: null, version: 0, focus: 0, notice: '' })
+  const [bulkBusy, setBulkBusy] = useState(false)
   // 열린 폼이 건네준 '저장 안 한 수정 있음?' 함수. 이벤트 처리 중에만 부른다.
   const dirtyCheck = useRef<() => boolean>(() => false)
   const registerDirtyCheck = useCallback((check: () => boolean) => {
@@ -91,16 +92,20 @@ export default function AdminBookManager({ initialBooks, initialQuery }: Props) 
 
   function openPanel(item: Book | null) {
     if (panel.open && !confirmDiscard(isDirty())) return
-    setPanel((p) => ({ open: true, item, version: p.version + 1 }))
+    setPanel((p) => ({ open: true, item, version: p.version + 1, focus: p.focus + 1, notice: '' }))
   }
 
   const closePanel = useCallback(() => {
-    setPanel((p) => ({ ...p, open: false, item: null }))
+    setPanel((p) => ({ ...p, open: false, item: null, notice: '' }))
   }, [])
 
   function handleSaved(saved: Book) {
     setBooks((prev) => (prev.some((b) => b.id === saved.id) ? prev.map((b) => (b.id === saved.id ? saved : b)) : [saved, ...prev]))
-    setPanel((p) => ({ open: true, item: saved, version: p.version + 1 }))
+    // 저장 버튼을 누른 렌더의 클로저에서 불리므로 panel.version은 그 폼을 열었을 때의 값이다. 응답을 기다리는 동안
+    // 패널을 닫았거나 다른 줄을 열었다면(version이 달라졌다면) 건드리지 않는다.
+    // 같은 문구가 이어서 나오면 스크린리더가 다시 읽지 않아 끝에 공백을 번갈아 붙인다.
+    const formVersion = panel.version
+    setPanel((p) => (p.open && p.version === formVersion ? { ...p, item: saved, version: p.version + 1, notice: p.notice === '저장했습니다.' ? '저장했습니다. ' : '저장했습니다.' } : p))
     setFlashId(saved.id)
     setTimeout(() => setFlashId((id) => (id === saved.id ? null : id)), 1500)
   }
@@ -114,19 +119,22 @@ export default function AdminBookManager({ initialBooks, initialQuery }: Props) 
   // 응답을 기다리는 동안 ★ 토글·패널 저장·다른 줄 열기가 끼어들 수 있다 — 클릭 당시 값이 아니라
   // 함수형 갱신으로 그때의 최신 목록·패널에 적용한다.
   async function runBulk(ids: number[], clear: () => void, body: object, apply: (prev: Book[]) => Book[], isDelete = false) {
-    if (!guardOpenItem(ids)) return
+    if (bulkBusy || !guardOpenItem(ids)) return
+    setBulkBusy(true)
     try {
       const count = await sendBulk('/api/books', isDelete ? 'DELETE' : 'PATCH', { ids, ...body })
       setBooks((prev) => apply(prev))
       clear()
       setPanel((p) => {
         if (!p.item || !ids.includes(p.item.id)) return p
-        if (isDelete) return { open: false, item: null, version: p.version + 1 }
+        if (isDelete) return { ...p, open: false, item: null, version: p.version + 1, notice: '' }
         return { ...p, item: apply([p.item])[0] ?? null, version: p.version + 1 }
       })
       if (count !== ids.length) router.refresh()
     } catch (err) {
       alert(`일괄 작업 실패: ${(err as Error).message}`)
+    } finally {
+      setBulkBusy(false)
     }
   }
 
@@ -188,6 +196,8 @@ export default function AdminBookManager({ initialBooks, initialQuery }: Props) 
           searchPlaceholder="제목·저자·메모 검색"
           initialState={initialState}
           defaultSort={DEFAULT_SORT}
+          rowLabel={(i) => i.title}
+          bulkBusy={bulkBusy}
           card={(b) => (
             <span className="block min-w-0">
               <span className="block text-sm text-text-primary truncate">{b.title}</span>
@@ -203,7 +213,7 @@ export default function AdminBookManager({ initialBooks, initialQuery }: Props) 
           unit="권"
         />
       </div>
-      <AdminSidePanel open={panel.open} focusKey={panel.version} title={panel.item ? '책 수정' : '책 추가'} isDirty={isDirty} onClose={closePanel}>
+      <AdminSidePanel open={panel.open} focusKey={panel.focus} version={panel.version} notice={panel.notice} title={panel.item ? '책 수정' : '책 추가'} isDirty={isDirty} onClose={closePanel}>
         <BookForm
           key={`${panel.item?.id ?? 'new'}-${panel.version}`}
           item={panel.item}

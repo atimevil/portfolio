@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 290" width="880" height="290" role="img" aria-label="PALLOW architecture: a Java Spring main server handles client requests and hands friend recommendations to a separate Flask server that uses cosine similarity. Both are deployed to Oracle Cloud with Docker.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 290" width="880" height="290" role="img" aria-label="PALLOW architecture: a Java Spring main server handles client requests and hands friend recommendations to a separate Flask server that uses cosine similarity. Both are deployed to AWS EC2 with Docker.">
   <style>
 
     
@@ -44,7 +44,7 @@
 
   <rect class="box" x="680" y="106" width="184" height="56" rx="8"/>
   <text class="t" x="772" y="130" text-anchor="middle">Docker</text>
-  <text class="s" x="772" y="147" text-anchor="middle">Oracle Cloud</text>
+  <text class="s" x="772" y="147" text-anchor="middle">AWS EC2</text>
   <path class="ar" d="M644 134 H676" marker-end="url(#a)"/>
 
   <text class="c" x="16" y="248">Led a five-person team. Split into two servers so recommendations never block main-server responses</text>

@@ -53,7 +53,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // 미들웨어가 /en 요청에만 x-locale을 붙인다. 나머지는 기본값 ko.
-  const locale = (await headers()).get('x-locale') === 'en' ? 'en' : 'ko'
+  const requestHeaders = await headers()
+  const locale = requestHeaders.get('x-locale') === 'en' ? 'en' : 'ko'
+  // proxy.ts가 요청마다 만든 CSP nonce. 인라인 테마 스크립트가 이 값을 달아야 실행된다.
+  const nonce = requestHeaders.get('x-nonce') ?? undefined
 
   return (
     <html lang={locale} className={mono.variable} suppressHydrationWarning>
@@ -62,6 +65,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link rel="stylesheet" href={SANS_CSS} />
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `
               try {

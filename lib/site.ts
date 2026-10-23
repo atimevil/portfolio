@@ -29,6 +29,7 @@ export function buildPageMetadata({
   noindex?: boolean
 }): Metadata {
   const url = `${SITE_URL}${path || '/'}`
+  const isEn = path === '/en' || path.startsWith('/en/')
   return {
     title: absoluteTitle ? { absolute: title } : title,
     description,
@@ -45,7 +46,9 @@ export function buildPageMetadata({
       description,
       url,
       siteName: SITE_NAME,
-      locale: 'ko_KR',
+      locale: isEn ? 'en_US' : 'ko_KR',
+      // 영문 짝이 없는 한국어 전용 페이지에는 en_US를 알리지 않는다.
+      ...(isEn ? { alternateLocale: ['ko_KR'] } : languages ? { alternateLocale: ['en_US'] } : {}),
       type: 'website',
       images: [OG_IMAGE],
     },

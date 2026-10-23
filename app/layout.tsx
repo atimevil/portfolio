@@ -14,8 +14,9 @@ const mono = IBM_Plex_Mono({ weight: ['400', '500'], subsets: ['latin'], variabl
 // font-medium은 tailwind 설정에서 600으로 합쳤고, 700 이상(font-bold, 제목 800)은 브라우저가 600으로 그린다.
 const SANS_CSS = 'https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600&display=swap'
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   const { profile } = getSettings()
+  const isEn = (await headers()).get('x-locale') === 'en'
   const name = profile.name?.trim() || '포트폴리오'
   const description = profile.bio?.trim() || profile.aboutText?.trim() || '개발자 포트폴리오'
 
@@ -30,7 +31,8 @@ export function generateMetadata(): Metadata {
     openGraph: {
       siteName: SITE_NAME,
       type: 'website',
-      locale: 'ko_KR',
+      locale: isEn ? 'en_US' : 'ko_KR',
+      alternateLocale: isEn ? ['ko_KR'] : ['en_US'],
       title: name,
       description,
       images: [OG_IMAGE],

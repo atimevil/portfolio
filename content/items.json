@@ -230,7 +230,7 @@
     "order": 8,
     "year": "2024.07~08",
     "title": "PALLOW — 지역 및 MBTI 기반 친구 추천 웹사이트",
-    "description": "지역 기반 모임·친구 추천 서비스. 팀스파르타 내일배움캠프 백엔드 과정 최종 프로젝트로, 5인 팀 프로젝트 리더를 맡았다. 인증·프로필 백엔드, 친구 추천, 배포 자동화를 담당했다.",
+    "description": "지역 기반 모임·친구 추천 서비스. 5인 팀 프로젝트 리더를 맡았다. 인증·프로필 백엔드, 친구 추천, 배포 자동화를 담당했다.",
     "skills": [
       "Java",
       "Spring",
@@ -244,7 +244,7 @@
     "thumbnail": "/figures/pallow-architecture.svg",
     "slug": "pallow",
     "title_en": "PALLOW: Friend recommendations by region and MBTI",
-    "description_en": "A region-based meetup and friend-recommendation service. It was the final project of the Teamsparta Naeil Baeumcamp backend course, and I led the five-person team. I owned the authentication and profile backend, friend recommendations, and deployment automation.",
+    "description_en": "A region-based meetup and friend-recommendation service. I led the five-person team. I owned the authentication and profile backend, friend recommendations, and deployment automation.",
     "problem": "새로운 지역·모임에서 친구를 찾기 어렵다. 관심사와 성향이 맞는 사람을 매번 직접 찾아다녀야 했다.",
     "problem_en": "Making friends in a new area or group is hard, and people had to search on their own each time for someone with matching interests and personality.",
     "contribution": "JWT 인증을 Spring Security 필터 기반으로 재작성하고 리프레시 토큰 재발급을 구현했다. 메일 발송은 @Async 전용 스레드풀로 분리했다. 추천은 같은 지역 후보만 Flask 서버로 보내 관계 유형·MBTI로 거른 뒤 9개 항목을 원핫 인코딩하고 TruncatedSVD와 코사인 유사도로 정렬했다. GitHub Actions로 Gradle 빌드, Docker Hub 푸시, AWS EC2 컨테이너 교체를 자동화했다.",

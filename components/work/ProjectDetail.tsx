@@ -76,20 +76,21 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
         />
       ) : null}
 
+      {/* dl 대신 제목(h2) + 본문 — 제목 목록으로 문제·기여·결과 사이를 건너뛸 수 있다. */}
       {columns.length > 0 && (
-        <dl
+        <div
           className="mb-8 grid gap-x-8 gap-y-5 lg:grid-cols-[repeat(var(--cols),minmax(0,1fr))]"
           style={{ ['--cols' as string]: String(columns.length) }}
         >
           {columns.map(([key, body]) => (
-            <div key={key}>
-              <dt className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">
+            <section key={key}>
+              <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">
                 {t(locale, key)}
-              </dt>
-              <dd className="m-0 text-[15px] leading-relaxed text-text-secondary">{body}</dd>
-            </div>
+              </h2>
+              <div className="text-[15px] leading-relaxed text-text-secondary">{body}</div>
+            </section>
           ))}
-        </dl>
+        </div>
       )}
 
       {metrics.length > 0 && (

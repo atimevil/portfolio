@@ -24,7 +24,7 @@
     "slug": "finbert-vs-llm",
     "measure": true,
     "title_en": "UCSD Qualcomm Institute: FinBERT vs. LLM sentiment classification research",
-    "description_en": "A 37-day AI research intensive at UC San Diego's Qualcomm Institute. I was one of five students selected from my university and served as deputy cohort lead. Lectures, office hours, progress presentations, and the closing hackathon presentation were all in English. Our five-person team came from two universities. I wrote and ran the BERT and FinBERT baselines and owned the data pipeline, which filtered 650K Yelp reviews down to 617,611 with a Gemini quality filter and labeled them through the OpenAI Batch API and the Gemini API. FinBERT, trained only on FPB, classified 90 to 96% of reviews rated 3 or higher as neutral. Zero-shot Gemini labeled 98.7% of 1-star reviews negative and 97.6% of 5-star reviews positive. The gap showed negative transfer. I kept working with the advisor after the program, and the paper was published at KCC 2026 (second author of six). A follow-up used semi-supervised self-training on 124,381 reviews where FinBERT and Gemini agreed, and raised financial test-set Macro-F1 to 0.87, up from 0.84 and 0.85. The follow-up is unpublished and was only presented at the final hackathon.",
+    "description_en": "A 37-day AI research intensive at UC San Diego's Qualcomm Institute. I was one of five students selected from my university and served as deputy leader of cohort 16. Lectures, office hours, progress presentations, and the closing hackathon presentation were all in English. Our five-person team came from two universities. I wrote and ran the BERT and FinBERT baselines and owned the data pipeline, which filtered 650K Yelp reviews down to 617,611 with a Gemini quality filter and labeled them through the OpenAI Batch API and the Gemini API. FinBERT, trained only on FPB, classified 90 to 96% of reviews rated 3 or higher as neutral. Zero-shot Gemini labeled 98.7% of 1-star reviews negative and 97.6% of 5-star reviews positive. The gap showed negative transfer. I kept working with the advisor after the program, and the paper was published at KCC 2026 (second author of six). A follow-up used semi-supervised self-training on 124,381 reviews where FinBERT and Gemini agreed, and raised financial test-set Macro-F1 to 0.87, up from 0.84 and 0.85. The follow-up is unpublished and was only presented at the final hackathon.",
     "problem_en": "It was not known what happens when FinBERT, trained only on a financial corpus (FPB), is applied as-is to general reviews.",
     "contribution_en": "Wrote and ran the BERT and FinBERT baselines. Also owned the data pipeline that filtered 650K Yelp reviews with a Gemini quality filter.",
     "result_en": "Showed negative transfer with numbers and published it at KCC 2026 as second author of six. A follow-up with semi-supervised self-training improved scores on the financial test set.",
@@ -325,20 +325,20 @@
     "type": "activity",
     "year": "2025.11",
     "title": "2025 LLM Safety Challenge 참가",
-    "description": "LLM 안전성 공격·방어 과제에 참가해 문제를 모두 풀었으나 예선을 통과하지 못했다. 풀이 복기는 노션에 정리했다.\nhttps://app.notion.com/p/2025-LLM-Safety-Challnge-2b96b6b36a168003ab50f3019c7d286d?source=copy_link",
+    "description": "LLM 안전성 공격·방어 과제에 참가해 문제를 모두 풀었으나 예선을 통과하지 못했다. 풀이 복기는 [노션](https://app.notion.com/p/2025-LLM-Safety-Challnge-2b96b6b36a168003ab50f3019c7d286d?source=copy_link)에 정리했다.",
     "title_en": "2025 LLM Safety Challenge",
-    "description_en": "I took part in the LLM safety attack-and-defense challenge and solved every problem, but we did not make it past the preliminary round. I wrote up the solutions on Notion.\nhttps://app.notion.com/p/2025-LLM-Safety-Challnge-2b96b6b36a168003ab50f3019c7d286d?source=copy_link"
+    "description_en": "I took part in the LLM safety attack-and-defense challenge and solved every problem, but we did not make it past the preliminary round. I wrote up the solutions on [Notion](https://app.notion.com/p/2025-LLM-Safety-Challnge-2b96b6b36a168003ab50f3019c7d286d?source=copy_link)."
   },
   {
     "id": "a9",
     "type": "award",
     "year": "2025.10~11",
     "title": "2025년 조선대학교 SW중심대학 AI 챌린지 최우수상",
-    "description": "500M MACs 제한 아래 균열 분할(crack segmentation) 과제. EfficientNet-B0 + GroupNorm U-Net 디코더를 499.5M MACs로 맞췄다. 리더보드 5위였으나 상위 3팀이 500M MACs 제한을 초과해 실격, 30팀 중 최종 2위. 파라미터 5.01M / MACs 499.5M.\nhttps://www.kaggle.com/competitions/2025-csu-sw-ai-challenge",
+    "description": "500M MACs 제한 아래 균열 분할(crack segmentation) 과제. EfficientNet-B0 + GroupNorm U-Net 디코더를 499.5M MACs로 맞췄다. 리더보드 5위였으나 상위 3팀이 500M MACs 제한을 초과해 실격, 30팀 중 최종 2위. 파라미터 5.01M / MACs 499.5M.\n[Kaggle 대회 페이지](https://www.kaggle.com/competitions/2025-csu-sw-ai-challenge)",
     "measure": true,
     "metrics": "2 / 30 | 최종 순위 · MACs 499.5M (제한 500M)",
     "title_en": "2025 Chosun University SW-Centered University AI Challenge: Top Excellence Award",
-    "description_en": "A crack segmentation task under a 500M MACs budget. I tuned an EfficientNet-B0 encoder with a GroupNorm U-Net decoder to 499.5M MACs. We were 5th on the leaderboard. The top three teams went over the 500M MACs limit and were disqualified, so we finished 2nd of 30. Our model had 5.01M parameters and used 499.5M MACs.\nhttps://www.kaggle.com/competitions/2025-csu-sw-ai-challenge",
+    "description_en": "A crack segmentation task under a 500M MACs budget. I tuned an EfficientNet-B0 encoder with a GroupNorm U-Net decoder to 499.5M MACs. We were 5th on the leaderboard. The top three teams went over the 500M MACs limit and were disqualified, so we finished 2nd of 30. Our model had 5.01M parameters and used 499.5M MACs.\n[Kaggle competition page](https://www.kaggle.com/competitions/2025-csu-sw-ai-challenge)",
     "metrics_en": "2 / 30 | Final rank · 499.5M MACs (limit 500M)"
   },
   {
@@ -348,13 +348,13 @@
     "title": "제5회 미래와 소프트웨어 공모전 우수상",
     "description": "재단법인 미래와소프트웨어 주최 정보보안 SW 웹·앱 개발 공모전 (전국 98개 대학 204팀)",
     "title_en": "5th Future & Software Contest: Excellence Award",
-    "description_en": "An information security web/app development contest hosted by the Future & Software Foundation (재단법인 미래와소프트웨어), with 204 teams from 98 universities nationwide."
+    "description_en": "An information security web/app development contest hosted by the Future & Software Foundation, with 204 teams from 98 universities nationwide."
   },
   {
     "id": "a11",
     "type": "activity",
     "year": "2025.03~09",
-    "title": "Whitehat School 3기 수료",
+    "title": "화이트햇 스쿨 3기 수료",
     "description": "",
     "title_en": "Whitehat School, cohort 3 (completed)"
   },

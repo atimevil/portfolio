@@ -9,6 +9,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  // 청년주택 지도(public/youth-housing/index.html, atimevil/youth-housing-map에서 빌드해 복사)를 폴더 주소로 연다.
+  async rewrites() {
+    return [{ source: '/youth-housing', destination: '/youth-housing/index.html' }]
+  },
   // 프로젝트 상세는 /work/<slug>만 있다. 주소 끝을 지워 /work로 오면 404 대신 프로젝트 목록이 있는 소개로 보낸다.
   async redirects() {
     return [

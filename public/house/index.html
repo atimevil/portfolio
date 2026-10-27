@@ -341,16 +341,18 @@ function openPopup(d, i) {
   closePopup();
   popupOv = new kakao.maps.CustomOverlay({position: d._loc, content: wrap, xAnchor: .5, yAnchor: 1, zIndex: 10});
   popupOv.setMap(map);
-  // 팝업이 지도 밖으로 삐져나가면 그만큼 지도 중심을 옮긴다 (핀은 지도 안에 남는 만큼만)
-  requestAnimationFrame(() => {
-    const r = box.getBoundingClientRect(), m = mapEl.getBoundingClientRect();
-    const dy = Math.min(Math.max(0, m.top + 10 - r.top), mapEl.clientHeight / 2 - 5);
-    const dx = r.left < m.left + 10 ? r.left - m.left - 10 : r.right > m.right - 10 ? r.right - m.right + 10 : 0;
-    if (dx || dy) {
-      const proj = map.getProjection(), c = proj.containerPointFromCoords(map.getCenter());
-      map.setCenter(proj.coordsFromContainerPoint(new kakao.maps.Point(c.x + dx, c.y - dy)));
-    }
-  });
+  // 팝업이 지도 밖으로 삐져나가면 그만큼 지도 중심을 옮긴다 (핀은 지도 안에 남는 만큼만).
+  // setMap 직후 바로 잰다 — 다음 프레임을 기다리면 백그라운드 탭에서 늦게 돌아 잠깐 잘려 보였다
+  // 내리는 양은 핀이 지도 아래 끝에 닿을 때까지만(지도 위쪽 핀을 바로 눌렀을 때도 팝업이 다 보이게)
+  const proj = map.getProjection(), pinY = proj.containerPointFromCoords(d._loc).y;
+  const r = box.getBoundingClientRect(), m = mapEl.getBoundingClientRect();
+  const dy = Math.min(Math.max(0, m.top + 10 - r.top), mapEl.clientHeight - 5 - pinY);
+  const rm = innerWidth > 700 ? 50 : 10;  // 데스크톱은 오른쪽 확대·축소 버튼이 × 버튼을 덮지 않게
+  const dx = r.left < m.left + 10 ? r.left - m.left - 10 : r.right > m.right - rm ? r.right - m.right + rm : 0;
+  if (dx || dy > 0) {
+    const c = proj.containerPointFromCoords(map.getCenter());
+    map.setCenter(proj.coordsFromContainerPoint(new kakao.maps.Point(c.x + dx, c.y - Math.max(0, dy))));
+  }
   document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
   const card = document.getElementById('card-'+i);
   if(card){ card.classList.add('active'); if (innerWidth > 700) card.scrollIntoView({behavior:'smooth',block:'nearest'}); }  // 휴대폰에선 지도에 머무름

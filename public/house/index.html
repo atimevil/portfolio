@@ -334,7 +334,10 @@ function openPopup(d, i) {
   // 휴대폰 지도(화면의 45%)보다 팝업이 길면 위가 잘려서, 지도 높이에 맞추고 안에서 스크롤
   if (innerWidth <= 700) box.style.maxHeight = (mapEl.clientHeight - d._popupOffset - 25) + 'px';
   wrap.querySelector('.kpop-x').onclick = e => { e.stopPropagation(); closePopup(); };
-  wrap.addEventListener('click', e => e.stopPropagation());
+  // 카카오맵은 mouseup 때 지도 'click'을 내는데, 그게 closePopup을 불러 링크의 click이 나기 전에 팝업이 사라졌다.
+  // 팝업 안 마우스·터치·휠은 지도로 보내지 않는다(휠은 지도 확대 대신 팝업 스크롤)
+  ['mousedown', 'mouseup', 'touchstart', 'touchend', 'click', 'dblclick', 'wheel']
+    .forEach(t => wrap.addEventListener(t, e => e.stopPropagation()));
   closePopup();
   popupOv = new kakao.maps.CustomOverlay({position: d._loc, content: wrap, xAnchor: .5, yAnchor: 1, zIndex: 10});
   popupOv.setMap(map);

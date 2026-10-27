@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 330" width="880" height="330" role="img" aria-label="CTF-Solver 구조: LLM이 MCP로 FastMCP 서버에 연결되고, 서버가 Kali 보안도구 55종 이상을 호출한다. 기존 서버가 단발 실행만 가능했던 것과 달리 도구 실행, 출력 해석, 다음 도구 선택을 반복하는 멀티스텝 워크플로로 동작한다">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 330" width="880" height="330" role="img" aria-label="CTF-Solver 구조: LLM이 MCP로 FastMCP 서버에 연결되고, 서버가 Kali 보안도구를 MCP 도구 52개(엔드포인트 55개)로 호출한다. 기존 서버가 단발 실행만 가능했던 것과 달리 도구 실행, 출력 해석, 다음 도구 선택을 반복하는 멀티스텝 워크플로로 동작한다">
   <style>
 
     
@@ -42,7 +42,7 @@
 
   <rect class="box" x="524" y="40" width="200" height="64" rx="8" />
   <text class="t" x="624" y="68" text-anchor="middle">Kali 보안도구</text>
-  <text class="s" x="624" y="85" text-anchor="middle">기존 약 10종 → 55종 이상</text>
+  <text class="s" x="624" y="85" text-anchor="middle">MCP 도구 12개 → 52개</text>
 
   <!-- ── 구분선 ── -->
   <line class="rule" x1="16" y1="146" x2="864" y2="146" />

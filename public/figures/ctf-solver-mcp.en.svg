@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 330" width="880" height="330" role="img" aria-label="CTF-Solver architecture: an LLM connects over MCP to a FastMCP server that calls more than 55 Kali security tools. The original server could only run one command at a time; this one loops through running a tool, reading its output, and picking the next tool.">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 330" width="880" height="330" role="img" aria-label="CTF-Solver architecture: an LLM connects over MCP to a FastMCP server that calls Kali security tools through 52 MCP tools (55 endpoints). The original server could only run one command at a time; this one loops through running a tool, reading its output, and picking the next tool.">
   <style>
 
     
@@ -42,7 +42,7 @@
 
   <rect class="box" x="524" y="40" width="200" height="64" rx="8" />
   <text class="t" x="624" y="68" text-anchor="middle">Kali security tools</text>
-  <text class="s" x="624" y="85" text-anchor="middle">~10 before → 55+ now</text>
+  <text class="s" x="624" y="85" text-anchor="middle">12 MCP tools → 52</text>
 
   <!-- ── 구분선 ── -->
   <line class="rule" x1="16" y1="146" x2="864" y2="146" />

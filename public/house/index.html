@@ -568,7 +568,8 @@ function renderList(items, regions) {
       <div class="card-meta">${meta}</div>
       <div class="card-rent">${bottom}</div>`;
     div.onclick = () => {
-      if (innerWidth <= 700) scrollTo({top: 0, behavior: 'smooth'});  // 휴대폰에선 지도가 목록 위에 있음
+      // 휴대폰에선 지도가 목록 위에 있어 맨 위로 바로 올린다(부드러운 스크롤은 지도를 다시 그리는 중에 가끔 멈췄다)
+      if (innerWidth <= 700) scrollTo(0, 0);
       locate(d).then(pt => {
         if (!map) return;
         if (!pt) { mapMsg.textContent = '이 주소는 지도에서 위치를 못 찾았어요'; setTimeout(() => mapMsg.textContent = '', 3000); return; }

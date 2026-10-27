@@ -50,7 +50,7 @@ export async function proxy(req: NextRequest) {
 export const config = {
   // 페이지 전부(CSP). 인증은 위에서 /admin·/maps만 건다 — /maps는 비공개 개인 도구(가고 싶은 곳 지도)라 admin과 동일.
   // API·정적 파일·이미지·업로드는 HTML이 아니라 CSP가 필요 없고, nonce 때문에 캐시를 깨지 않도록 뺀다.
-  // youth-housing/은 public에 둔 독립 정적 페이지(atimevil/youth-housing-map)라 인라인 스크립트·카카오맵 SDK를
+  // house/는 public에 둔 독립 정적 페이지(atimevil/youth-housing-map)라 인라인 스크립트·카카오맵 SDK를
   // 쓴다. nonce CSP를 붙이면 막히므로 빼고, next.config의 기본 보안 헤더만 받는다.
-  matcher: ['/((?!api/|_next/static|_next/image|uploads/|youth-housing|icon\\.svg|opengraph-image|robots\\.txt|sitemap\\.xml|rss\\.xml).*)'],
+  matcher: ['/((?!api/|_next/static|_next/image|uploads/|house|icon\\.svg|opengraph-image|robots\\.txt|sitemap\\.xml|rss\\.xml).*)'],
 }

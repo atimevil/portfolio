@@ -34,6 +34,8 @@ const ItemSchema = z.object({
   link: z.string().optional(),
   thumbnail: z.string().optional(),
   video: z.string().max(500).optional(),
+  // 사이트 안 경로나 https의 mp4·webm만 받는다
+  loop: z.string().max(300).regex(/^(?:\/(?!\/)|https:\/\/)[^\s"'<>]+\.(?:mp4|webm)$/i).optional().or(z.literal('')),
   order: z.number().optional(),
   visible: z.boolean().optional(),
   featured: z.boolean().optional(),

@@ -7,6 +7,7 @@ import { applyGithubStats } from '@/lib/githubStats'
 import { readFigure } from '@/lib/figure'
 import { parseVideo, formatClock } from '@/lib/projectVideo'
 import YouTubeClip from '@/components/work/YouTubeClip'
+import LoopVideo from '@/components/work/LoopVideo'
 import { splitTitle, outcome } from '@/lib/projectCard'
 import { t, localized, type Locale } from '@/lib/i18n'
 
@@ -24,6 +25,8 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
   const metrics = parseMetrics(applyGithubStats(localized(project, 'metrics', locale), project.github))
   const figure = readFigure(project.thumbnail, locale)
   const video = parseVideo(project.video)
+  const loop = parseVideo(project.loop)
+  const loopSrc = loop?.kind === 'file' ? loop.src : null
   const columns = (
     [
       ['csProblem', localized(project, 'problem', locale)],
@@ -90,15 +93,19 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
       ) : null}
 
       {/* 영상은 눌러야 불러온다(유튜브는 loading=lazy, 파일은 preload=metadata) — 상세를 열자마자 무거워지지 않게 */}
-      {video?.kind === 'youtube' && video.clip && (
+      {video?.kind === 'youtube' && (video.clip || loopSrc) && (
         <figure className="mb-8">
-          <YouTubeClip
-            embed={video.embed}
-            clipEmbed={video.clipEmbed}
-            start={video.start}
-            title={`${title} — ${t(locale, 'video')}`}
-            labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }}
-          />
+          {loopSrc ? (
+            <LoopVideo src={loopSrc} variant="frame" title={`${title} — ${t(locale, 'video')}`} labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }} />
+          ) : (
+            <YouTubeClip
+              embed={video.embed}
+              clipEmbed={video.clipEmbed}
+              start={video.start}
+              title={`${title} — ${t(locale, 'video')}`}
+              labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }}
+            />
+          )}
           <figcaption className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-text-muted">
             <span className="font-mono">
               {formatClock(video.start)}
@@ -115,7 +122,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
           </figcaption>
         </figure>
       )}
-      {video?.kind === 'youtube' && !video.clip && (
+      {video?.kind === 'youtube' && !video.clip && !loopSrc && (
         <div className="mb-8 aspect-video overflow-hidden rounded-2xl border border-border bg-bg-secondary">
           <iframe
             src={video.embed}
@@ -128,7 +135,12 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
           />
         </div>
       )}
-      {video?.kind === 'file' && (
+      {loopSrc && video?.kind !== 'youtube' && (
+        <div className="mb-8">
+          <LoopVideo src={loopSrc} variant="frame" title={`${title} — ${t(locale, 'video')}`} labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }} />
+        </div>
+      )}
+      {video?.kind === 'file' && !loopSrc && (
         <video
           src={video.src}
           controls

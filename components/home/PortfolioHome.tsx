@@ -112,18 +112,18 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
 
         <Link
           href={`${aboutHref}#awards`}
-          className={`flex flex-col justify-between gap-6 rounded-2xl bg-accent p-6 text-bg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg ${statsSpan}`}
+          className={`${tileLink} group flex flex-col justify-between gap-6 p-6 ${statsSpan}`}
         >
-          <span className="font-mono text-xs opacity-85">{t(locale, 'record')}</span>
+          <span className="font-mono text-xs text-text-muted">{t(locale, 'record')}</span>
           <span className="flex gap-6">
             <Stat value={awardCount} label={t(locale, 'awardCount')} />
             <Stat value={activityCount} label={t(locale, 'activityCount')} />
           </span>
-          <span className="text-[13px]">{t(locale, 'viewAllWork')}</span>
+          <span className="text-[13px] text-accent transition-colors group-hover:text-accent-hover">{t(locale, 'viewAllWork')}</span>
         </Link>
 
         {offHours.length > 0 && (
-          <nav aria-label={t(locale, 'offHours')} className="flex flex-wrap items-center justify-between gap-4 col-span-2 lg:col-span-3 rounded-2xl bg-surface px-7 py-6">
+          <nav aria-label={t(locale, 'offHours')} className="flex flex-wrap items-center justify-between gap-4 col-span-2 lg:col-span-3 tile px-7 py-6">
             <span className="text-sm text-text-secondary">{t(locale, 'offHours')}</span>
             <ul className="flex gap-5 font-semibold text-text-primary">
               {offHours.map((l) => (
@@ -206,8 +206,8 @@ function ProjectTile({
 function Stat({ value, label }: { value: number; label?: string }) {
   return (
     <span className="flex flex-col">
-      <span className="text-[2.75rem] font-bold leading-none tracking-tight">{value}</span>
-      {label && <span className="mt-1 text-[13px] opacity-85">{label}</span>}
+      <span className="text-[2.75rem] font-bold leading-none tracking-tight text-text-primary">{value}</span>
+      {label && <span className="mt-1 text-[13px] text-text-secondary">{label}</span>}
     </span>
   )
 }

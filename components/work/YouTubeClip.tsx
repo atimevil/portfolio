@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
-import { useReducedMotion, useYouTubeClip } from '@/lib/useYouTubeClip'
+import { useOrigin, useReducedMotion, useYouTubeClip } from '@/lib/useYouTubeClip'
 import ClipPauseButton from '@/components/work/ClipPauseButton'
 
 /**
@@ -24,8 +24,10 @@ export default function YouTubeClip({
 }) {
   const frame = useRef<HTMLIFrameElement>(null)
   const reduced = useReducedMotion()
-  const clipOn = reduced === false
-  const { paused, gaveUp, toggle } = useYouTubeClip(frame, clipOn, start)
+  const origin = useOrigin()
+  const clipOn = reduced === false && origin !== ''
+  // 15초(버퍼링 중이면 한 번 더) 안에 재생이 안 되면 평범한 플레이어로
+  const { paused, gaveUp, toggle } = useYouTubeClip(frame, clipOn, start, { giveUpMs: 15000 })
 
   return (
     <div className="relative aspect-video overflow-hidden rounded-2xl border border-border bg-bg-secondary">
@@ -44,7 +46,7 @@ export default function YouTubeClip({
           {/* 눌러도 유튜브로 넘어가지 않게 플레이어는 클릭을 받지 않는다. 조작은 아래 버튼과 '유튜브에서 보기'로. */}
           <iframe
             ref={frame}
-            src={clipEmbed}
+            src={`${clipEmbed}&origin=${encodeURIComponent(origin)}`}
             title={title}
             tabIndex={-1}
             allow="autoplay; encrypted-media"

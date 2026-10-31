@@ -7,10 +7,10 @@ const inputCls = 'w-full px-3 py-2 text-sm border border-border rounded-md bg-bg
 const labelCls = 'block text-xs text-text-muted mb-1'
 
 // /en 페이지용 영문 칸. 한국어 칸을 채우고 영문을 비우면 /en에 한국어가 그대로 나온다.
-const EN_FIELDS = ['title', 'description', 'problem', 'contribution', 'result', 'metrics'] as const
+const EN_FIELDS = ['title', 'description', 'problem', 'contribution', 'result', 'metrics', 'highlight', 'role'] as const
 // 영문 칸이 빈 것을 알릴 때 키 이름(problem 등) 대신 화면의 칸 이름으로 보여준다
 const FIELD_LABELS: Record<(typeof EN_FIELDS)[number], string> = {
-  title: '제목', description: '설명', problem: '문제', contribution: '내가 한 것', result: '결과', metrics: '지표',
+  title: '제목', description: '설명', problem: '문제', contribution: '내가 한 것', result: '결과', metrics: '지표', highlight: '홈 결과', role: '홈 역할',
 }
 
 type FormState = {
@@ -22,12 +22,16 @@ type FormState = {
   contribution: string
   result: string
   metrics: string
+  highlight: string
+  role: string
   title_en: string
   description_en: string
   problem_en: string
   contribution_en: string
   result_en: string
   metrics_en: string
+  highlight_en: string
+  role_en: string
   skills: string
   github: string
   paper: string
@@ -49,12 +53,16 @@ function toForm(item: PortfolioItem | null): FormState {
     contribution: item?.contribution ?? '',
     result: item?.result ?? '',
     metrics: item?.metrics ?? '',
+    highlight: item?.highlight ?? '',
+    role: item?.role ?? '',
     title_en: item?.title_en ?? '',
     description_en: item?.description_en ?? '',
     problem_en: item?.problem_en ?? '',
     contribution_en: item?.contribution_en ?? '',
     result_en: item?.result_en ?? '',
     metrics_en: item?.metrics_en ?? '',
+    highlight_en: item?.highlight_en ?? '',
+    role_en: item?.role_en ?? '',
     skills: (item?.skills ?? []).join(', '),
     github: item?.github ?? '',
     paper: item?.paper ?? '',
@@ -130,6 +138,10 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
       contribution: isProject ? form.contribution : undefined,
       result: isProject ? form.result : undefined,
       metrics: isProject ? form.metrics : undefined,
+      highlight: isProject ? form.highlight : undefined,
+      role: isProject ? form.role : undefined,
+      highlight_en: isProject ? form.highlight_en : undefined,
+      role_en: isProject ? form.role_en : undefined,
       skills: isProject ? form.skills.split(',').map((s) => s.trim()).filter(Boolean) : undefined,
       github: isProject ? form.github : undefined,
       paper: isProject ? form.paper : undefined,
@@ -229,6 +241,27 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
             <div>
               <label htmlFor="item-metrics-en" className={labelCls}>영문 지표 (줄 수·숫자를 위와 맞춤)</label>
               <textarea id="item-metrics-en" value={form.metrics_en} rows={3} onChange={(e) => set('metrics_en', e.target.value)} className={`${inputCls} resize-none font-mono`} />
+            </div>
+          </fieldset>
+
+          <fieldset className="rounded-md border border-border p-3 space-y-3 min-w-0">
+            <legend className="px-1 text-xs text-text-secondary">홈 카드</legend>
+            <p className="text-xs text-text-secondary">홈 대표로 고른 작업의 카드에 두 줄로 나온다. 결과는 밖에서 확인되는 것(수상·게재·사용량), 역할은 팀 규모와 맡은 부분. 결과를 비우면 지표 첫 줄을 쓴다.</p>
+            <div>
+              <label htmlFor="item-highlight" className={labelCls}>결과 (예: SUMTECH 2026 우수상)</label>
+              <input id="item-highlight" type="text" value={form.highlight} onChange={(e) => set('highlight', e.target.value)} className={inputCls} />
+            </div>
+            <div>
+              <label htmlFor="item-role" className={labelCls}>역할 (예: 5인 팀 · 개발 전담)</label>
+              <input id="item-role" type="text" value={form.role} onChange={(e) => set('role', e.target.value)} className={inputCls} />
+            </div>
+            <div>
+              <label htmlFor="item-highlight-en" className={labelCls}>영문 결과</label>
+              <input id="item-highlight-en" type="text" value={form.highlight_en} onChange={(e) => set('highlight_en', e.target.value)} className={inputCls} />
+            </div>
+            <div>
+              <label htmlFor="item-role-en" className={labelCls}>영문 역할</label>
+              <input id="item-role-en" type="text" value={form.role_en} onChange={(e) => set('role_en', e.target.value)} className={inputCls} />
             </div>
           </fieldset>
 

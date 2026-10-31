@@ -1,5 +1,39 @@
 [
   {
+    "id": "p15",
+    "type": "project",
+    "order": 0,
+    "year": "2026.10.29~30",
+    "title": "첫팀 — 첫 참가자 팀 매칭 서비스",
+    "description": "SUMTECH 2026 루프톤에서 5인 팀으로 만든 서비스. 공모전·경진대회에 처음 나가는 사람 3~5명이 익명으로 10분 대화하고, 서로 '계속 함께할래요'를 고른 사람끼리 팀이 된다. 팀원들이 정리한 문제정의를 바탕으로 이틀 동안 개발을 전담했다. SUMTECH 2026 우수상.",
+    "problem": "팀으로 대회에 나가 본 적 없는 사람은 모집글에 아무도 응하지 않거나, 경험이 없다는 이유로 거절당하거나, 지원 자체를 접어 대회를 놓친다. 팀원 5명 중 팀 제출 경험이 없는 4명이 모두 이런 일을 겪었다. 지금의 모집 방식은 함께 해 보기 전에 팀이 정해진다.",
+    "contribution": "5인 팀에서 개발을 전담했다. 대기열, 익명 대화방, 서로 고르기, 팀 확정, 팀 채팅까지 서비스 전체를 Next.js와 Prisma로 구현했다. 오래 기다린 사람을 먼저 묶고 이미 만난 사람끼리는 다시 묶지 않는 대화방 배정, 모두가 서로 고른 가장 큰 묶음부터 팀으로 만드는 규칙, 노쇼와 이탈을 반영하는 '열정온도'를 코드로 옮기고 단위 테스트를 붙였다. 진행 봇 질문은 대회 공고를 읽어 Claude로 미리 만들어 두고, 대화 중에는 AI를 부르지 않게 했다.",
+    "result": "이틀(2026.10.29~30) 동안 커밋 86개로 서비스를 완성해 SUMTECH 2026 우수상을 받았다.",
+    "metrics": "2일 | 개발 기간\n10분 | 익명 대화 뒤 서로 고르기\n86 | 커밋",
+    "skills": [
+      "Next.js",
+      "TypeScript",
+      "Prisma",
+      "PostgreSQL",
+      "Vitest",
+      "Playwright",
+      "Docker"
+    ],
+    "slug": "first-team",
+    "title_en": "First Team: Team matching for first-time contestants",
+    "description_en": "Built with a five-person team at the SUMTECH 2026 Loopthon. Three to five people entering their first contest talk anonymously for ten minutes, and those who pick each other become a team. Working from the problem definition my teammates wrote, I was the sole developer over two days. Excellence Award at SUMTECH 2026.",
+    "problem_en": "People who have never entered a contest as a team often get no replies to recruiting posts, get turned down for lack of experience, or give up before applying, and miss the contest. Four of our five team members with no team-submission experience had all been through one of these. Today's recruiting decides the team before anyone has worked together.",
+    "contribution_en": "I was the sole developer on a five-person team and built the whole service in Next.js and Prisma: the queue, anonymous chat rooms, mutual picks, team confirmation, and team chat. I turned the rules into code with unit tests: room assignment that seats the longest-waiting people first and never regroups people who have already met, team formation that starts from the largest group where everyone picked everyone, and a 'passion temperature' score that accounts for no-shows and dropouts. The facilitator bot's questions are generated ahead of time with Claude from each contest notice, so no AI is called during a chat.",
+    "result_en": "Finished the service in two days (Oct 29–30, 2026) with 86 commits and won the Excellence Award at SUMTECH 2026.",
+    "metrics_en": "2 days | Build time\n10 min | Anonymous chat, then mutual picks\n86 | Commits",
+    "highlight": "SUMTECH 2026 우수상",
+    "role": "5인 팀 · 개발 전담",
+    "highlight_en": "SUMTECH 2026 Excellence Award",
+    "role_en": "Team of five · sole developer",
+    "visible": true,
+    "featured": true
+  },
+  {
     "id": "p1",
     "type": "project",
     "order": 0,
@@ -29,7 +63,12 @@
     "contribution_en": "Wrote and ran the BERT and FinBERT baselines. Also owned the data pipeline that filtered 650K Yelp reviews with a Gemini quality filter.",
     "result_en": "Showed negative transfer with numbers and published it at KCC 2026 as second author of six. A follow-up with semi-supervised self-training improved scores on the financial test set.",
     "metrics_en": "0.84 → 0.87 | Financial test-set Macro-F1\n617,611 | Reviews kept out of 650K\n90–96% | Share FinBERT labeled neutral",
-    "visible": true
+    "visible": true,
+    "featured": true,
+    "highlight": "KCC 2026 게재",
+    "role": "6인 중 2저자",
+    "highlight_en": "Published at KCC 2026",
+    "role_en": "Second author of six"
   },
   {
     "id": "p9",
@@ -59,7 +98,11 @@
     "result_en": "It picks vocabulary from a source text based on the learner's history and profile, then gives each word an importance score, \"expressions to use today,\" and a CSV word list. Team Bulldog (No.45) reached the MABC 2026 finals.",
     "metrics_en": "20 | Words selected per text (max)\n3 | \"Expressions to use today\" per word\n6 days | From first meeting to testing",
     "featured": true,
-    "visible": true
+    "visible": true,
+    "highlight": "MABC 2026 결선",
+    "role": "2인 팀 · 개발 전담",
+    "highlight_en": "MABC 2026 finalist",
+    "role_en": "Team of two · sole developer"
   },
   {
     "id": "p2",
@@ -80,15 +123,15 @@
     "github": "https://github.com/chosuninsight/chosuninsight",
     "problem": "학사 정보는 정형·비정형·실시간이 섞여 있어 단일 검색 방식으로는 답이 나오지 않았다.",
     "contribution": "산학 5인 팀에서 RAG 엔진 개발과 고도화를 담당했다. 질문 의도에 따른 3-way 라우팅과 수집·색인 파이프라인도 맡았다.",
-    "result": "학번·시행연도·최신 여부 메타데이터로 옛 졸업 규정이 먼저 검색되던 문제를 해결했다. 조선대 도메인으로 제한한 웹 검색(Jina, site:chosun.ac.kr)을 별도 경로로 두었다. QA 테스트 35건 통과가 6건(17%)에서 31건(89%)으로 늘었고 2026.05.22 서비스를 공개했다.",
+    "result": "학번·시행연도·최신 여부 메타데이터로 옛 졸업 규정이 먼저 검색되던 문제를 해결했다. 조선대 도메인으로 제한한 웹 검색(Jina, site:chosun.ac.kr)을 별도 경로로 두었다. QA 테스트 35건 통과가 6건(17%)에서 31건(89%)으로 늘었고 2026.05.22 서비스를 공개했고, 지금은 운영하지 않는다.",
     "thumbnail": "/figures/chosuninsight-rag.svg",
     "slug": "chosun-insight",
     "title_en": "ChosunInsight: Hybrid RAG chatbot",
     "description_en": "A hybrid RAG assistant for Chosun University's academic information. It rewrites a follow-up into a standalone question, then routes it by intent to a structured answer, vector search, or live search of the official website. Dense retrieval (ChromaDB) and sparse retrieval (BM25) are fused with RRF (Reciprocal Rank Fusion), and the retrieved context goes to GPT-4o-mini. I also wrote the ingestion and index pipeline (markdown normalization that keeps table structure, metadata enrichment, zero-downtime Chroma rebuilds). I owned the RAG engine on a five-person industry-academia project team.",
     "problem_en": "Academic information mixes structured, unstructured, and real-time data, so no single retrieval method could answer every question.",
     "contribution_en": "Owned the RAG engine on a five-person industry-academia team, including three-way routing by question intent and the ingestion and index pipeline.",
-    "result_en": "Metadata for student ID, enforcement year, and whether a rule is current fixed the problem of outdated graduation rules being retrieved first. Web search restricted to the Chosun University domain (Jina, site:chosun.ac.kr) runs as its own path. QA tests passed went from 6 of 35 (17%) to 31 of 35 (89%), and the service launched on May 22, 2026.",
-    "featured": true,
+    "result_en": "Metadata for student ID, enforcement year, and whether a rule is current fixed the problem of outdated graduation rules being retrieved first. Web search restricted to the Chosun University domain (Jina, site:chosun.ac.kr) runs as its own path. QA tests passed went from 6 of 35 (17%) to 31 of 35 (89%), and the service launched on May 22, 2026. It is no longer running.",
+    "featured": false,
     "visible": true,
     "metrics": "6 → 31 | QA 35건 통과",
     "metrics_en": "6 → 31 | QA tests passed (of 35)"
@@ -121,7 +164,11 @@
     "result_en": "Published to the Smithery registry, where it drew about 600 tool calls a month while it was live. 73 GitHub stars, 8 forks (2026-10). I kept extending it alone after the Whitehat School final presentation.",
     "metrics_en": "★ 73 | GitHub stars\n52 | MCP tools (55 endpoints)\n~600 | Tool calls per month (while on Smithery)",
     "featured": true,
-    "visible": true
+    "visible": true,
+    "highlight": "월 600회 호출 (공개 당시)",
+    "role": "도구 12 → 52개 확장",
+    "highlight_en": "~600 calls a month (while listed)",
+    "role_en": "Extended 12 → 52 tools"
   },
   {
     "id": "p4",
@@ -503,5 +550,14 @@
     "id": "1790759360989",
     "title_en": "2026 Honam SW Startup Idea Competition: Top Excellence Award",
     "description_en": "A hands-on heritage experience that turns museum visits, which are hard to follow without background knowledge and easy to lose interest in, into a detective game solved with real artifacts as clues, deepening understanding of and immersion in history."
+  },
+  {
+    "id": "a13",
+    "type": "award",
+    "year": "2026.10.29~30",
+    "title": "SUMTECH 2026 루프톤 우수상",
+    "title_en": "SUMTECH 2026 Loopthon: Excellence Award",
+    "description": "5인 팀으로 공모전 첫 참가자 팀 매칭 서비스 '첫팀'을 만들었다. 개발 전담.",
+    "description_en": "Built First Team, a team-matching service for first-time contestants, with a five-person team. Sole developer."
   }
 ]

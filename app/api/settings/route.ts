@@ -22,6 +22,8 @@ const SettingsSchema = z.object({
       aboutText: z.string().optional(),
       affiliation: z.string().optional(),
       affiliation_en: z.string().optional(),
+      headline: z.string().optional(),
+      headline_en: z.string().optional(),
     })
     .optional(),
 })

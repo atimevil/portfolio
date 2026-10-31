@@ -22,6 +22,11 @@ const ItemSchema = z.object({
   contribution_en: z.string().optional(),
   result_en: z.string().optional(),
   metrics_en: z.string().optional(),
+  // 홈 카드의 결과·역할 한 줄
+  highlight: z.string().optional(),
+  role: z.string().optional(),
+  highlight_en: z.string().optional(),
+  role_en: z.string().optional(),
   skills: z.array(z.string()).optional(),
   github: z.string().optional(),
   slug: z.string().optional(),

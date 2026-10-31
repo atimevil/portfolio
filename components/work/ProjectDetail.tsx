@@ -5,7 +5,8 @@ import { hasCaseStudy, parseMetrics } from '@/lib/caseStudy'
 import { projectLinks } from '@/lib/projectLinks'
 import { applyGithubStats } from '@/lib/githubStats'
 import { readFigure } from '@/lib/figure'
-import { parseVideo } from '@/lib/projectVideo'
+import { parseVideo, formatClock } from '@/lib/projectVideo'
+import YouTubeClip from '@/components/work/YouTubeClip'
 import { splitTitle, outcome } from '@/lib/projectCard'
 import { t, localized, type Locale } from '@/lib/i18n'
 
@@ -89,7 +90,32 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
       ) : null}
 
       {/* 영상은 눌러야 불러온다(유튜브는 loading=lazy, 파일은 preload=metadata) — 상세를 열자마자 무거워지지 않게 */}
-      {video?.kind === 'youtube' && (
+      {video?.kind === 'youtube' && video.clip && (
+        <figure className="mb-8">
+          <YouTubeClip
+            embed={video.embed}
+            clipEmbed={video.clipEmbed}
+            start={video.start}
+            title={`${title} — ${t(locale, 'video')}`}
+            labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }}
+          />
+          <figcaption className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-text-muted">
+            <span className="font-mono">
+              {formatClock(video.start)}
+              {video.end > 0 && ` – ${formatClock(video.end)}`}
+            </span>
+            <a
+              href={video.watch}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[24px] items-center gap-1 transition-colors hover:text-text-primary"
+            >
+              {t(locale, 'watchOnYoutube')} ↗
+            </a>
+          </figcaption>
+        </figure>
+      )}
+      {video?.kind === 'youtube' && !video.clip && (
         <div className="mb-8 aspect-video overflow-hidden rounded-2xl border border-border bg-bg-secondary">
           <iframe
             src={video.embed}

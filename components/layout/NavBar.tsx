@@ -118,7 +118,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
           href={isEn ? '/en' : '/'}
           className="inline-flex h-11 items-center gap-2 rounded-sm font-semibold text-[15px] tracking-tight text-text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
-          <img src="/icon.svg" alt="" width={28} height={28} className="rounded-md" />
+          <img src="/icon.svg" alt="" width={28} height={28} className="rounded-md dark:invert" />
           <span>fo<span className="text-accent">xi</span>bu</span>
         </Link>
 

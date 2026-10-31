@@ -302,7 +302,7 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
             <input id="item-thumbnail" type="text" value={form.thumbnail} placeholder="/figures/....svg" onChange={(e) => set('thumbnail', e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label htmlFor="item-video" className={labelCls}>영상 (그림 아래 · 유튜브 주소 또는 /videos/....mp4 · 구간은 &t=시작초&end=끝초)</label>
+            <label htmlFor="item-video" className={labelCls}>영상 (그림 아래 · 유튜브 주소 또는 /videos/....mp4 · 구간은 &t=시작초&end=끝초 · 소리 없이 반복은 &autoplay=1)</label>
             <input id="item-video" type="text" value={form.video} placeholder="https://youtu.be/..." onChange={(e) => set('video', e.target.value)} className={inputCls} />
           </div>
           <div>

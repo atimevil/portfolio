@@ -10,7 +10,7 @@ export const contentType = 'image/png'
 const BG = '#131317'
 const INK = '#d6d4de'
 const DIM = '#93919f'
-const ACCENT = '#6a4dbd'
+const ACCENT = '#171717'
 
 export default function OpengraphImage() {
   return new ImageResponse(

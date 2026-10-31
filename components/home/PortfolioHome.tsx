@@ -112,18 +112,18 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
 
         <Link
           href={`${aboutHref}#awards`}
-          className={`flex flex-col justify-between gap-6 rounded-2xl bg-accent p-6 text-bg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg ${statsSpan}`}
+          className={`${tileLink} group flex flex-col justify-between gap-6 p-6 ${statsSpan}`}
         >
-          <span className="font-mono text-xs opacity-85">{t(locale, 'record')}</span>
+          <span className="font-mono text-xs text-text-muted">{t(locale, 'record')}</span>
           <span className="flex gap-6">
             <Stat value={awardCount} label={t(locale, 'awardCount')} />
             <Stat value={activityCount} label={t(locale, 'activityCount')} />
           </span>
-          <span className="text-[13px]">{t(locale, 'viewAllWork')}</span>
+          <span className="text-[13px] text-accent transition-colors group-hover:text-accent-hover">{t(locale, 'viewAllWork')}</span>
         </Link>
 
         {offHours.length > 0 && (
-          <nav aria-label={t(locale, 'offHours')} className="flex flex-wrap items-center justify-between gap-4 col-span-2 lg:col-span-3 rounded-2xl bg-surface px-7 py-6">
+          <nav aria-label={t(locale, 'offHours')} className="flex flex-wrap items-center justify-between gap-4 col-span-2 lg:col-span-3 tile px-7 py-6">
             <span className="text-sm text-text-secondary">{t(locale, 'offHours')}</span>
             <ul className="flex gap-5 font-semibold text-text-primary">
               {offHours.map((l) => (
@@ -141,13 +141,14 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
   )
 }
 
+// 라이트에서는 먹색으로 뒤집은 큰 타일. 다크에서 그대로 뒤집으면 밝은 회색 판이 튀어서, 바탕보다 한 단계 밝은 면으로 둔다.
 function LeadTile({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
   const { name, line } = splitTitle(project, locale)
   const { highlight, role } = outcome(project, locale, true)
   return (
     <Link
       href={href}
-      className="group flex flex-col justify-between gap-8 rounded-2xl bg-text-primary p-8 text-bg transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg col-span-2 lg:row-span-2 lg:p-10"
+      className="group flex flex-col justify-between gap-8 rounded-2xl border border-text-primary bg-text-primary p-8 text-bg transition-opacity dark:border-border dark:bg-surface dark:text-text-primary hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg col-span-2 lg:row-span-2 lg:p-10"
     >
       <span className="flex justify-between gap-3 font-mono text-xs opacity-70">
         <span>{t(locale, 'latest')}</span>
@@ -206,8 +207,8 @@ function ProjectTile({
 function Stat({ value, label }: { value: number; label?: string }) {
   return (
     <span className="flex flex-col">
-      <span className="text-[2.75rem] font-bold leading-none tracking-tight">{value}</span>
-      {label && <span className="mt-1 text-[13px] opacity-85">{label}</span>}
+      <span className="text-[2.75rem] font-bold leading-none tracking-tight text-text-primary">{value}</span>
+      {label && <span className="mt-1 text-[13px] text-text-secondary">{label}</span>}
     </span>
   )
 }

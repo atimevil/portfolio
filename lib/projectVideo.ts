@@ -6,7 +6,20 @@
  * 알아볼 수 없는 값은 null — 상세에서 아무것도 그리지 않는다.
  */
 export type ProjectVideo =
-  | { kind: 'youtube'; id: string; embed: string }
+  | {
+      kind: 'youtube'
+      id: string
+      /** 플레이어 그대로(컨트롤 있음) */
+      embed: string
+      /** autoplay=1을 붙인 주소: 구간을 소리 없이 자동으로 되풀이하는 장면 모드 */
+      clip: boolean
+      /** 장면 모드용 임베드 — 컨트롤·자막·관련 영상 없이, 끝에 닿으면 클라이언트가 시작으로 되감는다 */
+      clipEmbed: string
+      start: number
+      end: number
+      /** 유튜브에서 그 구간부터 보기 */
+      watch: string
+    }
   | { kind: 'file'; src: string }
 
 const YOUTUBE = /(?:youtube(?:-nocookie)?\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
@@ -23,7 +36,23 @@ export function parseVideo(raw: string | undefined): ProjectVideo | null {
     const query = new URLSearchParams({ rel: '0' })
     if (start > 0) query.set('start', String(start))
     if (end > start) query.set('end', String(end))
-    return { kind: 'youtube', id: yt[1], embed: `https://www.youtube-nocookie.com/embed/${yt[1]}?${query}` }
+    const id = yt[1]
+    const clipQuery = new URLSearchParams({
+      autoplay: '1', mute: '1', controls: '0', disablekb: '1', iv_load_policy: '3',
+      playsinline: '1', rel: '0', fs: '0', enablejsapi: '1',
+    })
+    if (start > 0) clipQuery.set('start', String(start))
+    if (end > start) clipQuery.set('end', String(end))
+    return {
+      kind: 'youtube',
+      id,
+      embed: `https://www.youtube-nocookie.com/embed/${id}?${query}`,
+      clip: /[?&#](?:autoplay|loop)=1(?:[&#]|$)/.test(value),
+      clipEmbed: `https://www.youtube-nocookie.com/embed/${id}?${clipQuery}`,
+      start,
+      end: end > start ? end : 0,
+      watch: `https://www.youtube.com/watch?v=${id}${start > 0 ? `&t=${start}s` : ''}`,
+    }
   }
   if (FILE.test(value)) return { kind: 'file', src: value }
   return null
@@ -42,4 +71,13 @@ function timeParam(url: string, names: string[]): number {
     if (colon) return Number(colon[1] ?? 0) * 3600 + Number(colon[2]) * 60 + Number(colon[3])
   }
   return 0
+}
+
+/** 12895 → '3:34:55' */
+export function formatClock(sec: number): string {
+  const h = Math.floor(sec / 3600)
+  const m = Math.floor((sec % 3600) / 60)
+  const s = sec % 60
+  const mm = h > 0 ? String(m).padStart(2, '0') : String(m)
+  return `${h > 0 ? `${h}:` : ''}${mm}:${String(s).padStart(2, '0')}`
 }

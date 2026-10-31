@@ -135,8 +135,8 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
 
         {/* 메뉴 노출 */}
         <section className="bg-bg-secondary border border-border rounded-lg p-5">
-          <h2 className="text-sm font-medium text-text-primary mb-1">메뉴 노출</h2>
-          <p className="text-xs text-text-muted mb-4">OFF로 끄면 방문자 헤더 메뉴에서 사라짐 (블로그/소개는 항상 노출)</p>
+          <h2 className="text-sm font-medium text-text-primary mb-1">공개 범위</h2>
+          <p className="text-xs text-text-muted mb-4">OFF면 비공개 — 로그인한 나만 본다. 방문자에게는 메뉴·홈 타일·페이지가 모두 숨겨진다 (블로그/소개는 항상 공개)</p>
           <div className="flex flex-col gap-3">
             {NAV_TOGGLES.map(({ key, label }) => (
               <div key={key} className="flex items-center justify-between">
@@ -145,7 +145,7 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
                   type="button"
                   role="switch"
                   aria-checked={navVisibility[key]}
-                  aria-label={`${label} 메뉴 노출`}
+                  aria-label={`${label} 공개`}
                   onClick={() => setNavVisibility((v) => ({ ...v, [key]: !v[key] }))}
                   className={`relative inline-flex w-11 h-6 rounded-full transition-colors duration-200 focus:outline-none overflow-hidden shrink-0 ${
                     navVisibility[key] ? 'bg-text-primary' : 'bg-border'
@@ -197,6 +197,8 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
               { key: 'github', label: 'GitHub URL', placeholder: 'https://github.com/...' },
               { key: 'linkedin', label: 'LinkedIn URL', placeholder: 'https://linkedin.com/...' },
               { key: 'email', label: '이메일 (프로필·푸터에 노출)', placeholder: 'you@example.com' },
+              { key: 'headline', label: '홈 문장 (이름 아래 · 비우면 안 나옴)', placeholder: '비워 두면 이름과 소속만' },
+              { key: 'headline_en', label: '홈 문장 영문', placeholder: 'Leave empty to show name only' },
             ].map(({ key, label, placeholder }) => (
               <div key={key}>
                 <label className="block text-xs text-text-muted mb-1">{label}</label>

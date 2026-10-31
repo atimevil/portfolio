@@ -79,7 +79,8 @@ function dropEmpty<T extends object>(item: T): T {
 const PROJECT_ONLY_KEYS = [
   'problem', 'contribution', 'result', 'metrics',
   'problem_en', 'contribution_en', 'result_en', 'metrics_en',
-  'skills', 'github', 'paper', 'slug', 'link', 'thumbnail', 'order', 'visible', 'featured',
+  'highlight', 'role', 'highlight_en', 'role_en',
+  'skills', 'github', 'paper', 'slug', 'link', 'thumbnail', 'video', 'order', 'visible', 'featured',
 ] as const
 
 function stripProjectOnly(item: PortfolioItem): PortfolioItem {

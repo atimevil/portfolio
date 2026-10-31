@@ -211,7 +211,7 @@ export default function MapsManager({ initial }: Props) {
         />
 
         {/* 추가 폼 */}
-        <section className="rounded-xl border border-border bg-bg-secondary p-5">
+        <section className="tile p-5">
           <div className="mb-3 flex items-center gap-3">
             <h2 className="text-sm font-semibold text-text-primary">장소 추가</h2>
             <div className="flex gap-1">

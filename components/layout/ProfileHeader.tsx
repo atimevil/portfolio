@@ -37,7 +37,7 @@ export default function ProfileHeader({ profile, locale = 'ko', headingLevel = 1
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <NameHeading className="text-2xl font-extrabold tracking-tight text-text-primary">{profile.name}</NameHeading>
+        <NameHeading className="text-2xl font-bold tracking-tight text-text-primary">{profile.name}</NameHeading>
         {affiliation && <p className="mt-1 text-sm text-text-secondary">{affiliation}</p>}
         {description && (
           <p className="text-sm text-text-secondary mt-1.5 whitespace-pre-line leading-relaxed">{description}</p>

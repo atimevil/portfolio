@@ -1,5 +1,7 @@
 export const dynamic = 'force-dynamic'
 
+import { notFound } from 'next/navigation'
+import { hiddenFromPublic } from '@/lib/publicGate'
 import { getAllTracks } from '@/lib/music'
 import MusicList from '@/components/music/MusicList'
 import { buildPageMetadata } from '@/lib/site'
@@ -15,12 +17,14 @@ export function generateMetadata() {
 }
 
 export default async function MusicPage() {
+  // 설정에서 비공개로 둔 메뉴는 방문자에게 없는 페이지로 보인다(로그인한 관리자는 그대로 본다)
+  if (await hiddenFromPublic('music')) notFound()
   const tracks = await getAllTracks()
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-8 py-8 outline-none">
       <header className="mb-6">
-        <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">음악</h1>
+        <h1 className="page-title">음악</h1>
         <p className="mt-1 text-sm text-text-secondary">즐겨 듣는 트랙 모음</p>
       </header>
 

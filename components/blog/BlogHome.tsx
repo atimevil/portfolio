@@ -87,7 +87,7 @@ export default async function BlogHome({
       <header className="mb-6">
         {filtering ? (
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">{filterHeading}</h1>
+            <h1 className="page-title">{filterHeading}</h1>
             <span className="text-sm text-text-muted">
               {posts.length}
               {t(locale, 'count')}
@@ -98,7 +98,7 @@ export default async function BlogHome({
           </div>
         ) : (
           <div className="flex flex-wrap items-baseline justify-between gap-2">
-            <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">{t(locale, 'writing')}</h1>
+            <h1 className="page-title">{t(locale, 'writing')}</h1>
             {/* 글 본문은 번역하지 않으므로 영문 방문자에게 한국어 글임을 미리 알린다 */}
             <span className="text-sm text-text-muted">
               {locale === 'en' ? t(locale, 'postsInKorean') : `${allPosts.length}${t(locale, 'count')}`}

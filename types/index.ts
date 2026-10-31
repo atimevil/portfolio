@@ -55,6 +55,14 @@ export interface PortfolioItem {
   contribution_en?: string
   result_en?: string
   metrics_en?: string
+  /** 홈 카드 한 줄 — 밖에서 확인되는 결과(수상·게재·사용량). 비우면 지표 첫 줄을 쓴다. */
+  highlight?: string
+  /** 홈 카드 한 줄 — 팀 규모와 맡은 부분. 팀 작업에서 내 몫을 부풀리지 않게 따로 적는다. */
+  role?: string
+  highlight_en?: string
+  role_en?: string
+  /** 상세 페이지 영상. 유튜브 주소(일부 공개 권장) 또는 /videos/... .mp4·.webm 경로. 그림 아래에 붙는다. */
+  video?: string
   /** 무언가를 재고 평가한 작업(연구·경진대회). 홈의 '연구 · 경진대회'에 모인다. 종류(type)와 무관하다. */
   measure?: boolean
   /** 소개(/about)에 노출한다. 꺼져 있으면 등록만 되고 목록에는 안 나온다(직접 URL로는 열림). */
@@ -82,5 +90,8 @@ export interface SiteSettings {
     /** 소속(학교·학과·학년). 이름 옆에 사실 그대로 적는다. */
     affiliation?: string
     affiliation_en?: string
+    /** 홈 이름 아래 한 문장. 비우면 이름과 소속만 나온다. */
+    headline?: string
+    headline_en?: string
   }
 }

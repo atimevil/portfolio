@@ -18,6 +18,8 @@ const config: Config = {
           translucent: 'var(--color-bg-translucent)',
         },
         surface: 'var(--color-surface)',
+        paper: 'var(--color-paper)',
+        tape: 'var(--color-tape)',
         border: 'var(--color-border)',
         'text-primary':   'var(--color-text-primary)',
         'text-soft':      'var(--color-text-soft)',

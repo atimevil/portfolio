@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 페이지 공통 모양 — 홈 타일과 같은 기준을 모든 페이지가 쓴다 */
+@layer components {
+  .page-title {
+    @apply text-[2rem] font-bold leading-tight tracking-tight text-text-primary;
+  }
+  .tile {
+    @apply rounded-2xl border border-border bg-bg-secondary;
+  }
+}
+
 /* 라이트: C-2 짝 테마 (화이트 베이스 + 어둡게 조정한 퍼플 포인트) */
 :root {
   --color-bg:             #ffffff;
@@ -20,6 +30,9 @@
      Tailwind의 /80 같은 수식어가 적용되지 않고 유틸리티가 통째로 사라진다. */
   --color-bg-translucent: rgba(255, 255, 255, 0.80);
   --color-text-soft:      rgba(28, 27, 34, 0.08);
+  /* 갤러리 폴라로이드 테두리와 마스킹테이프 */
+  --color-paper:          #ffffff;
+  --color-tape:           rgba(226, 216, 186, 0.78);
 }
 
 /* 다크(기본): C-2 편안한 다크 퍼플 */
@@ -36,6 +49,8 @@
   --color-accent-soft:    rgba(157, 140, 216, 0.10);
   --color-bg-translucent: rgba(19, 19, 23, 0.80);
   --color-text-soft:      rgba(214, 212, 222, 0.10);
+  --color-paper:          #23222b;
+  --color-tape:           rgba(214, 204, 172, 0.30);
 }
 
 * {

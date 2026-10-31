@@ -1,290 +1,213 @@
 import Link from 'next/link'
 import type { PortfolioItem } from '@/types'
-import { getAllPosts } from '@/lib/blog'
 import { getSettings } from '@/lib/settings'
-import { getOrderedProjects, getTimeline, projectSlug, timeKey } from '@/lib/items'
-import { parseMetrics } from '@/lib/caseStudy'
-import { readFigure } from '@/lib/figure'
-import { applyGithubStats } from '@/lib/githubStats'
+import { getOrderedProjects, getTimeline, projectSlug } from '@/lib/items'
+import { splitTitle, outcome } from '@/lib/projectCard'
 import { cleanEmail } from '@/lib/email'
-import { t, localized, blogBase, type Locale, type UiKey } from '@/lib/i18n'
-import SectionNav from '@/components/home/SectionNav'
+import { hiddenFromPublic } from '@/lib/publicGate'
+import { t, type Locale } from '@/lib/i18n'
 
-/** 홈에 띄울 개수 — 나머지는 /about, /blog에서 본다. 대표 작업을 하나도 안 골랐을 때만 쓴다. */
-const BUILT_COUNT = 4
-const RECORD_COUNT = 6
-const TEASER_COUNT = 3
+/** 대표 작업을 하나도 안 골랐을 때만 최신순으로 이만큼 띄운다. */
+const FALLBACK_COUNT = 4
 
-// 첫 화면 문구. 제목은 사용자가 직접 쓴 한 줄, 그 아래 요약은 이력서 첫 문장을 옮긴 것이다.
-// 이름 위·아래에 역할 줄은 두지 않는다(제목과 같은 말을 키워드로 되풀이할 뿐이었다).
-// 설정의 한 줄 소개(bio)는 검색 설명문을 겸한다. 보안은 교육과정 한 번이라 내세우지 않는다.
-const INTRO: Record<Locale, { statement: string; summary: string }> = {
-  ko: {
-    statement: '이론보다 실제로 해보며 이해하는 것을 좋아합니다.',
-    summary:
-      '스스로 도구를 골라 호출하는 LLM 시스템과, 정해진 문서 안에서 답하는 검색 시스템을 만듭니다. MCP 도구를 공개 레지스트리에 올렸고, UC 샌디에이고 퀄컴연구소에서 한 연구로 KCC 2026 논문을 함께 썼습니다.',
-  },
-  en: {
-    statement: 'I learn by doing, more than by reading theory.',
-    summary:
-      "I build LLM systems that choose and call tools on their own, and retrieval systems that answer from a specific set of documents. I published MCP tooling to a public registry and co-authored a KCC 2026 paper from research at UC San Diego's Qualcomm Institute.",
-  },
-}
+// 홈은 타일 몇 장으로 끝낸다: 누구인지(이름·소속·연락처), 대표 작업(밖에서 확인되는 결과 + 내 역할), 숫자 두 개, 개인 공간.
+// 문장은 관리자 설정의 '홈 문장'이 있을 때만 이름 아래에 나온다 — 고민할 슬로건을 기본값으로 두지 않는다.
+// 글·전체 이력은 소개와 글 페이지에서 본다.
+const OFF_HOURS = [
+  { href: '/gallery', key: 'gallery' },
+  { href: '/music', key: 'music' },
+  { href: '/books', key: 'books' },
+] as const
 
-/**
- * 홈(/ · /en).
- *
- * 왼쪽은 고정: 누구이고 무엇을 하는지. 오른쪽은 그 근거를 두 갈래로 나눠 보여준다.
- *  - 프로젝트: 돌아가는 시스템 → 구조도
- *  - 연구·경진대회: 모델이 틀리는 지점을 확인한 기록 → 숫자
- * 같은 "작업"이라도 증거의 모양이 달라서, 섞지 않고 나눈 것 자체가 포지션을 말한다.
- */
+const tile = 'tile'
+const tileLink = `${tile} transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`
+
 export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
   const { profile } = getSettings()
-  const intro = INTRO[locale]
   const projects = getOrderedProjects()
-  const built = projects.filter((p) => !p.measure)
-  // 날짜순이면 반응이 가장 좋았던 CTF-Solver(2025.09)가 밀리고 작은 도구가 올라온다.
-  // 홈에는 직접 고른 대표 작업만, 날짜순으로 둔다.
-  const picked = built.filter((p) => p.featured)
-  const shown = picked.length > 0 ? picked : built.slice(0, BUILT_COUNT)
-  const timeline = getTimeline().filter((i) => i.type !== 'project')
-  // 연구·경진대회는 종류와 무관하다 — 연구 프로젝트와 경진대회가 한곳에 모인다. 최신순.
-  const measured = [...projects, ...timeline].filter((i) => i.measure)
-  const measuredIds = new Set(measured.map((i) => i.id))
-  measured.sort((a, b) => timeKey(b.year) - timeKey(a.year))
-  const record = timeline.filter((i) => !measuredIds.has(i.id))
-  const posts = await getAllPosts()
-  const mail = cleanEmail(profile.email)
-  const aboutHref = locale === 'en' ? '/en/about' : '/about'
-  const workBase = locale === 'en' ? '/en/work' : '/work'
+  // getOrderedProjects가 최신순이라 고른 것 중 가장 최근 작업이 큰 타일에 온다
+  const picked = projects.filter((p) => p.featured)
+  const [lead, ...rest] = picked.length > 0 ? picked : projects.slice(0, FALLBACK_COUNT)
+  const timeline = getTimeline()
+  const awardCount = timeline.filter((i) => i.type === 'award').length
+  const activityCount = timeline.filter((i) => i.type === 'activity').length
 
-  // 목차는 실제로 그려지는 섹션만 — 빈 섹션은 아래에서 렌더하지 않으므로 링크가 허공을 가리킨다
-  const sections = (
-    [
-      { id: 'projects', label: 'projects', on: true }, // 이 섹션은 항상 그린다
-      { id: 'research', label: 'research', on: measured.length > 0 },
-      { id: 'awards', label: 'awards', on: record.length > 0 },
-      { id: 'writing', label: 'recentPosts', on: posts.length > 0 },
-    ] satisfies { id: string; label: UiKey; on: boolean }[]
-  ).filter((s) => s.on)
+  const mail = cleanEmail(profile.email)
+  const en = locale === 'en'
+  const affiliation = (en ? profile.affiliation_en : profile.affiliation)?.trim()
+  const headline = (en ? profile.headline_en : profile.headline)?.trim()
+  const aboutHref = en ? '/en/about' : '/about'
+  const workBase = en ? '/en/work' : '/work'
+  // 비공개로 둔 메뉴는 방문자에게 빼고, 로그인한 관리자에게는 보여 준다(헤더 메뉴와 같은 기준)
+  const hidden = await Promise.all(OFF_HOURS.map((l) => hiddenFromPublic(l.key)))
+  const offHours = OFF_HOURS.filter((_, i) => !hidden[i])
+  // 대표 작업 줄은 넓은 화면에서 4칸: 둘이면 넓게·좁게 + 더보기, 하나면 반 + 더보기, 없으면 더보기만 한 줄.
+  // 좁은 화면(2칸)에서는 넓은 카드가 한 줄을 다 쓰고, 더보기와 기록이 나란히 선다.
+  const row = rest.slice(0, 2)
+  const rowSpan = (i: number) => (row.length === 1 || i === 0 ? 'col-span-2' : 'col-span-2 sm:col-span-1')
+  const moreSpan = row.length === 2 ? 'col-span-1' : row.length === 1 ? 'col-span-2' : 'col-span-2 lg:col-span-4'
+  // 더보기가 한 칸이면 아주 좁은 화면에서 기록 타일이 그 옆에 붙는다
+  const statsSpan =
+    (row.length === 2 ? 'col-span-1 sm:col-span-2' : 'col-span-2') + (offHours.length > 0 ? ' lg:col-span-1' : ' lg:col-span-4')
+  const moreCount = Math.max(projects.length - (lead ? 1 : 0) - row.length, 0)
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 w-full outline-none">
-      <div className="mx-auto grid max-w-6xl gap-12 px-4 py-12 md:px-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:py-16">
-        {/* 왼쪽: 스크롤해도 따라온다(넓은 화면만) */}
-        <aside className="lg:sticky lg:top-24 lg:self-start">
-          <p className="font-mono text-xs text-text-muted">
-            {profile.name}
-            {(locale === 'en' ? profile.affiliation_en : profile.affiliation)?.trim() && (
-              <span className="font-sans"> · {locale === 'en' ? profile.affiliation_en : profile.affiliation}</span>
-            )}
-          </p>
-          <h1 className="mt-3 text-[2rem] font-bold leading-[1.25] tracking-tight text-text-primary [text-wrap:balance] md:text-[2.5rem]">
-            {intro.statement}
-          </h1>
-          <p className="mt-5 max-w-md text-[15px] leading-relaxed text-text-secondary">{intro.summary}</p>
-
-          <SectionNav
-            label={locale === 'en' ? 'On this page' : '이 페이지에서'}
-            sections={sections.map((sec) => ({ id: sec.id, label: t(locale, sec.label) }))}
-          />
-
-          <ul className="mt-10 flex flex-wrap gap-x-5 gap-y-1 font-mono text-[13px] text-text-secondary [&_a]:inline-flex [&_a]:min-h-[24px] [&_a]:items-center [&_a]:transition-colors [&_a:hover]:text-accent">
+      <div className="mx-auto grid max-w-6xl grid-cols-2 gap-3 px-4 py-10 sm:gap-4 md:px-8 lg:grid-cols-4 lg:py-14">
+        <section className={`${tile} col-span-2 flex flex-col justify-between gap-8 p-8 lg:row-span-2 lg:p-10`}>
+          <div>
+            <h1 className="text-[2.5rem] font-bold leading-tight tracking-tight text-text-primary lg:text-[3.25rem]">{profile.name}</h1>
+            {affiliation && <p className="mt-2 text-lg text-text-primary">{affiliation}</p>}
+            {headline && <p className="mt-4 max-w-md text-[15px] leading-relaxed text-text-secondary">{headline}</p>}
+          </div>
+          <ul className="flex flex-wrap gap-2 text-sm">
             {mail && (
               <li>
-                <a href={`mailto:${mail}`}>{mail}</a>
+                <a href={`mailto:${mail}`} className="inline-flex min-h-[40px] items-center rounded-full bg-text-primary px-4 text-bg transition-opacity hover:opacity-85">
+                  {mail}
+                </a>
               </li>
             )}
             {profile.github && (
               <li>
-                <a href={profile.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href={profile.github} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[40px] items-center rounded-full border border-border px-4 text-text-primary transition-colors hover:border-accent">
+                  GitHub ↗
+                </a>
               </li>
             )}
             {profile.linkedin && (
               <li>
-                <a href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[40px] items-center rounded-full border border-border px-4 text-text-primary transition-colors hover:border-accent">
+                  LinkedIn ↗
+                </a>
               </li>
             )}
-            <li>
-              <Link href={aboutHref}>{t(locale, 'aboutArrow')}</Link>
-            </li>
           </ul>
-        </aside>
+        </section>
 
-        {/* 오른쪽: 근거 */}
-        <div className="min-w-0">
-          <Section id="projects" title="projects" lede="projectsLede" count={projects.length} more={`${aboutHref}#projects`} locale={locale}>
-            <ul className="flex flex-col gap-3">
-              {shown.map((p) => (
-                <BuiltRow key={p.id} project={p} href={`${workBase}/${projectSlug(p)}`} locale={locale} />
+        {lead && <LeadTile project={lead} href={`${workBase}/${projectSlug(lead)}`} locale={locale} />}
+
+        {row.map((p, i) => (
+          <ProjectTile
+            key={p.id}
+            project={p}
+            href={`${workBase}/${projectSlug(p)}`}
+            locale={locale}
+            wide={i === 0 || row.length < 2}
+            className={rowSpan(i)}
+          />
+        ))}
+
+        {/* 대표로 고르지 않은 작업은 숫자 하나로 묶어 소개의 전체 목록으로 보낸다 */}
+        <Link href={`${aboutHref}#projects`} className={`${tileLink} group flex flex-col justify-between gap-6 p-6 ${moreSpan}`}>
+          <span className="font-mono text-xs text-text-muted">{t(locale, 'more')}</span>
+          {moreCount > 0 && (
+            <span className="flex flex-col">
+              <span className="text-[2.75rem] font-bold leading-none tracking-tight text-text-primary">+{moreCount}</span>
+              <span className="mt-1 text-[13px] text-text-secondary">{t(locale, 'projects')}</span>
+            </span>
+          )}
+          <span className="text-[13px] text-accent transition-colors group-hover:text-accent-hover">{t(locale, 'viewAllWork')}</span>
+        </Link>
+
+        <Link
+          href={`${aboutHref}#awards`}
+          className={`flex flex-col justify-between gap-6 rounded-2xl bg-accent p-6 text-bg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg ${statsSpan}`}
+        >
+          <span className="font-mono text-xs opacity-85">{t(locale, 'record')}</span>
+          <span className="flex gap-6">
+            <Stat value={awardCount} label={t(locale, 'awardCount')} />
+            <Stat value={activityCount} label={t(locale, 'activityCount')} />
+          </span>
+          <span className="text-[13px]">{t(locale, 'viewAllWork')}</span>
+        </Link>
+
+        {offHours.length > 0 && (
+          <nav aria-label={t(locale, 'offHours')} className="flex flex-wrap items-center justify-between gap-4 col-span-2 lg:col-span-3 rounded-2xl bg-surface px-7 py-6">
+            <span className="text-sm text-text-secondary">{t(locale, 'offHours')}</span>
+            <ul className="flex gap-5 font-semibold text-text-primary">
+              {offHours.map((l) => (
+                <li key={l.key}>
+                  <Link href={l.href} className="inline-flex min-h-[24px] items-center transition-colors hover:text-accent">
+                    {t(locale, l.key)}
+                  </Link>
+                </li>
               ))}
             </ul>
-          </Section>
-
-          {measured.length > 0 && (
-            <Section id="research" title="research" lede="researchLede" locale={locale}>
-              <ul className="flex flex-col">
-                {measured.map((item) => (
-                  <MeasuredRow
-                    key={item.id}
-                    item={item}
-                    href={item.type === 'project' ? `${workBase}/${projectSlug(item)}` : `${aboutHref}#r-${item.id}`}
-                    locale={locale}
-                  />
-                ))}
-              </ul>
-            </Section>
-          )}
-
-          {record.length > 0 && (
-            <Section id="awards" title="awards" count={timeline.length} more={`${aboutHref}#awards`} locale={locale}>
-              <ul>
-                {record.slice(0, RECORD_COUNT).map((item) => (
-                  <li key={item.id} className="border-b border-border last:border-b-0">
-                    {/* 소개의 그 항목으로 바로 간다 — 도착하면 설명이 펼쳐지고 잠깐 강조된다 */}
-                    <Link
-                      href={`${aboutHref}#r-${item.id}`}
-                      className="group grid grid-cols-[7rem_minmax(0,1fr)] items-baseline gap-x-4 py-2.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                    >
-                      <span className="whitespace-nowrap font-mono text-xs text-text-muted">{item.year}</span>
-                      <span className="text-sm leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
-                        {item.type === 'award' && <span aria-hidden="true" className="mr-1.5 text-accent">★</span>}
-                        {localized(item, 'title', locale)}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </Section>
-          )}
-
-          {posts.length > 0 && (
-            <Section id="writing" title="recentPosts" count={posts.length} more={blogBase(locale)} locale={locale}>
-              <ul>
-                {posts.slice(0, TEASER_COUNT).map((post) => (
-                  <li key={post.slug} className="border-b border-border last:border-b-0">
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="group grid grid-cols-[5.5rem_minmax(0,1fr)] items-baseline gap-x-4 py-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                    >
-                      <span className="font-mono text-xs text-text-muted">{post.date}</span>
-                      <span className="text-[15px] text-text-primary transition-colors group-hover:text-accent-hover">
-                        {post.title}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </Section>
-          )}
-        </div>
+          </nav>
+        )}
       </div>
     </main>
   )
 }
 
-function Section({
-  id,
-  title,
-  lede,
-  count,
-  more,
+function LeadTile({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
+  const { name, line } = splitTitle(project, locale)
+  const { highlight, role } = outcome(project, locale, true)
+  return (
+    <Link
+      href={href}
+      className="group flex flex-col justify-between gap-8 rounded-2xl bg-text-primary p-8 text-bg transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg col-span-2 lg:row-span-2 lg:p-10"
+    >
+      <span className="flex justify-between gap-3 font-mono text-xs opacity-70">
+        <span>{t(locale, 'latest')}</span>
+        <span>{project.year}</span>
+      </span>
+      <span>
+        <span className="block text-[2rem] font-bold leading-tight tracking-tight">{name}</span>
+        {line && <span className="mt-2 block max-w-md opacity-80">{line}</span>}
+      </span>
+      {(highlight || role) && (
+        <span className="flex flex-col gap-4">
+          {/* 토큰 색(var)에는 /20 같은 투명도가 안 붙어서 구분선은 글자색에 opacity로 낸다 */}
+          <span aria-hidden="true" className="block h-px bg-current opacity-20" />
+          <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+            {highlight && <span className="font-semibold">{highlight}</span>}
+            {role && <span className="text-[13px] opacity-70">{role}</span>}
+          </span>
+        </span>
+      )}
+    </Link>
+  )
+}
+
+function ProjectTile({
+  project,
+  href,
   locale,
-  children,
+  wide,
+  className,
 }: {
-  id: string
-  title: UiKey
-  lede?: UiKey
-  count?: number
-  more?: string
+  project: PortfolioItem
+  href: string
   locale: Locale
-  children: React.ReactNode
+  wide: boolean
+  className: string
 }) {
+  const { name, line } = splitTitle(project, locale)
+  const { highlight, role } = outcome(project, locale, true)
   return (
-    <section id={id} className="scroll-mt-24 pb-14">
-      <div className="mb-5 flex items-baseline justify-between gap-4">
-        <h2 className="text-lg font-semibold tracking-tight text-text-primary">
-          {t(locale, title)}
-          {count !== undefined && <span className="ml-2 font-mono text-sm font-normal text-text-muted">{count}</span>}
-        </h2>
-        {more && (
-          <Link
-            href={more}
-            // 보이는 글자는 셋 다 "전체 보기"라, 스크린리더 링크 목록에서 구별되게 섹션 이름을 붙인다
-            aria-label={locale === 'en' ? `View all ${t(locale, title).toLowerCase()}` : `${t(locale, title)} 전체 보기`}
-            className="inline-flex min-h-[24px] items-center text-sm text-text-secondary transition-colors hover:text-accent"
-          >
-            {t(locale, 'viewAllWork')}
-          </Link>
-        )}
-      </div>
-      {lede && <p className="-mt-3 mb-5 text-sm text-text-muted">{t(locale, lede)}</p>}
-      {children}
-    </section>
+    <Link href={href} className={`${tileLink} group flex flex-col gap-2 p-6 ${className}`}>
+      <span className="font-mono text-xs text-text-muted">{project.year}</span>
+      <span className={`font-semibold leading-snug tracking-tight text-text-primary transition-colors group-hover:text-accent-hover ${wide ? 'text-[1.375rem]' : 'text-lg'}`}>
+        {name}
+      </span>
+      {line && <span className="text-sm leading-relaxed text-text-secondary">{line}</span>}
+      {(highlight || role) && (
+        <span className={`mt-auto flex gap-x-4 pt-3 ${wide ? 'flex-wrap items-baseline justify-between' : 'flex-col'}`}>
+          {highlight && <span className="font-semibold text-text-primary">{highlight}</span>}
+          {role && <span className="text-[13px] text-text-secondary">{role}</span>}
+        </span>
+      )}
+    </Link>
   )
 }
 
-/** 프로젝트 한 줄 — 왼쪽에 구조도, 오른쪽에 무엇·결과. 구조도는 알아보는 얼굴이라 읽히지 않아도 된다. */
-function BuiltRow({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
-  const figure = readFigure(project.thumbnail, locale)
-  const metric = parseMetrics(applyGithubStats(localized(project, 'metrics', locale), project.github))[0]
-  const summary = localized(project, 'result', locale).trim() || localized(project, 'description', locale)
+function Stat({ value, label }: { value: number; label?: string }) {
   return (
-    <li>
-      <Link
-        href={href}
-        className="group grid gap-4 rounded-xl border border-transparent p-3 -mx-3 transition-colors hover:border-border hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:grid-cols-[11rem_minmax(0,1fr)]"
-      >
-        <div
-          aria-hidden="true"
-          className="fig fig-fill aspect-[16/8] overflow-hidden rounded-lg border border-border bg-bg-secondary p-2"
-          dangerouslySetInnerHTML={figure ? { __html: figure } : undefined}
-        />
-        <div className="min-w-0">
-          <p className="font-mono text-xs text-text-muted">{project.year}</p>
-          <h3 className="mt-0.5 font-semibold leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
-            {localized(project, 'title', locale)}
-          </h3>
-          {summary && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-text-secondary">{summary}</p>}
-          {metric && (
-            <p className="mt-2 font-mono text-xs text-text-muted">
-              <span className="text-accent">{metric.value}</span>
-              {metric.label && ` · ${metric.label}`}
-            </p>
-          )}
-        </div>
-      </Link>
-    </li>
-  )
-}
-
-/** 연구·경진대회 한 줄 — 숫자가 먼저. 연구 프로젝트는 상세로, 대회는 소개의 해당 항목으로 간다. */
-function MeasuredRow({ item, href, locale }: { item: PortfolioItem; href: string; locale: Locale }) {
-  const metric = parseMetrics(applyGithubStats(localized(item, 'metrics', locale), item.github))[0]
-  const summary = localized(item, 'result', locale).trim() || localized(item, 'description', locale)
-  const body = (
-    <>
-      <div className="whitespace-nowrap font-mono text-2xl font-medium tracking-tight text-accent">{metric?.value ?? '—'}</div>
-      <div className="min-w-0">
-        <p className="font-mono text-xs text-text-muted">
-          {item.year}
-          {metric?.label && ` · ${metric.label}`}
-        </p>
-        <h3 className="mt-0.5 font-semibold leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
-          {localized(item, 'title', locale)}
-          <span aria-hidden="true" className="ml-1 inline-block text-text-muted opacity-0 transition-opacity group-hover:opacity-100 group-hover:text-accent">→</span>
-        </h3>
-        {summary && <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-text-secondary">{summary}</p>}
-      </div>
-    </>
-  )
-  const cls = 'grid gap-x-4 gap-y-1 border-b border-border py-4 sm:grid-cols-[11rem_minmax(0,1fr)] sm:items-baseline'
-  return (
-    <li className="last:[&>*]:border-b-0">
-      <Link href={href} className={`group ${cls} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`}>
-        {body}
-      </Link>
-    </li>
+    <span className="flex flex-col">
+      <span className="text-[2.75rem] font-bold leading-none tracking-tight">{value}</span>
+      {label && <span className="mt-1 text-[13px] opacity-85">{label}</span>}
+    </span>
   )
 }

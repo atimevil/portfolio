@@ -63,6 +63,14 @@ const UI = {
   searchResult: { ko: '검색 결과', en: 'search results' },
   postsInKorean: { ko: '', en: 'Posts are in Korean.' },
   aboutArrow: { ko: '소개 →', en: 'About →' },
+  // 홈 타일
+  latest: { ko: '최근', en: 'Latest' },
+  awardCount: { ko: '수상', en: 'Awards' },
+  activityCount: { ko: '활동', en: 'Activities' },
+  more: { ko: '더보기', en: 'More' },
+  record: { ko: '기록', en: 'Record' },
+  offHours: { ko: '개발 밖의 기록', en: 'Off the clock' },
+  video: { ko: '영상', en: 'Video' },
   count: { ko: '개', en: '' },
 } as const
 
@@ -90,7 +98,7 @@ export function categoryLabel(locale: Locale, name: string): string {
  * 항목의 로케일별 필드를 고른다. 영문 필드가 비어 있으면 한국어로 폴백해
  * 화면에 빈칸이 노출되지 않게 한다.
  */
-export type LocalizedField = 'title' | 'description' | 'problem' | 'contribution' | 'result' | 'metrics'
+export type LocalizedField = 'title' | 'description' | 'problem' | 'contribution' | 'result' | 'metrics' | 'highlight' | 'role'
 
 export function localized(item: PortfolioItem, field: LocalizedField, locale: Locale): string {
   if (locale === 'en') {

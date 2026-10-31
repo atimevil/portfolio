@@ -24,7 +24,7 @@ function GridCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-bg-secondary transition-all hover:-translate-y-0.5 hover:border-accent"
+      className="group flex flex-col overflow-hidden tile transition-all hover:-translate-y-0.5 hover:border-accent"
     >
       {/* 커버 이미지가 있으면 상단 썸네일 + 글, 없으면 텍스트만(카드 높이는 자연스럽게 달라짐) */}
       {cover && (
@@ -51,7 +51,7 @@ function ImageCard({ post }: { post: BlogPost }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-border bg-bg-secondary transition-all hover:-translate-y-0.5 hover:border-accent"
+      className="group flex flex-col overflow-hidden tile transition-all hover:-translate-y-0.5 hover:border-accent"
     >
       <div className="relative h-40">
         {cover ? (

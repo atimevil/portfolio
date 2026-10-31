@@ -2,11 +2,10 @@ import Link from 'next/link'
 import type { PortfolioItem } from '@/types'
 import { getSettings } from '@/lib/settings'
 import { getOrderedProjects, getTimeline, projectSlug } from '@/lib/items'
-import { parseMetrics } from '@/lib/caseStudy'
-import { applyGithubStats } from '@/lib/githubStats'
+import { splitTitle, outcome } from '@/lib/projectCard'
 import { cleanEmail } from '@/lib/email'
 import { hiddenFromPublic } from '@/lib/publicGate'
-import { t, localized, type Locale } from '@/lib/i18n'
+import { t, type Locale } from '@/lib/i18n'
 
 /** 대표 작업을 하나도 안 골랐을 때만 최신순으로 이만큼 띄운다. */
 const FALLBACK_COUNT = 4
@@ -20,7 +19,7 @@ const OFF_HOURS = [
   { href: '/books', key: 'books' },
 ] as const
 
-const tile = 'rounded-2xl border border-border bg-bg-secondary'
+const tile = 'tile'
 const tileLink = `${tile} transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`
 
 export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
@@ -128,29 +127,9 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
   )
 }
 
-/**
- * 제목에 부제가 붙어 있으면 이름과 한 줄 설명으로 나눈다.
- * 한국어는 "첫팀 — 첫 참가자 팀 매칭 서비스", 영문은 "First Team: Team matching …" 꼴로 적혀 있다.
- */
-function splitTitle(project: PortfolioItem, locale: Locale): { name: string; line: string } {
-  const title = localized(project, 'title', locale)
-  const m = title.match(/\s—\s|:\s/)
-  if (m?.index) return { name: title.slice(0, m.index), line: title.slice(m.index + m[0].length) }
-  return { name: title, line: '' }
-}
-
-/** 카드 아래 두 줄: 밖에서 확인되는 결과, 내 역할. 결과를 안 적었으면 지표 첫 줄로 대신한다. */
-function outcome(project: PortfolioItem, locale: Locale): { highlight: string; role: string } {
-  const role = localized(project, 'role', locale).trim()
-  const highlight = localized(project, 'highlight', locale).trim()
-  if (highlight) return { highlight, role }
-  const metric = parseMetrics(applyGithubStats(localized(project, 'metrics', locale), project.github))[0]
-  return { highlight: metric ? [metric.value, metric.label].filter(Boolean).join(' · ') : '', role }
-}
-
 function LeadTile({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
   const { name, line } = splitTitle(project, locale)
-  const { highlight, role } = outcome(project, locale)
+  const { highlight, role } = outcome(project, locale, true)
   return (
     <Link
       href={href}
@@ -192,7 +171,7 @@ function ProjectTile({
   className: string
 }) {
   const { name, line } = splitTitle(project, locale)
-  const { highlight, role } = outcome(project, locale)
+  const { highlight, role } = outcome(project, locale, true)
   return (
     <Link href={href} className={`${tileLink} group flex flex-col gap-2 p-6 ${className}`}>
       <span className="font-mono text-xs text-text-muted">{project.year}</span>

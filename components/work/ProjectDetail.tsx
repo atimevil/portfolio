@@ -5,6 +5,7 @@ import { hasCaseStudy, parseMetrics } from '@/lib/caseStudy'
 import { projectLinks } from '@/lib/projectLinks'
 import { applyGithubStats } from '@/lib/githubStats'
 import { readFigure } from '@/lib/figure'
+import { splitTitle, outcome } from '@/lib/projectCard'
 import { t, localized, type Locale } from '@/lib/i18n'
 
 /**
@@ -15,6 +16,8 @@ import { t, localized, type Locale } from '@/lib/i18n'
  */
 export default function ProjectDetail({ project, locale = 'ko' }: { project: PortfolioItem; locale?: Locale }) {
   const title = localized(project, 'title', locale)
+  const { name, line } = splitTitle(project, locale)
+  const { highlight, role } = outcome(project, locale)
   const links = projectLinks(project, locale)
   const metrics = parseMetrics(applyGithubStats(localized(project, 'metrics', locale), project.github))
   const figure = readFigure(project.thumbnail, locale)
@@ -49,11 +52,18 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
 
       <header className="mt-4 mb-7 border-b border-border pb-6">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <h1 className="text-2xl font-extrabold tracking-tight text-text-primary">{title}</h1>
+          <h1 className="page-title">{name}</h1>
           {project.year && (
             <span className="shrink-0 font-mono text-sm text-text-secondary">{project.year}</span>
           )}
         </div>
+        {line && <p className="mt-2 text-lg text-text-secondary">{line}</p>}
+        {(highlight || role) && (
+          <p className="mt-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            {highlight && <span className="font-semibold text-text-primary">{highlight}</span>}
+            {role && <span className="text-sm text-text-secondary">{role}</span>}
+          </p>
+        )}
         {!hasCaseStudy(project) && project.description && (
           <p className="mt-3 max-w-[68ch] text-sm leading-relaxed text-text-secondary">
             {localized(project, 'description', locale)}
@@ -65,14 +75,14 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
           업로드한 이미지 등 그 외 썸네일은 그대로 <img>로 건다. */}
       {figure ? (
         <div
-          className="fig mb-8 overflow-hidden rounded-xl border border-border bg-bg"
+          className="fig mb-8 overflow-hidden rounded-2xl border border-border bg-bg"
           dangerouslySetInnerHTML={{ __html: figure }}
         />
       ) : project.thumbnail ? (
         <img
           src={project.thumbnail}
           alt={title}
-          className="mb-8 w-full rounded-xl border border-border bg-bg object-contain"
+          className="mb-8 w-full rounded-2xl border border-border bg-bg object-contain"
         />
       ) : null}
 
@@ -94,7 +104,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
       )}
 
       {metrics.length > 0 && (
-        <ul className="mb-8 flex flex-wrap gap-x-12 gap-y-4 rounded-xl border border-border bg-bg-secondary px-6 py-5">
+        <ul className="mb-8 flex flex-wrap gap-x-12 gap-y-4 tile px-6 py-5">
           {metrics.map((m) => (
             <li key={m.value + m.label}>
               <div className="font-mono text-2xl text-accent">{m.value}</div>
@@ -138,7 +148,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
           {prev ? (
             <Link
               href={`${workBase}/${projectSlug(prev)}`}
-              className="group rounded-lg border border-border p-3 transition-colors hover:border-accent"
+              className="group tile p-4 transition-colors hover:border-accent"
             >
               <span className="block text-xs text-text-muted">{t(locale, 'prevProject')}</span>
               <span className="mt-1 block line-clamp-2 text-sm text-text-secondary transition-colors group-hover:text-text-primary">
@@ -151,7 +161,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
           {next ? (
             <Link
               href={`${workBase}/${projectSlug(next)}`}
-              className="group rounded-lg border border-border p-3 text-right transition-colors hover:border-accent"
+              className="group tile p-4 text-right transition-colors hover:border-accent"
             >
               <span className="block text-xs text-text-muted">{t(locale, 'nextProject')}</span>
               <span className="mt-1 block line-clamp-2 text-sm text-text-secondary transition-colors group-hover:text-text-primary">

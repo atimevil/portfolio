@@ -76,7 +76,7 @@ export default function Modal({ open, onClose, children, label }: ModalProps) {
             role="dialog"
             aria-modal="true"
             aria-label={label}
-            className="relative z-10 w-full max-w-5xl overflow-hidden rounded-xl bg-bg shadow-2xl"
+            className="relative z-10 w-full max-w-5xl overflow-hidden rounded-2xl bg-bg shadow-2xl"
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.95, opacity: 0, transition: { duration: 0.15 } }}

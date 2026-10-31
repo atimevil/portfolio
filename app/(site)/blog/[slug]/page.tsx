@@ -67,7 +67,7 @@ export default async function BlogPostPage(props: Props) {
             </div>
           )}
           <div className="flex items-start justify-between gap-4">
-            <h1 className="text-2xl font-extrabold tracking-tight text-text-primary mb-3">{post.title}</h1>
+            <h1 className="page-title mb-3">{post.title}</h1>
             {session && (
               <Link
                 href={`/admin/blog/edit/${slug}`}
@@ -108,7 +108,7 @@ export default async function BlogPostPage(props: Props) {
           {prevPost ? (
             <Link
               href={`/blog/${prevPost.slug}`}
-              className="group rounded-lg border border-border p-3 transition-colors hover:border-accent"
+              className="group tile p-4 transition-colors hover:border-accent"
             >
               <span className="block text-xs text-text-muted">← 이전 글</span>
               <span className="mt-1 block line-clamp-2 text-sm text-text-secondary transition-colors group-hover:text-text-primary">
@@ -121,7 +121,7 @@ export default async function BlogPostPage(props: Props) {
           {nextPost ? (
             <Link
               href={`/blog/${nextPost.slug}`}
-              className="group rounded-lg border border-border p-3 text-right transition-colors hover:border-accent"
+              className="group tile p-4 text-right transition-colors hover:border-accent"
             >
               <span className="block text-xs text-text-muted">다음 글 →</span>
               <span className="mt-1 block line-clamp-2 text-sm text-text-secondary transition-colors group-hover:text-text-primary">

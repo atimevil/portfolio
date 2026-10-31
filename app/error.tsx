@@ -14,7 +14,7 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
   return (
     <main id="main" className="mx-auto flex min-h-screen w-full max-w-6xl flex-col justify-center bg-bg px-4 py-24 md:px-8">
       <p className="font-mono text-sm text-text-muted">500</p>
-      <h1 className="mt-2 text-3xl font-bold tracking-tight text-text-primary">
+      <h1 className="mt-2 page-title">
         {en ? 'Something went wrong on our side.' : '일시적인 오류가 났습니다.'}
       </h1>
       <p className="mt-3 text-text-secondary">
@@ -24,13 +24,13 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         <button
           type="button"
           onClick={reset}
-          className="inline-flex min-h-[40px] items-center rounded-lg border border-accent px-4 text-accent transition-colors hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="inline-flex min-h-[40px] items-center rounded-full border border-accent px-4 text-accent transition-colors hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           {en ? 'Try again' : '다시 시도'}
         </button>
         <a
           href={en ? '/en' : '/'}
-          className="inline-flex min-h-[40px] items-center rounded-lg border border-border px-4 text-text-primary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          className="inline-flex min-h-[40px] items-center rounded-full border border-border px-4 text-text-primary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           {en ? 'Home' : '홈'}
         </a>

@@ -26,7 +26,7 @@ export default async function NotFound() {
       <NavBar navVisibility={navVisibility} locale={locale} />
       <main id="main" tabIndex={-1} className="mx-auto w-full max-w-6xl flex-1 px-4 py-24 outline-none md:px-8">
         <p className="font-mono text-sm text-text-muted">404</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-text-primary">
+        <h1 className="mt-2 page-title">
           {en ? 'This page does not exist.' : '없는 페이지입니다.'}
         </h1>
         <p className="mt-3 text-text-secondary">
@@ -41,7 +41,7 @@ export default async function NotFound() {
             <li key={l.href}>
               <Link
                 href={l.href}
-                className="inline-flex min-h-[40px] items-center rounded-lg border border-border px-4 text-text-primary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="inline-flex min-h-[40px] items-center rounded-full border border-border px-4 text-text-primary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 {l.label}
               </Link>

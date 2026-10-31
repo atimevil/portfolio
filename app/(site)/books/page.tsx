@@ -1,5 +1,7 @@
 export const dynamic = 'force-dynamic'
 
+import { notFound } from 'next/navigation'
+import { hiddenFromPublic } from '@/lib/publicGate'
 import { getAllBooks } from '@/lib/books'
 import BooksList from '@/components/books/BooksList'
 import { buildPageMetadata } from '@/lib/site'
@@ -15,6 +17,8 @@ export function generateMetadata() {
 }
 
 export default async function BooksPage() {
+  // 설정에서 비공개로 둔 메뉴는 방문자에게 없는 페이지로 보인다(로그인한 관리자는 그대로 본다)
+  if (await hiddenFromPublic('books')) notFound()
   const books = await getAllBooks()
 
   return (

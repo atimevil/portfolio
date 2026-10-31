@@ -11,7 +11,7 @@ const CORE_LINKS = [
   { href: '/about', labelKey: 'about' as UiKey },
 ]
 
-// key는 SiteSettings.navVisibility의 필드명과 맞춘다 — 관리자가 설정에서 개별로 끄고 켤 수 있음.
+// key는 SiteSettings.navVisibility의 필드명과 맞춘다. 설정에서 끈 것은 비공개 — 방문자에겐 안 보이고 로그인한 관리자에겐 보인다.
 const TOGGLABLE_LINKS = [
   { href: '/gallery', labelKey: 'gallery' as UiKey, key: 'gallery' },
   { href: '/books', labelKey: 'books' as UiKey, key: 'books' },
@@ -63,7 +63,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
   // /en에는 소개와 프로젝트 상세만 있다. 글은 한국어로만 쓰므로 영문 메뉴의
   // 글 링크도 한국어 /blog를 가리킨다. 갤러리·책·음악·지도는 한국어 전용이라 뺀다.
   const koLinks = isAdmin
-    ? [...CORE_LINKS, ...TOGGLABLE_LINKS.filter((l) => navVisibility?.[l.key] ?? true), ...adminOnlyLinks]
+    ? [...CORE_LINKS, ...TOGGLABLE_LINKS, ...adminOnlyLinks]
     : [...CORE_LINKS, ...TOGGLABLE_LINKS.filter((l) => navVisibility?.[l.key] ?? true)]
 
   const links = isEn

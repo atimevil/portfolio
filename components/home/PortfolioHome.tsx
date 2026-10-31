@@ -5,6 +5,7 @@ import { getOrderedProjects, getTimeline, projectSlug } from '@/lib/items'
 import { parseMetrics } from '@/lib/caseStudy'
 import { applyGithubStats } from '@/lib/githubStats'
 import { cleanEmail } from '@/lib/email'
+import { hiddenFromPublic } from '@/lib/publicGate'
 import { t, localized, type Locale } from '@/lib/i18n'
 
 /** 대표 작업을 하나도 안 골랐을 때만 최신순으로 이만큼 띄운다. */
@@ -22,8 +23,8 @@ const OFF_HOURS = [
 const tile = 'rounded-2xl border border-border bg-bg-secondary'
 const tileLink = `${tile} transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`
 
-export default function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
-  const { profile, navVisibility } = getSettings()
+export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
+  const { profile } = getSettings()
   const projects = getOrderedProjects()
   // getOrderedProjects가 최신순이라 고른 것 중 가장 최근 작업이 큰 타일에 온다
   const picked = projects.filter((p) => p.featured)
@@ -38,7 +39,9 @@ export default function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
   const headline = (en ? profile.headline_en : profile.headline)?.trim()
   const aboutHref = en ? '/en/about' : '/about'
   const workBase = en ? '/en/work' : '/work'
-  const offHours = OFF_HOURS.filter((l) => navVisibility?.[l.key] !== false)
+  // 비공개로 둔 메뉴는 방문자에게 빼고, 로그인한 관리자에게는 보여 준다(헤더 메뉴와 같은 기준)
+  const hidden = await Promise.all(OFF_HOURS.map((l) => hiddenFromPublic(l.key)))
+  const offHours = OFF_HOURS.filter((_, i) => !hidden[i])
   // 나머지 대표 작업은 넓은 화면에서 한 줄 4칸을 채운다: 셋이면 넓게·좁게·좁게, 둘이면 반반, 하나면 한 줄.
   // 좁은 화면(2칸)에서는 넓은 카드가 한 줄을 다 쓰고 좁은 카드 둘이 나란히 선다.
   const restSpan = (i: number) =>

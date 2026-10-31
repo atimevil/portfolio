@@ -17,12 +17,29 @@ export function parseVideo(raw: string | undefined): ProjectVideo | null {
   if (!value) return null
   const yt = value.match(YOUTUBE)
   if (yt) {
-    // t=90 / t=1m30s 같은 시작 시각은 살린다
-    const t = value.match(/[?&#]t=(?:(\d+)m)?(\d+)s?/)
-    const start = t ? Number(t[1] ?? 0) * 60 + Number(t[2]) : 0
-    const query = new URLSearchParams({ rel: '0', ...(start > 0 ? { start: String(start) } : {}) })
+    // 시작(t= 또는 start=)과 끝(end=)을 살린다. 긴 영상에서 한 장면만 보여 줄 때 쓴다.
+    const start = timeParam(value, ['t', 'start'])
+    const end = timeParam(value, ['end'])
+    const query = new URLSearchParams({ rel: '0' })
+    if (start > 0) query.set('start', String(start))
+    if (end > start) query.set('end', String(end))
     return { kind: 'youtube', id: yt[1], embed: `https://www.youtube-nocookie.com/embed/${yt[1]}?${query}` }
   }
   if (FILE.test(value)) return { kind: 'file', src: value }
   return null
+}
+
+/** 12895 · 12895s · 3h34m55s · 3:34:55 을 초로. 없거나 못 읽으면 0. */
+function timeParam(url: string, names: string[]): number {
+  for (const name of names) {
+    const m = url.match(new RegExp(`[?&#]${name}=([^&#]+)`))
+    if (!m) continue
+    const v = decodeURIComponent(m[1])
+    if (/^\d+s?$/.test(v)) return parseInt(v, 10)
+    const hms = v.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/)
+    if (hms && v) return Number(hms[1] ?? 0) * 3600 + Number(hms[2] ?? 0) * 60 + Number(hms[3] ?? 0)
+    const colon = v.match(/^(?:(\d+):)?(\d{1,2}):(\d{2})$/)
+    if (colon) return Number(colon[1] ?? 0) * 3600 + Number(colon[2]) * 60 + Number(colon[3])
+  }
+  return 0
 }

@@ -39,6 +39,7 @@ type FormState = {
   link: string
   thumbnail: string
   video: string
+  loop: string
   order: number
   visible: boolean
   featured: boolean
@@ -71,6 +72,7 @@ function toForm(item: PortfolioItem | null): FormState {
     link: item?.link ?? '',
     thumbnail: item?.thumbnail ?? '',
     video: item?.video ?? '',
+    loop: item?.loop ?? '',
     order: item?.order ?? 0,
     visible: item?.visible ?? false,
     featured: item?.featured ?? false,
@@ -151,6 +153,7 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
       link: isProject ? form.link : undefined,
       thumbnail: isProject ? form.thumbnail : undefined,
       video: isProject ? form.video.trim() || undefined : undefined,
+      loop: isProject ? form.loop.trim() || undefined : undefined,
       order: isProject ? Number(form.order) || 0 : undefined,
       visible: isProject ? form.visible : undefined,
       featured: isProject ? (form.visible && form.featured) : undefined,
@@ -304,6 +307,10 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
           <div>
             <label htmlFor="item-video" className={labelCls}>영상 (그림 아래 · 유튜브 주소 또는 /videos/....mp4 · 구간은 &t=시작초&end=끝초 · 소리 없이 반복은 &autoplay=1)</label>
             <input id="item-video" type="text" value={form.video} placeholder="https://youtu.be/..." onChange={(e) => set('video', e.target.value)} className={inputCls} />
+          </div>
+          <div>
+            <label htmlFor="item-loop" className={labelCls}>반복 영상 파일 (홈 대표 타일 배경 · 10~20초 · /videos/....mp4)</label>
+            <input id="item-loop" type="text" value={form.loop} placeholder="/videos/check-six.mp4" onChange={(e) => set('loop', e.target.value)} className={inputCls} />
           </div>
           <div>
             <label htmlFor="item-slug" className={labelCls}>상세 주소 슬러그 (예: finbert-vs-llm · 비우면 id 사용)</label>

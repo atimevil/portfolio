@@ -8,6 +8,7 @@ import { hiddenFromPublic } from '@/lib/publicGate'
 import { t, type Locale } from '@/lib/i18n'
 import { parseVideo } from '@/lib/projectVideo'
 import LeadClip from '@/components/home/LeadClip'
+import LoopVideo from '@/components/work/LoopVideo'
 
 /** 대표 작업을 하나도 안 골랐을 때만 최신순으로 이만큼 띄운다. */
 const FALLBACK_COUNT = 4
@@ -148,23 +149,22 @@ function LeadTile({ project, href, locale }: { project: PortfolioItem; href: str
   const { name, line } = splitTitle(project, locale)
   const { highlight, role } = outcome(project, locale, true)
   // 상세에 '장면 모드'(autoplay=1)로 건 영상이 있으면 그 장면을 타일 배경으로 되풀이한다
+  // 반복 영상 파일이 있으면 그것을, 없으면 상세에 '장면 모드'(autoplay=1)로 건 유튜브 장면을 타일 배경으로 되풀이한다
+  const loop = parseVideo(project.loop)
+  const loopSrc = loop?.kind === 'file' ? loop.src : null
   const video = parseVideo(project.video)
-  const clip = video?.kind === 'youtube' && video.clip ? video : null
+  const clip = !loopSrc && video?.kind === 'youtube' && video.clip ? video : null
+  const labels = { pause: t(locale, 'pause'), play: t(locale, 'play') }
   return (
     <div className="group relative col-span-2 overflow-hidden rounded-2xl border border-text-primary bg-text-primary text-bg dark:border-border dark:bg-surface dark:text-text-primary lg:row-span-2">
-      {clip && (
-        <LeadClip
-          clipEmbed={clip.clipEmbed}
-          start={clip.start}
-          labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }}
-        />
-      )}
+      {loopSrc && <LoopVideo src={loopSrc} variant="cover" labels={labels} />}
+      {clip && <LeadClip clipEmbed={clip.clipEmbed} start={clip.start} labels={labels} />}
       <Link
         href={href}
         className="relative z-10 flex h-full flex-col justify-between gap-8 rounded-2xl p-8 transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg lg:p-10"
       >
         {/* 영상이 있으면 오른쪽 위에 멈춤 버튼이 앉으므로 날짜를 '최근' 옆으로 붙인다 */}
-        <span className={`flex gap-3 font-mono text-xs opacity-70 ${clip ? '' : 'justify-between'}`}>
+        <span className={`flex gap-3 font-mono text-xs opacity-70 ${clip || loopSrc ? '' : 'justify-between'}`}>
           <span>{t(locale, 'latest')}</span>
           <span>{project.year}</span>
         </span>

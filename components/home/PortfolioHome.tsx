@@ -6,6 +6,8 @@ import { splitTitle, outcome } from '@/lib/projectCard'
 import { cleanEmail } from '@/lib/email'
 import { hiddenFromPublic } from '@/lib/publicGate'
 import { t, type Locale } from '@/lib/i18n'
+import { parseVideo } from '@/lib/projectVideo'
+import LeadClip from '@/components/home/LeadClip'
 
 /** 대표 작업을 하나도 안 골랐을 때만 최신순으로 이만큼 띄운다. */
 const FALLBACK_COUNT = 4
@@ -145,30 +147,43 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
 function LeadTile({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
   const { name, line } = splitTitle(project, locale)
   const { highlight, role } = outcome(project, locale, true)
+  // 상세에 '장면 모드'(autoplay=1)로 건 영상이 있으면 그 장면을 타일 배경으로 되풀이한다
+  const video = parseVideo(project.video)
+  const clip = video?.kind === 'youtube' && video.clip ? video : null
   return (
-    <Link
-      href={href}
-      className="group flex flex-col justify-between gap-8 rounded-2xl border border-text-primary bg-text-primary p-8 text-bg transition-opacity dark:border-border dark:bg-surface dark:text-text-primary hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg col-span-2 lg:row-span-2 lg:p-10"
-    >
-      <span className="flex justify-between gap-3 font-mono text-xs opacity-70">
-        <span>{t(locale, 'latest')}</span>
-        <span>{project.year}</span>
-      </span>
-      <span>
-        <span className="block text-[2rem] font-bold leading-tight tracking-tight">{name}</span>
-        {line && <span className="mt-2 block max-w-md opacity-80">{line}</span>}
-      </span>
-      {(highlight || role) && (
-        <span className="flex flex-col gap-4">
-          {/* 토큰 색(var)에는 /20 같은 투명도가 안 붙어서 구분선은 글자색에 opacity로 낸다 */}
-          <span aria-hidden="true" className="block h-px bg-current opacity-20" />
-          <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            {highlight && <span className="font-semibold">{highlight}</span>}
-            {role && <span className="text-[13px] opacity-70">{role}</span>}
-          </span>
-        </span>
+    <div className="group relative col-span-2 overflow-hidden rounded-2xl border border-text-primary bg-text-primary text-bg dark:border-border dark:bg-surface dark:text-text-primary lg:row-span-2">
+      {clip && (
+        <LeadClip
+          clipEmbed={clip.clipEmbed}
+          start={clip.start}
+          labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }}
+        />
       )}
-    </Link>
+      <Link
+        href={href}
+        className="relative z-10 flex h-full flex-col justify-between gap-8 rounded-2xl p-8 transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg lg:p-10"
+      >
+        {/* 영상이 있으면 오른쪽 위에 멈춤 버튼이 앉으므로 날짜를 '최근' 옆으로 붙인다 */}
+        <span className={`flex gap-3 font-mono text-xs opacity-70 ${clip ? '' : 'justify-between'}`}>
+          <span>{t(locale, 'latest')}</span>
+          <span>{project.year}</span>
+        </span>
+        <span>
+          <span className="block text-[2rem] font-bold leading-tight tracking-tight">{name}</span>
+          {line && <span className="mt-2 block max-w-md opacity-80">{line}</span>}
+        </span>
+        {(highlight || role) && (
+          <span className="flex flex-col gap-4">
+            {/* 토큰 색(var)에는 /20 같은 투명도가 안 붙어서 구분선은 글자색에 opacity로 낸다 */}
+            <span aria-hidden="true" className="block h-px bg-current opacity-20" />
+            <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+              {highlight && <span className="font-semibold">{highlight}</span>}
+              {role && <span className="text-[13px] opacity-70">{role}</span>}
+            </span>
+          </span>
+        )}
+      </Link>
+    </div>
   )
 }
 

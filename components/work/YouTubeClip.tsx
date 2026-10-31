@@ -8,6 +8,11 @@ const subscribeReduced = (cb: () => void) => {
   m.addEventListener('change', cb)
   return () => m.removeEventListener('change', cb)
 }
+// 서버에는 창이 없다 — 첫 페인트는 빈 16:9 칸, 하이드레이션 뒤 실제 값으로 다시 그린다.
+const subscribeNothing = () => () => {}
+
+/** 이 시간 안에 '재생 중'을 못 들으면 자동재생을 포기하고 평범한 플레이어로 바꾼다. */
+const GIVE_UP_MS = 8000
 
 /**
  * 긴 유튜브 영상에서 한 장면만 소리 없이 자동으로 되풀이한다(움짤처럼).
@@ -16,7 +21,8 @@ const subscribeReduced = (cb: () => void) => {
  * 대신 enablejsapi=1로 연 플레이어와 postMessage로만 이야기한다 — 유튜브 API 스크립트를
  * 불러오지 않으니 nonce CSP를 건드리지 않는다. 끝(end)에 닿아 '종료'가 오면 시작으로 되감는다.
  *
- * 움직임 줄이기를 켠 사람에게는 자동재생 대신 평범한 플레이어를 보여 준다.
+ * 자동재생이 막히거나(절전 모드, 브라우저 정책, 영상 쪽 제한) 플레이어가 답하지 않으면
+ * 빈 칸으로 두지 않고 컨트롤이 있는 평범한 플레이어로 바꾼다. 움직임 줄이기를 켠 사람도 평범한 플레이어.
  * 5초 넘게 저절로 움직이는 화면이라 멈춤 버튼을 둔다.
  */
 export default function YouTubeClip({
@@ -33,13 +39,15 @@ export default function YouTubeClip({
   labels: { pause: string; play: string }
 }) {
   const frame = useRef<HTMLIFrameElement>(null)
-  // null = 아직 모름(서버 렌더·첫 페인트). 그 사이에는 빈 16:9 칸만 둔다.
   const reduced = useSyncExternalStore<boolean | null>(subscribeReduced, () => window.matchMedia(REDUCED).matches, () => null)
-  // 실제 재생 상태를 따라간다. 자동재생이 막힌 기기(절전 모드 등)에서는 '재생' 버튼이 보여 눌러서 볼 수 있다.
+  // enablejsapi는 origin을 같이 주라고 한다. 창이 있어야 알 수 있어서 클라이언트에서만 붙인다.
+  const origin = useSyncExternalStore(subscribeNothing, () => window.location.origin, () => '')
   const [paused, setPaused] = useState(true)
+  const [gaveUp, setGaveUp] = useState(false)
+  const clipMode = reduced === false && !gaveUp
 
   useEffect(() => {
-    if (reduced !== false) return
+    if (!clipMode) return
     const el = frame.current
     if (!el) return
     const send = (func: string, args: unknown[] = []) =>
@@ -47,8 +55,12 @@ export default function YouTubeClip({
 
     // 플레이어가 준비될 때까지 '듣고 있다'를 몇 번 보낸다. 첫 답이 오면 멈춘다.
     let heard = false
+    let played = false
     const hello = () => el.contentWindow?.postMessage(JSON.stringify({ event: 'listening', id: 'clip', channel: 'widget' }), '*')
     const timer = window.setInterval(() => (heard ? window.clearInterval(timer) : hello()), 500)
+    const giveUp = window.setTimeout(() => {
+      if (!played) setGaveUp(true)
+    }, GIVE_UP_MS)
     el.addEventListener('load', hello)
 
     const onMessage = (e: MessageEvent) => {
@@ -67,8 +79,11 @@ export default function YouTubeClip({
           : typeof data.info === 'object' && data.info
             ? (data.info as { playerState?: number }).playerState
             : undefined
-      if (state === 1) setPaused(false)
-      else if (state === 2 || state === -1 || state === 5) setPaused(true)
+      if (data.event === 'onError') setGaveUp(true)
+      if (state === 1) {
+        played = true
+        setPaused(false)
+      } else if (state === 2) setPaused(true)
       // 0 = 종료(end 지점 도달) → 시작으로 되감아 다시 재생
       if (state === 0) {
         send('seekTo', [start, true])
@@ -78,37 +93,38 @@ export default function YouTubeClip({
     window.addEventListener('message', onMessage)
     return () => {
       window.clearInterval(timer)
+      window.clearTimeout(giveUp)
       el.removeEventListener('load', hello)
       window.removeEventListener('message', onMessage)
     }
-  }, [reduced, start])
+  }, [clipMode, start, origin])
 
   const toggle = () => {
-    const el = frame.current
-    if (!el) return
-    el.contentWindow?.postMessage(JSON.stringify({ event: 'command', func: paused ? 'playVideo' : 'pauseVideo', args: [] }), '*')
+    frame.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: 'command', func: paused ? 'playVideo' : 'pauseVideo', args: [] }),
+      '*',
+    )
     setPaused(!paused) // 플레이어가 상태를 알려 오면 그 값으로 다시 맞춰진다
   }
 
   return (
     <div className="relative aspect-video overflow-hidden rounded-2xl border border-border bg-bg-secondary">
-      {reduced === true && (
+      {(reduced === true || gaveUp) && (
         <iframe
           src={embed}
           title={title}
-          loading="lazy"
           allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           referrerPolicy="strict-origin-when-cross-origin"
           allowFullScreen
           className="h-full w-full"
         />
       )}
-      {reduced === false && (
+      {clipMode && origin && (
         <>
           {/* 눌러도 유튜브로 넘어가지 않게 플레이어는 클릭을 받지 않는다. 조작은 아래 버튼과 '유튜브에서 보기'로. */}
           <iframe
             ref={frame}
-            src={clipEmbed}
+            src={`${clipEmbed}&origin=${encodeURIComponent(origin)}`}
             title={title}
             tabIndex={-1}
             allow="autoplay; encrypted-media"

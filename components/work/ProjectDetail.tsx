@@ -93,7 +93,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
       ) : null}
 
       {/* 영상은 눌러야 불러온다(유튜브는 loading=lazy, 파일은 preload=metadata) — 상세를 열자마자 무거워지지 않게 */}
-      {video?.kind === 'youtube' && (video.clip || loopSrc) && (
+      {video?.kind === 'youtube' && video.clip && (
         <figure className="mb-8">
           {loopSrc ? (
             <LoopVideo src={loopSrc} variant="frame" title={`${title} — ${t(locale, 'video')}`} labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }} />
@@ -122,7 +122,8 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
           </figcaption>
         </figure>
       )}
-      {video?.kind === 'youtube' && !video.clip && !loopSrc && (
+      {/* 장면 모드가 아닌 유튜브(예: 본선 대국 3분)는 소리·컨트롤이 있는 평범한 플레이어. 반복 파일은 홈 배경용으로만 쓴다. */}
+      {video?.kind === 'youtube' && !video.clip && (
         <div className="mb-8 aspect-video overflow-hidden rounded-2xl border border-border bg-bg-secondary">
           <iframe
             src={video.embed}

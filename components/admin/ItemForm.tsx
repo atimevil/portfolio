@@ -309,7 +309,7 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
             <input id="item-video" type="text" value={form.video} placeholder="https://youtu.be/..." onChange={(e) => set('video', e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label htmlFor="item-loop" className={labelCls}>반복 영상 파일 (홈 대표 타일 배경·상세 영상 칸 · 10초 안팎 · /videos/....mp4)</label>
+            <label htmlFor="item-loop" className={labelCls}>반복 영상 파일 (홈 대표 타일 배경 · 10~20초 · /videos/....mp4)</label>
             <input id="item-loop" type="text" value={form.loop} placeholder="/videos/check-six.mp4" onChange={(e) => set('loop', e.target.value)} className={inputCls} />
           </div>
           <div>

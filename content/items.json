@@ -62,7 +62,8 @@
     "measure": true,
     "visible": true,
     "featured": true,
-    "video": "https://www.youtube.com/watch?v=xQcRlXqf7-I&t=3441&end=3633"
+    "video": "https://www.youtube.com/watch?v=xQcRlXqf7-I&t=3441&end=3633",
+    "loop": "/videos/check-six.mp4"
   },
   {
     "id": "p1",

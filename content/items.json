@@ -109,7 +109,7 @@
     "title": "VOCAB CURATOR — 개인 맞춤 어휘 큐레이션",
     "description": "MABC 2026(Upstage×Timely) 결선 진출작. 2인 팀(불독)에서 개발을 맡아 예선 당선 스킬 vocab-curator를 웹 서비스로 구현했다.",
     "problem": "시중 단어장은 존재하지 않는 '평균 학습자'에 맞춰 만들다 보니 정작 자주 쓸 단어는 빠지고 일상과 무관한 교과서적 예문만 남는다.",
-    "contribution": "2인 팀에서 개발을 전담했다 — 아이디어와 기획은 팀원이 맡았다. 예선 스킬을 웹 서비스로 옮기면서 Solar Pro 4를 직접 호출하고 원문·페르소나·학습 이력을 프롬프트로 전달하게 구현했다. DB는 중복 단어 탐지와 학습자 프로필 추적용으로 연동했다.",
+    "contribution": "예선은 팀원의 아이디어로 통과했고, 결선 과제는 그걸 서비스로 만드는 것이었다. 2인 팀에서 그 개발을 전담했다. 예선 스킬을 웹 서비스로 옮기면서 Solar Pro 4를 직접 호출하고 원문·페르소나·학습 이력을 프롬프트로 전달하게 구현했다. DB는 중복 단어 탐지와 학습자 프로필 추적용으로 연동했다.",
     "result": "원문에서 학습 이력과 프로필로 어휘를 선별해 단어별 중요도, \"오늘 바로 쓸 표현\", CSV 단어장을 낸다. 팀 불독(No.45)으로 MABC 2026 결선에 올랐다.",
     "metrics": "20 | 원문당 선별 어휘(최대)\n3 | 단어별 \"오늘 바로 쓸 표현\"\n6일 | 회의에서 테스트까지",
     "skills": [
@@ -125,7 +125,7 @@
     "title_en": "VOCAB CURATOR: Personalized vocabulary curation",
     "description_en": "Finalist at MABC 2026 (Upstage × Timely). I handled development on a two-person team (Bulldog) and turned our preliminary-round skill, vocab-curator, into a web service.",
     "problem_en": "Commercial vocabulary books are written for an 'average learner' who doesn't exist. The words you would actually use get left out, and the example sentences are textbook ones that have nothing to do with daily life.",
-    "contribution_en": "I was the only developer on a two-person team. The idea and planning came from my teammate. To turn the preliminary-round skill into a web service, I called Solar Pro 4 directly, passed the source text, persona, and learning history into the prompt, and connected a database that catches duplicate words and tracks the learner profile.",
+    "contribution_en": "We passed the preliminaries with my teammate's idea; the final round was about turning it into a working service, and I was the only developer on our two-person team. To turn the preliminary-round skill into a web service, I called Solar Pro 4 directly, passed the source text, persona, and learning history into the prompt, and connected a database that catches duplicate words and tracks the learner profile.",
     "result_en": "It picks vocabulary from a source text based on the learner's history and profile, then gives each word an importance score, \"expressions to use today,\" and a CSV word list. Team Bulldog (No.45) reached the MABC 2026 finals.",
     "metrics_en": "20 | Words selected per text (max)\n3 | \"Expressions to use today\" per word\n6 days | From first meeting to testing",
     "featured": true,

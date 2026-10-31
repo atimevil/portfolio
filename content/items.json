@@ -4,10 +4,10 @@
     "type": "project",
     "order": 0,
     "year": "2026.10.29~30",
-    "title": "첫팀 — 첫 참가자 팀 매칭 서비스",
-    "description": "SUMTECH 2026 루프톤에서 5인 팀으로 만든 서비스. 공모전·경진대회에 처음 나가는 사람 3~5명이 익명으로 10분 대화하고, 서로 '계속 함께할래요'를 고른 사람끼리 팀이 된다. 팀원들이 정리한 문제정의를 바탕으로 이틀 동안 개발을 전담했다. SUMTECH 2026 우수상.",
-    "problem": "팀으로 대회에 나가 본 적 없는 사람은 모집글에 아무도 응하지 않거나, 경험이 없다는 이유로 거절당하거나, 지원 자체를 접어 대회를 놓친다. 팀원 5명 중 팀 제출 경험이 없는 4명이 모두 이런 일을 겪었다. 지금의 모집 방식은 함께 해 보기 전에 팀이 정해진다.",
-    "contribution": "5인 팀에서 개발을 전담했다. 대기열, 익명 대화방, 서로 고르기, 팀 확정, 팀 채팅까지 서비스 전체를 Next.js와 Prisma로 구현했다. 오래 기다린 사람을 먼저 묶고 이미 만난 사람끼리는 다시 묶지 않는 대화방 배정, 모두가 서로 고른 가장 큰 묶음부터 팀으로 만드는 규칙, 노쇼와 이탈을 반영하는 '열정온도'를 코드로 옮기고 단위 테스트를 붙였다. 진행 봇 질문은 대회 공고를 읽어 Claude로 미리 만들어 두고, 대화 중에는 AI를 부르지 않게 했다.",
+    "title": "가치해봄 — 첫 참가자 팀 매칭 서비스",
+    "description": "2026 SUMTECH 해커톤에서 5인 팀(12팀 '지환이와 친구들')으로 만든 서비스. \"누구에게나 처음은 있었다.\" 공모전·경진대회에 처음 나가는 사람 3~5명이 익명으로 10분 대화하고, 서로 '계속 함께할래요'를 고른 사람끼리 팀이 된다. 팀원들이 정리한 문제정의를 바탕으로 이틀 동안 개발을 전담했다. SUMTECH 2026 우수상.",
+    "problem": "팀으로 대회에 나가 본 적 없는 사람은 모집글에 아무도 응하지 않거나, 경험이 없다는 이유로 거절당하거나, 지원 자체를 접어 대회를 놓친다. 팀원들이 겪은 사례 6건 중 5건이 이렇게 끝났다. 링커리어 팀원 모집글 33개를 모두 열어 보니 29개는 연락 방법이 오픈채팅 링크 하나였고, 팀이 되기 전에 같이 해 보는 단계를 둔 글은 0개였다. 서로를 알아볼 방법 없이 바로 팀을 정해야 하는 구조다.",
+    "contribution": "5인 팀에서 개발을 전담했다. 대기열, 진행 봇 '가치해'가 이끄는 익명 대화방, 20초 비공개 서로 고르기, 팀 확정, 팀 채팅까지 서비스 전체를 Next.js와 Prisma로 구현했다. 오래 기다린 사람을 먼저 묶고 이미 만난 사람끼리는 다시 묶지 않는 대화방 배정, 모두가 서로 고른 가장 큰 묶음부터 팀으로 만드는 규칙, 노쇼와 이탈을 반영하는 '열정온도'를 코드로 옮기고 단위 테스트를 붙였다. 진행 봇 질문은 대회 공고를 읽어 Claude로 미리 만들어 두고, 대화 중에는 AI를 부르지 않게 했다.",
     "result": "이틀(2026.10.29~30) 동안 커밋 86개로 서비스를 완성해 SUMTECH 2026 우수상을 받았다.",
     "metrics": "2일 | 개발 기간\n10분 | 익명 대화 뒤 서로 고르기\n86 | 커밋",
     "skills": [
@@ -19,11 +19,11 @@
       "Playwright",
       "Docker"
     ],
-    "slug": "first-team",
-    "title_en": "First Team: Team matching for first-time contestants",
-    "description_en": "Built with a five-person team at the SUMTECH 2026 Loopthon. Three to five people entering their first contest talk anonymously for ten minutes, and those who pick each other become a team. Working from the problem definition my teammates wrote, I was the sole developer over two days. Excellence Award at SUMTECH 2026.",
-    "problem_en": "People who have never entered a contest as a team often get no replies to recruiting posts, get turned down for lack of experience, or give up before applying, and miss the contest. Four of our five team members with no team-submission experience had all been through one of these. Today's recruiting decides the team before anyone has worked together.",
-    "contribution_en": "I was the sole developer on a five-person team and built the whole service in Next.js and Prisma: the queue, anonymous chat rooms, mutual picks, team confirmation, and team chat. I turned the rules into code with unit tests: room assignment that seats the longest-waiting people first and never regroups people who have already met, team formation that starts from the largest group where everyone picked everyone, and a 'passion temperature' score that accounts for no-shows and dropouts. The facilitator bot's questions are generated ahead of time with Claude from each contest notice, so no AI is called during a chat.",
+    "slug": "gachi-haebom",
+    "title_en": "Gachi Haebom: Team matching for first-time contestants",
+    "description_en": "Built with a five-person team (Team 12) at the 2026 SUMTECH Hackathon. \"Everyone has a first time.\" Three to five people entering their first contest talk anonymously for ten minutes, and those who pick each other become a team. Working from the problem definition my teammates wrote, I was the sole developer over two days. Excellence Award at SUMTECH 2026.",
+    "problem_en": "People who have never entered a contest as a team often get no replies to recruiting posts, get turned down for lack of experience, or give up before applying, and miss the contest. Five of the six cases our team members had been through ended this way. Of 33 recruiting posts we opened on Linkareer, 29 offered only an open-chat link as the way to get in touch, and none had any step for working together before forming a team. Teams are decided before people have any way to get to know each other.",
+    "contribution_en": "I was the sole developer on a five-person team and built the whole service in Next.js and Prisma: the queue, anonymous chat rooms led by the facilitator bot 'Gachihae', 20-second private mutual picks, team confirmation, and team chat. I turned the rules into code with unit tests: room assignment that seats the longest-waiting people first and never regroups people who have already met, team formation that starts from the largest group where everyone picked everyone, and a 'passion temperature' score that accounts for no-shows and dropouts. The bot's questions are generated ahead of time with Claude from each contest notice, so no AI is called during a chat.",
     "result_en": "Finished the service in two days (Oct 29–30, 2026) with 86 commits and won the Excellence Award at SUMTECH 2026.",
     "metrics_en": "2 days | Build time\n10 min | Anonymous chat, then mutual picks\n86 | Commits",
     "highlight": "SUMTECH 2026 우수상",
@@ -555,9 +555,9 @@
     "id": "a13",
     "type": "award",
     "year": "2026.10.29~30",
-    "title": "SUMTECH 2026 루프톤 우수상",
-    "title_en": "SUMTECH 2026 Loopthon: Excellence Award",
-    "description": "5인 팀으로 공모전 첫 참가자 팀 매칭 서비스 '첫팀'을 만들었다. 개발 전담.",
-    "description_en": "Built First Team, a team-matching service for first-time contestants, with a five-person team. Sole developer."
+    "title": "2026 SUMTECH 해커톤 우수상",
+    "title_en": "2026 SUMTECH Hackathon: Excellence Award",
+    "description": "5인 팀으로 공모전 첫 참가자 팀 매칭 서비스 '가치해봄'을 만들었다. 개발 전담.",
+    "description_en": "Built Gachi Haebom, a team-matching service for first-time contestants, with a five-person team. Sole developer."
   }
 ]

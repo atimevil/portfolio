@@ -5,7 +5,7 @@ import { localized, type Locale } from '@/lib/i18n'
 
 /**
  * 제목에 부제가 붙어 있으면 이름과 한 줄 설명으로 나눈다.
- * 한국어는 "첫팀 — 첫 참가자 팀 매칭 서비스", 영문은 "First Team: Team matching …" 꼴로 적혀 있다.
+ * 한국어는 "가치해봄 — 첫 참가자 팀 매칭 서비스", 영문은 "Gachi Haebom: Team matching …" 꼴로 적혀 있다.
  */
 export function splitTitle(project: PortfolioItem, locale: Locale): { name: string; line: string } {
   const title = localized(project, 'title', locale)

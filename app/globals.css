@@ -12,44 +12,44 @@
   }
 }
 
-/* 라이트: C-2 짝 테마 (화이트 베이스 + 어둡게 조정한 퍼플 포인트) */
+/* 라이트: 흑백 (Vercel식 회색 단계). 포인트 색도 글자색과 같은 먹색이라 링크는 화살표·굵기로 구분한다.
+   파랑 같은 포인트를 다시 넣으려면 accent 세 줄만 바꾸면 된다. */
 :root {
   --color-bg:             #ffffff;
   --color-bg-secondary:   #fafafa;
-  --color-surface:        #f4f2f8;
-  --color-border:         #ececf0;
-  --color-text-primary:   #1c1b22;
-  --color-text-secondary: #55535e;
-  --color-text-muted:     #6f6d7a;
-  /* accent-soft(10% 틴트) 위에 올라가는 배지 텍스트가 4.09:1까지 떨어져서 한 단계씩 어둡게.
-     최악 조건(카드 배경 위 소프트 틴트)에서 5.13:1. */
-  --color-accent:         #6a4dbd;
-  --color-accent-hover:   #5d43a3;
-  --color-accent-soft:    rgba(106, 77, 189, 0.10);
+  --color-surface:        #f5f5f5;
+  --color-border:         #ebebeb;
+  --color-text-primary:   #171717;
+  --color-text-secondary: #4d4d4d;
+  /* 카드 배경(#fafafa) 위 11~12px 라벨도 4.5:1을 넘기는 가장 옅은 회색 */
+  --color-text-muted:     #6b6b6b;
+  --color-accent:         #171717;
+  --color-accent-hover:   #000000;
+  --color-accent-soft:    rgba(23, 23, 23, 0.06);
   /* 알파가 필요한 색은 토큰으로 직접 정의한다 — var() 문자열 토큰에는
      Tailwind의 /80 같은 수식어가 적용되지 않고 유틸리티가 통째로 사라진다. */
   --color-bg-translucent: rgba(255, 255, 255, 0.80);
-  --color-text-soft:      rgba(28, 27, 34, 0.08);
-  /* 갤러리 폴라로이드 테두리와 마스킹테이프 */
+  --color-text-soft:      rgba(23, 23, 23, 0.08);
+  /* 갤러리 폴라로이드 테두리와 마스킹테이프 — 갤러리만 따뜻한 종이색을 남긴다 */
   --color-paper:          #ffffff;
   --color-tape:           rgba(226, 216, 186, 0.78);
 }
 
-/* 다크(기본): C-2 편안한 다크 퍼플 */
+/* 다크(기본): 흑백 */
 .dark {
-  --color-bg:             #131317;
-  --color-bg-secondary:   #1a1a20;
-  --color-surface:        #211f2a;
-  --color-border:         #26262e;
-  --color-text-primary:   #d6d4de;
-  --color-text-secondary: #93919f;
-  --color-text-muted:     #8a8896;
-  --color-accent:         #9d8cd8;
-  --color-accent-hover:   #b7a8ea;
-  --color-accent-soft:    rgba(157, 140, 216, 0.10);
-  --color-bg-translucent: rgba(19, 19, 23, 0.80);
-  --color-text-soft:      rgba(214, 212, 222, 0.10);
-  --color-paper:          #23222b;
+  --color-bg:             #0a0a0a;
+  --color-bg-secondary:   #111111;
+  --color-surface:        #1a1a1a;
+  --color-border:         #262626;
+  --color-text-primary:   #ededed;
+  --color-text-secondary: #a1a1a1;
+  --color-text-muted:     #8f8f8f;
+  --color-accent:         #ededed;
+  --color-accent-hover:   #ffffff;
+  --color-accent-soft:    rgba(237, 237, 237, 0.08);
+  --color-bg-translucent: rgba(10, 10, 10, 0.80);
+  --color-text-soft:      rgba(237, 237, 237, 0.10);
+  --color-paper:          #1c1c1c;
   --color-tape:           rgba(214, 204, 172, 0.30);
 }
 

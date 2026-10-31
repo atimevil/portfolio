@@ -141,13 +141,14 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
   )
 }
 
+// 라이트에서는 먹색으로 뒤집은 큰 타일. 다크에서 그대로 뒤집으면 밝은 회색 판이 튀어서, 바탕보다 한 단계 밝은 면으로 둔다.
 function LeadTile({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
   const { name, line } = splitTitle(project, locale)
   const { highlight, role } = outcome(project, locale, true)
   return (
     <Link
       href={href}
-      className="group flex flex-col justify-between gap-8 rounded-2xl bg-text-primary p-8 text-bg transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg col-span-2 lg:row-span-2 lg:p-10"
+      className="group flex flex-col justify-between gap-8 rounded-2xl border border-text-primary bg-text-primary p-8 text-bg transition-opacity dark:border-border dark:bg-surface dark:text-text-primary hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg col-span-2 lg:row-span-2 lg:p-10"
     >
       <span className="flex justify-between gap-3 font-mono text-xs opacity-70">
         <span>{t(locale, 'latest')}</span>

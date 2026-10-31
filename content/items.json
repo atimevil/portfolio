@@ -31,7 +31,7 @@
     "highlight_en": "SUMTECH 2026 Excellence Award",
     "role_en": "Team of five · sole developer",
     "visible": true,
-    "featured": true
+    "featured": false
   },
   {
     "id": "p16",
@@ -61,7 +61,7 @@
     ],
     "measure": true,
     "visible": true,
-    "featured": false
+    "featured": true
   },
   {
     "id": "p1",

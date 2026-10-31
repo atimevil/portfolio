@@ -41,10 +41,15 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
   // 비공개로 둔 메뉴는 방문자에게 빼고, 로그인한 관리자에게는 보여 준다(헤더 메뉴와 같은 기준)
   const hidden = await Promise.all(OFF_HOURS.map((l) => hiddenFromPublic(l.key)))
   const offHours = OFF_HOURS.filter((_, i) => !hidden[i])
-  // 나머지 대표 작업은 넓은 화면에서 한 줄 4칸을 채운다: 셋이면 넓게·좁게·좁게, 둘이면 반반, 하나면 한 줄.
-  // 좁은 화면(2칸)에서는 넓은 카드가 한 줄을 다 쓰고 좁은 카드 둘이 나란히 선다.
-  const restSpan = (i: number) =>
-    rest.length === 1 ? 'col-span-2 lg:col-span-4' : rest.length === 2 || i === 0 ? 'col-span-2' : 'col-span-2 sm:col-span-1'
+  // 대표 작업 줄은 넓은 화면에서 4칸: 둘이면 넓게·좁게 + 더보기, 하나면 반 + 더보기, 없으면 더보기만 한 줄.
+  // 좁은 화면(2칸)에서는 넓은 카드가 한 줄을 다 쓰고, 더보기와 기록이 나란히 선다.
+  const row = rest.slice(0, 2)
+  const rowSpan = (i: number) => (row.length === 1 || i === 0 ? 'col-span-2' : 'col-span-2 sm:col-span-1')
+  const moreSpan = row.length === 2 ? 'col-span-1' : row.length === 1 ? 'col-span-2' : 'col-span-2 lg:col-span-4'
+  // 더보기가 한 칸이면 아주 좁은 화면에서 기록 타일이 그 옆에 붙는다
+  const statsSpan =
+    (row.length === 2 ? 'col-span-1 sm:col-span-2' : 'col-span-2') + (offHours.length > 0 ? ' lg:col-span-1' : ' lg:col-span-4')
+  const moreCount = Math.max(projects.length - (lead ? 1 : 0) - row.length, 0)
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 w-full outline-none">
@@ -82,18 +87,33 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
 
         {lead && <LeadTile project={lead} href={`${workBase}/${projectSlug(lead)}`} locale={locale} />}
 
-        {rest.slice(0, 3).map((p, i) => (
+        {row.map((p, i) => (
           <ProjectTile
             key={p.id}
             project={p}
             href={`${workBase}/${projectSlug(p)}`}
             locale={locale}
-            wide={i === 0 || rest.length < 3}
-            className={restSpan(i)}
+            wide={i === 0 || row.length < 2}
+            className={rowSpan(i)}
           />
         ))}
 
-        <Link href={`${aboutHref}#awards`} className="flex flex-col justify-between gap-6 rounded-2xl bg-accent p-6 text-bg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg">
+        {/* 대표로 고르지 않은 작업은 숫자 하나로 묶어 소개의 전체 목록으로 보낸다 */}
+        <Link href={`${aboutHref}#projects`} className={`${tileLink} group flex flex-col justify-between gap-6 p-6 ${moreSpan}`}>
+          <span className="font-mono text-xs text-text-muted">{t(locale, 'more')}</span>
+          {moreCount > 0 && (
+            <span className="flex flex-col">
+              <span className="text-[2.75rem] font-bold leading-none tracking-tight text-text-primary">+{moreCount}</span>
+              <span className="mt-1 text-[13px] text-text-secondary">{t(locale, 'projects')}</span>
+            </span>
+          )}
+          <span className="text-[13px] text-accent transition-colors group-hover:text-accent-hover">{t(locale, 'viewAllWork')}</span>
+        </Link>
+
+        <Link
+          href={`${aboutHref}#awards`}
+          className={`flex flex-col justify-between gap-6 rounded-2xl bg-accent p-6 text-bg transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg ${statsSpan}`}
+        >
           <span className="font-mono text-xs opacity-85">{t(locale, 'record')}</span>
           <span className="flex gap-6">
             <Stat value={awardCount} label={t(locale, 'awardCount')} />
@@ -102,14 +122,8 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
           <span className="text-[13px]">{t(locale, 'viewAllWork')}</span>
         </Link>
 
-        <Link href={`${aboutHref}#projects`} className={`${tileLink} flex flex-col justify-between gap-6 p-6`}>
-          <span className="font-mono text-xs text-text-muted">{t(locale, 'workCount')}</span>
-          <Stat value={projects.length} />
-          <span className="text-[13px] text-accent">{t(locale, 'viewAllWork')}</span>
-        </Link>
-
         {offHours.length > 0 && (
-          <nav aria-label={t(locale, 'offHours')} className="flex flex-wrap items-center justify-between gap-4 col-span-2 rounded-2xl bg-surface px-7 py-6">
+          <nav aria-label={t(locale, 'offHours')} className="flex flex-wrap items-center justify-between gap-4 col-span-2 lg:col-span-3 rounded-2xl bg-surface px-7 py-6">
             <span className="text-sm text-text-secondary">{t(locale, 'offHours')}</span>
             <ul className="flex gap-5 font-semibold text-text-primary">
               {offHours.map((l) => (

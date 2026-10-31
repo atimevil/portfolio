@@ -67,7 +67,7 @@ const UI = {
   latest: { ko: '최근', en: 'Latest' },
   awardCount: { ko: '수상', en: 'Awards' },
   activityCount: { ko: '활동', en: 'Activities' },
-  workCount: { ko: '작업', en: 'Work' },
+  more: { ko: '더보기', en: 'More' },
   record: { ko: '기록', en: 'Record' },
   offHours: { ko: '개발 밖의 기록', en: 'Off the clock' },
   video: { ko: '영상', en: 'Video' },

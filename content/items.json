@@ -193,7 +193,7 @@
     "contribution_en": "Wrote the server setup for Smithery deployment, then used Claude Code to raise the MCP quality score from 44 to 100, extend it to 52 tools, and build multi-step workflows.",
     "result_en": "Published to the Smithery registry, where it drew about 600 tool calls a month while it was live. 73 GitHub stars, 8 forks (2026-10). I kept extending it alone after the Whitehat School final presentation.",
     "metrics_en": "★ 73 | GitHub stars\n52 | MCP tools (55 endpoints)\n~600 | Tool calls per month (while on Smithery)",
-    "featured": true,
+    "featured": false,
     "visible": true,
     "highlight": "월 600회 호출 (공개 당시)",
     "role": "도구 12 → 52개 확장",

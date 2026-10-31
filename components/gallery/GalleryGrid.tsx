@@ -108,6 +108,30 @@ interface GalleryGridProps {
   images: GalleryImage[]
 }
 
+// 스크랩북처럼 보이게 사진마다 기울기와 테이프를 다르게 준다. id로 정해서 새로고침해도 같은 모양이다.
+function hash(id: string): number {
+  let h = 0
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0
+  return Math.abs(h)
+}
+const TILTS = [-2.2, 1.4, -0.8, 2, -1.6, 0.6, 1.8, -1.2]
+
+function scrapStyle(id: string) {
+  const h = hash(id)
+  return {
+    tilt: TILTS[h % TILTS.length],
+    // 셋 중 둘에만 붙인다 — 전부 붙이면 무늬가 되고 스크랩한 느낌이 사라진다
+    tape: h % 3 !== 0,
+    tapeTilt: h % 2 ? 4 : -5,
+  }
+}
+
+/** createdAt(ISO) → "2026.10" */
+function monthLabel(createdAt: string): string {
+  const d = new Date(createdAt)
+  return Number.isNaN(d.getTime()) ? '' : `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}`
+}
+
 export default function GalleryGrid({ images }: GalleryGridProps) {
   const [selected, setSelected] = useState<GalleryImage | null>(null)
   const [zoomable, setZoomable] = useState(false)
@@ -119,14 +143,16 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
   return (
     <>
       {/* 카테고리 필터 */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="mb-10 flex flex-wrap gap-2">
         {categories.map((cat) => (
           <button
             key={cat}
+            type="button"
+            aria-pressed={activeCategory === cat}
             onClick={() => setActiveCategory(cat)}
-            className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
+            className={`min-h-[32px] rounded-full border px-3.5 text-sm transition-colors ${
               activeCategory === cat
-                ? 'bg-accent-soft text-accent border-accent'
+                ? 'border-text-primary bg-text-primary text-bg'
                 : 'border-border text-text-secondary hover:border-text-muted hover:text-text-primary'
             }`}
           >
@@ -135,40 +161,53 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
         ))}
       </div>
 
-      {/* 이미지 그리드 */}
+      {/* 사진: 자르지 않고 원래 비율로 단을 나눠 쌓는다 */}
       {filtered.length === 0 ? (
         <p className="text-center text-text-secondary py-16">이미지가 없습니다.</p>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-          {filtered.map((image, idx) => (
-            // 버튼이라 키보드(Tab·Enter·Space)로도 열 수 있다
-            <motion.button
-              type="button"
-              key={image.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: idx * 0.04 }}
-              aria-label={image.description ? `${image.description} 크게 보기` : '이미지 크게 보기'}
-              className="relative block aspect-square w-full overflow-hidden rounded-lg cursor-pointer group bg-surface text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
-              onClick={() => setSelected(image)}
-              onMouseEnter={() => {
-                const img = new window.Image()
-                img.src = galleryFullSrc(image)
-              }}
-            >
-              <img
-                src={galleryThumbSrc(image)}
-                alt={image.description}
-                loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-              {image.description && (
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100 transition-opacity flex items-end p-3">
-                  <p className="text-white text-xs line-clamp-2">{image.description}</p>
-                </div>
-              )}
-            </motion.button>
-          ))}
+        <div className="columns-2 gap-5 md:columns-3 md:gap-8 lg:columns-4">
+          {filtered.map((image, idx) => {
+            const { tilt, tape, tapeTilt } = scrapStyle(image.id)
+            const month = monthLabel(image.createdAt)
+            return (
+              // 버튼이라 키보드(Tab·Enter·Space)로도 열 수 있다
+              <motion.button
+                type="button"
+                key={image.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: Math.min(idx, 12) * 0.04 }}
+                aria-label={image.description ? `${image.description} 크게 보기` : '이미지 크게 보기'}
+                style={{ '--tilt': `${tilt}deg` } as React.CSSProperties}
+                className="group relative mb-6 block w-full break-inside-avoid bg-paper p-2.5 pb-3 text-left shadow-[0_1px_2px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.08)] [transform:rotate(var(--tilt))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:[transform:rotate(0deg)_translateY(-4px)] md:mb-10 md:p-3 md:pb-3.5"
+                onClick={() => setSelected(image)}
+                onMouseEnter={() => {
+                  const img = new window.Image()
+                  img.src = galleryFullSrc(image)
+                }}
+              >
+                {tape && (
+                  <span
+                    aria-hidden="true"
+                    style={{ transform: `translateX(-50%) rotate(${tapeTilt}deg)` }}
+                    className="absolute -top-3 left-1/2 h-6 w-20 bg-tape"
+                  />
+                )}
+                <img
+                  src={galleryThumbSrc(image)}
+                  alt={image.description}
+                  loading="lazy"
+                  className="block h-auto w-full bg-surface"
+                />
+                {(image.description || month) && (
+                  <span className="flex items-baseline justify-between gap-3 pt-2.5">
+                    <span className="line-clamp-2 text-[13px] leading-snug text-text-primary">{image.description}</span>
+                    {month && <span className="shrink-0 font-mono text-[11px] text-text-muted">{month}</span>}
+                  </span>
+                )}
+              </motion.button>
+            )
+          })}
         </div>
       )}
 

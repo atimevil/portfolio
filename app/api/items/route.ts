@@ -33,6 +33,7 @@ const ItemSchema = z.object({
   paper: z.string().optional(),
   link: z.string().optional(),
   thumbnail: z.string().optional(),
+  video: z.string().max(500).optional(),
   order: z.number().optional(),
   visible: z.boolean().optional(),
   featured: z.boolean().optional(),

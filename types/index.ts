@@ -61,6 +61,8 @@ export interface PortfolioItem {
   role?: string
   highlight_en?: string
   role_en?: string
+  /** 상세 페이지 영상. 유튜브 주소(일부 공개 권장) 또는 /videos/... .mp4·.webm 경로. 그림 아래에 붙는다. */
+  video?: string
   /** 무언가를 재고 평가한 작업(연구·경진대회). 홈의 '연구 · 경진대회'에 모인다. 종류(type)와 무관하다. */
   measure?: boolean
   /** 소개(/about)에 노출한다. 꺼져 있으면 등록만 되고 목록에는 안 나온다(직접 URL로는 열림). */

@@ -38,6 +38,7 @@ type FormState = {
   slug: string
   link: string
   thumbnail: string
+  video: string
   order: number
   visible: boolean
   featured: boolean
@@ -69,6 +70,7 @@ function toForm(item: PortfolioItem | null): FormState {
     slug: item?.slug ?? '',
     link: item?.link ?? '',
     thumbnail: item?.thumbnail ?? '',
+    video: item?.video ?? '',
     order: item?.order ?? 0,
     visible: item?.visible ?? false,
     featured: item?.featured ?? false,
@@ -148,6 +150,7 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
       slug: isProject ? form.slug : undefined,
       link: isProject ? form.link : undefined,
       thumbnail: isProject ? form.thumbnail : undefined,
+      video: isProject ? form.video.trim() || undefined : undefined,
       order: isProject ? Number(form.order) || 0 : undefined,
       visible: isProject ? form.visible : undefined,
       featured: isProject ? (form.visible && form.featured) : undefined,
@@ -297,6 +300,10 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
           <div>
             <label htmlFor="item-thumbnail" className={labelCls}>그림 경로 (상세 페이지 상단 · 예: /figures/ctf-solver-mcp.svg)</label>
             <input id="item-thumbnail" type="text" value={form.thumbnail} placeholder="/figures/....svg" onChange={(e) => set('thumbnail', e.target.value)} className={inputCls} />
+          </div>
+          <div>
+            <label htmlFor="item-video" className={labelCls}>영상 (그림 아래 · 유튜브 주소 또는 /videos/....mp4)</label>
+            <input id="item-video" type="text" value={form.video} placeholder="https://youtu.be/..." onChange={(e) => set('video', e.target.value)} className={inputCls} />
           </div>
           <div>
             <label htmlFor="item-slug" className={labelCls}>상세 주소 슬러그 (예: finbert-vs-llm · 비우면 id 사용)</label>

@@ -34,6 +34,36 @@
     "featured": true
   },
   {
+    "id": "p16",
+    "type": "project",
+    "year": "2026.09.17",
+    "title": "Check-Six — 1:1 공중전 AI",
+    "title_en": "Check-Six: 1v1 air-combat AI",
+    "slug": "ai-pilot",
+    "description": "AI Pilot Top Gun Challenge 2026에 2인 팀 팀장으로 나가 행동 트리와 강화학습 에이전트를 설계·학습했다.",
+    "description_en": "Led a two-person team at AI Pilot Top Gun Challenge 2026, designing and training a behavior tree and a reinforcement learning agent.",
+    "problem": "한국항공대 총장배 1:1 공중전 AI 대회(290개 팀 참가). 상대 기체를 먼저 잡는 에이전트를 만들어 토너먼트로 겨룬다.",
+    "problem_en": "A 1v1 air-combat AI contest hosted by Korea Aerospace University, with 290 teams. Agents fight each other in a tournament.",
+    "contribution": "2인 팀 Check-Six 팀장으로 행동 트리와 강화학습 에이전트를 직접 설계·학습했다. Claude Code 검증 스킬로 평가 문제 17건을 찾았고, 스스로 걸어 둔 조준점 회전 상한(20°/s)을 풀어 잔여 체력 차를 32%에서 41%로 올렸다.",
+    "contribution_en": "As leader of the two-person team Check-Six, I designed and trained both a behavior tree and a reinforcement learning agent. A Claude Code audit skill flagged 17 evaluation issues, and removing a 20°/s aim-point turn-rate cap I had set myself raised the remaining-HP margin from 32% to 41%.",
+    "result": "예선 4승 2패, 16강 2승 1패로 8강에 진출해 장려상(KAI 사장상)을 받았다.",
+    "result_en": "We went 4–2 in the preliminaries and 2–1 in the round of 16, reaching the quarterfinals and winning an Honorable Mention (KAI President's Award).",
+    "metrics": "290 | 참가 팀\n8강 | 토너먼트 진출\n32% → 41% | 잔여 체력 차",
+    "metrics_en": "290 | Teams entered\nTop 8 | Knockout bracket\n32% → 41% | Remaining-HP margin",
+    "highlight": "AI Pilot 2026 장려상",
+    "role": "2인 팀 · 팀장",
+    "highlight_en": "AI Pilot 2026 Honorable Mention",
+    "role_en": "Team of 2 · Lead",
+    "skills": [
+      "Behavior Tree",
+      "Reinforcement Learning",
+      "Claude Code"
+    ],
+    "measure": true,
+    "visible": true,
+    "featured": false
+  },
+  {
     "id": "p1",
     "type": "project",
     "order": 0,

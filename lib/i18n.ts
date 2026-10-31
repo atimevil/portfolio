@@ -70,6 +70,7 @@ const UI = {
   workCount: { ko: '작업', en: 'Work' },
   record: { ko: '기록', en: 'Record' },
   offHours: { ko: '개발 밖의 기록', en: 'Off the clock' },
+  video: { ko: '영상', en: 'Video' },
   count: { ko: '개', en: '' },
 } as const
 

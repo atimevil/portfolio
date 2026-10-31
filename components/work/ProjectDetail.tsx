@@ -5,6 +5,7 @@ import { hasCaseStudy, parseMetrics } from '@/lib/caseStudy'
 import { projectLinks } from '@/lib/projectLinks'
 import { applyGithubStats } from '@/lib/githubStats'
 import { readFigure } from '@/lib/figure'
+import { parseVideo } from '@/lib/projectVideo'
 import { splitTitle, outcome } from '@/lib/projectCard'
 import { t, localized, type Locale } from '@/lib/i18n'
 
@@ -21,6 +22,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
   const links = projectLinks(project, locale)
   const metrics = parseMetrics(applyGithubStats(localized(project, 'metrics', locale), project.github))
   const figure = readFigure(project.thumbnail, locale)
+  const video = parseVideo(project.video)
   const columns = (
     [
       ['csProblem', localized(project, 'problem', locale)],
@@ -85,6 +87,31 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
           className="mb-8 w-full rounded-2xl border border-border bg-bg object-contain"
         />
       ) : null}
+
+      {/* 영상은 눌러야 불러온다(유튜브는 loading=lazy, 파일은 preload=metadata) — 상세를 열자마자 무거워지지 않게 */}
+      {video?.kind === 'youtube' && (
+        <div className="mb-8 aspect-video overflow-hidden rounded-2xl border border-border bg-bg-secondary">
+          <iframe
+            src={video.embed}
+            title={`${title} — ${t(locale, 'video')}`}
+            loading="lazy"
+            allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+            className="h-full w-full"
+          />
+        </div>
+      )}
+      {video?.kind === 'file' && (
+        <video
+          src={video.src}
+          controls
+          preload="metadata"
+          playsInline
+          aria-label={`${title} — ${t(locale, 'video')}`}
+          className="mb-8 w-full rounded-2xl border border-border bg-bg-secondary"
+        />
+      )}
 
       {/* dl 대신 제목(h2) + 본문 — 제목 목록으로 문제·기여·결과 사이를 건너뛸 수 있다. */}
       {columns.length > 0 && (

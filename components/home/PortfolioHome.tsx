@@ -148,30 +148,33 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
 function LeadTile({ project, href, locale }: { project: PortfolioItem; href: string; locale: Locale }) {
   const { name, line } = splitTitle(project, locale)
   const { highlight, role } = outcome(project, locale, true)
-  // 상세에 '장면 모드'(autoplay=1)로 건 영상이 있으면 그 장면을 타일 배경으로 되풀이한다
-  // 반복 영상 파일이 있으면 그것을, 없으면 상세에 '장면 모드'(autoplay=1)로 건 유튜브 장면을 타일 배경으로 되풀이한다
+  // 반복 영상 파일이 있으면 제목 아래 16:9 액자로 넣고(글자와 겹치지 않는다),
+  // 없으면 상세에 '장면 모드'(autoplay=1)로 건 유튜브 장면을 타일 배경으로 되풀이한다
   const loop = parseVideo(project.loop)
   const loopSrc = loop?.kind === 'file' ? loop.src : null
   const video = parseVideo(project.video)
   const clip = !loopSrc && video?.kind === 'youtube' && video.clip ? video : null
   const labels = { pause: t(locale, 'pause'), play: t(locale, 'play') }
   return (
-    <div className="group relative col-span-2 overflow-hidden rounded-2xl border border-text-primary bg-text-primary text-bg dark:border-border dark:bg-surface dark:text-text-primary lg:row-span-2">
-      {loopSrc && <LoopVideo src={loopSrc} variant="cover" labels={labels} />}
+    <div className="group relative col-span-2 overflow-hidden rounded-2xl border border-text-primary bg-text-primary text-bg transition-opacity hover:opacity-95 dark:border-border dark:bg-surface dark:text-text-primary lg:row-span-2">
       {clip && <LeadClip clipEmbed={clip.clipEmbed} start={clip.start} labels={labels} />}
-      <Link
-        href={href}
-        className="relative z-10 flex h-full flex-col justify-between gap-8 rounded-2xl p-8 transition-opacity hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg lg:p-10"
-      >
-        {/* 영상이 있으면 오른쪽 위에 멈춤 버튼이 앉으므로 날짜를 '최근' 옆으로 붙인다 */}
-        <span className={`flex gap-3 font-mono text-xs opacity-70 ${clip || loopSrc ? '' : 'justify-between'}`}>
+      <div className={`relative flex h-full flex-col justify-between p-8 lg:p-10 ${loopSrc ? 'gap-6' : 'gap-8'}`}>
+        {/* 배경 장면이 있으면 오른쪽 위에 멈춤 버튼이 앉으므로 날짜를 '최근' 옆으로 붙인다 */}
+        <span className={`flex gap-3 font-mono text-xs opacity-70 ${clip ? '' : 'justify-between'}`}>
           <span>{t(locale, 'latest')}</span>
           <span>{project.year}</span>
         </span>
         <span>
-          <span className="block text-[2rem] font-bold leading-tight tracking-tight">{name}</span>
+          {/* 링크는 이름에 걸고 ::after로 타일 전체를 덮는다 — 액자의 멈춤 버튼(z-20)을 링크 밖에 둘 수 있게 */}
+          <Link
+            href={href}
+            className="block text-[2rem] font-bold leading-tight tracking-tight after:absolute after:inset-0 after:z-10 after:rounded-2xl focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-inset focus-visible:after:ring-accent"
+          >
+            {name}
+          </Link>
           {line && <span className="mt-2 block max-w-md opacity-80">{line}</span>}
         </span>
+        {loopSrc && <LoopVideo src={loopSrc} labels={labels} className="rounded-xl bg-black/30" />}
         {(highlight || role) && (
           <span className="flex flex-col gap-4">
             {/* 토큰 색(var)에는 /20 같은 투명도가 안 붙어서 구분선은 글자색에 opacity로 낸다 */}
@@ -182,7 +185,7 @@ function LeadTile({ project, href, locale }: { project: PortfolioItem; href: str
             </span>
           </span>
         )}
-      </Link>
+      </div>
     </div>
   )
 }

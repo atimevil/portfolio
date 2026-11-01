@@ -96,7 +96,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
       {video?.kind === 'youtube' && video.clip && (
         <figure className="mb-8">
           {loopSrc ? (
-            <LoopVideo src={loopSrc} variant="frame" title={`${title} — ${t(locale, 'video')}`} labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }} />
+            <LoopVideo src={loopSrc} title={`${title} — ${t(locale, 'video')}`} labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }} />
           ) : (
             <YouTubeClip
               embed={video.embed}
@@ -138,7 +138,7 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
       )}
       {loopSrc && video?.kind !== 'youtube' && (
         <div className="mb-8">
-          <LoopVideo src={loopSrc} variant="frame" title={`${title} — ${t(locale, 'video')}`} labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }} />
+          <LoopVideo src={loopSrc} title={`${title} — ${t(locale, 'video')}`} labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }} />
         </div>
       )}
       {video?.kind === 'file' && !loopSrc && (

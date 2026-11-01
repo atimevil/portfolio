@@ -1,5 +1,6 @@
 import type { SiteSettings } from '@/types'
 import { cleanEmail } from '@/lib/email'
+import { githubHandle } from '@/lib/github'
 import type { Locale } from '@/lib/i18n'
 
 interface Props {
@@ -53,6 +54,10 @@ export default function ProfileHeader({ profile, locale = 'ko', headingLevel = 1
           {profile.github && (
             <a href={profile.github} target="_blank" rel="noopener noreferrer"
               className="hover:text-accent transition-colors">GitHub</a>
+          )}
+          {profile.github_org?.trim() && (
+            <a href={profile.github_org.trim()} target="_blank" rel="noopener noreferrer"
+              className="hover:text-accent transition-colors">GitHub · {githubHandle(profile.github_org)}</a>
           )}
           {mail && (
             <a href={`mailto:${mail}`} className="hover:text-accent transition-colors">

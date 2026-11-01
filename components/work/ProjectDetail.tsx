@@ -180,6 +180,30 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
         </ul>
       )}
 
+      {/* 포스터는 세로로 아주 길어서(약 1:3) 윗부분만 4:5로 보이고, 누르면 원본이 새 탭에서 열린다 */}
+      {project.poster && (
+        <section className="mb-8">
+          <h2 className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-muted">{t(locale, 'poster')}</h2>
+          <a
+            href={project.poster}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block w-full max-w-xs overflow-hidden rounded-2xl border border-border bg-bg-secondary transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            <img
+              src={project.poster}
+              alt={`${title} — ${t(locale, 'poster')}`}
+              loading="lazy"
+              className="aspect-[4/5] w-full object-cover object-top"
+            />
+            <span className="flex min-h-[40px] items-center justify-between border-t border-border px-4 text-xs text-text-secondary transition-colors group-hover:text-text-primary">
+              {t(locale, 'viewFullSize')}
+              <span aria-hidden="true">↗</span>
+            </span>
+          </a>
+        </section>
+      )}
+
       {(project.skills?.length ?? 0) > 0 && (
         <div className="mb-6 flex flex-wrap gap-2">
           {project.skills?.map((s) => (

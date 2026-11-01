@@ -63,10 +63,12 @@ export interface PortfolioItem {
   role_en?: string
   /** 상세 페이지 영상. 유튜브 주소(일부 공개 권장) 또는 /videos/... .mp4·.webm 경로. 그림 아래에 붙는다. */
   video?: string
-  /** 소리 없이 되풀이할 짧은 영상 파일(/videos/....mp4·.webm). 있으면 홈 대표 타일 배경에 쓴다. 상세에서는 장면 모드 유튜브나
+  /** 소리 없이 되풀이할 짧은 영상 파일(/videos/....mp4·.webm). 있으면 홈 대표 타일의 영상 액자에 쓴다. 상세에서는 장면 모드 유튜브나
    *  유튜브 영상이 없을 때만 대신 쓴다(본선 대국처럼 평범한 플레이어로 건 유튜브는 그대로).
    *  — 유튜브 임베드는 채널명·일시정지 아이콘·'동영상 더보기'를 화면에 그려서 움짤처럼 보이지 않는다. */
   loop?: string
+  /** 대회·학회 포스터 이미지(/uploads/gallery/....jpg 등). 상세에서 윗부분만 미리 보이고, 누르면 원본이 열린다. */
+  poster?: string
   /** 무언가를 재고 평가한 작업(연구·경진대회). 홈의 '연구 · 경진대회'에 모인다. 종류(type)와 무관하다. */
   measure?: boolean
   /** 소개(/about)에 노출한다. 꺼져 있으면 등록만 되고 목록에는 안 나온다(직접 URL로는 열림). */
@@ -88,6 +90,8 @@ export interface SiteSettings {
     avatar: string
     skills: string[]
     github: string
+    /** 개인 계정 말고 함께 쓰는 GitHub(조직) 주소. 비우면 안 나온다. */
+    github_org?: string
     linkedin: string
     email: string
     aboutText: string

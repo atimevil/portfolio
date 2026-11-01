@@ -80,7 +80,7 @@ const PROJECT_ONLY_KEYS = [
   'problem', 'contribution', 'result', 'metrics',
   'problem_en', 'contribution_en', 'result_en', 'metrics_en',
   'highlight', 'role', 'highlight_en', 'role_en',
-  'skills', 'github', 'paper', 'slug', 'link', 'thumbnail', 'video', 'loop', 'order', 'visible', 'featured',
+  'skills', 'github', 'paper', 'slug', 'link', 'thumbnail', 'video', 'loop', 'poster', 'order', 'visible', 'featured',
 ] as const
 
 function stripProjectOnly(item: PortfolioItem): PortfolioItem {

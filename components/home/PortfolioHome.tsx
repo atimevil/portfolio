@@ -4,6 +4,7 @@ import { getSettings } from '@/lib/settings'
 import { getOrderedProjects, getTimeline, projectSlug } from '@/lib/items'
 import { splitTitle, outcome } from '@/lib/projectCard'
 import { cleanEmail } from '@/lib/email'
+import { githubHandle } from '@/lib/github'
 import { hiddenFromPublic } from '@/lib/publicGate'
 import { t, type Locale } from '@/lib/i18n'
 import { parseVideo } from '@/lib/projectVideo'
@@ -36,6 +37,7 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
   const activityCount = timeline.filter((i) => i.type === 'activity').length
 
   const mail = cleanEmail(profile.email)
+  const githubOrg = profile.github_org?.trim()
   const en = locale === 'en'
   const affiliation = (en ? profile.affiliation_en : profile.affiliation)?.trim()
   const headline = (en ? profile.headline_en : profile.headline)?.trim()
@@ -79,6 +81,13 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
               <li>
                 <a href={profile.github} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[40px] items-center rounded-full border border-border px-4 text-text-primary transition-colors hover:border-accent">
                   GitHub ↗
+                </a>
+              </li>
+            )}
+            {githubOrg && (
+              <li>
+                <a href={githubOrg} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[40px] items-center rounded-full border border-border px-4 text-text-primary transition-colors hover:border-accent">
+                  GitHub · {githubHandle(githubOrg)} ↗
                 </a>
               </li>
             )}

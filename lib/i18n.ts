@@ -74,6 +74,8 @@ const UI = {
   pause: { ko: '일시정지', en: 'Pause' },
   play: { ko: '재생', en: 'Play' },
   watchOnYoutube: { ko: '유튜브에서 보기', en: 'Watch on YouTube' },
+  poster: { ko: '포스터', en: 'Poster' },
+  viewFullSize: { ko: '원본 크기로 보기', en: 'View full size' },
   count: { ko: '개', en: '' },
 } as const
 

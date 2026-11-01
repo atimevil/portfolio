@@ -17,6 +17,7 @@ const SettingsSchema = z.object({
       avatar: z.string().optional(),
       skills: z.array(z.string()).optional(),
       github: z.string().optional(),
+      github_org: z.string().optional(),
       linkedin: z.string().optional(),
       email: z.string().optional(),
       aboutText: z.string().optional(),

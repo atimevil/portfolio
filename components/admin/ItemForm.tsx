@@ -40,6 +40,7 @@ type FormState = {
   thumbnail: string
   video: string
   loop: string
+  poster: string
   order: number
   visible: boolean
   featured: boolean
@@ -73,6 +74,7 @@ function toForm(item: PortfolioItem | null): FormState {
     thumbnail: item?.thumbnail ?? '',
     video: item?.video ?? '',
     loop: item?.loop ?? '',
+    poster: item?.poster ?? '',
     order: item?.order ?? 0,
     visible: item?.visible ?? false,
     featured: item?.featured ?? false,
@@ -154,6 +156,7 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
       thumbnail: isProject ? form.thumbnail : undefined,
       video: isProject ? form.video.trim() || undefined : undefined,
       loop: isProject ? form.loop.trim() || undefined : undefined,
+      poster: isProject ? form.poster.trim() || undefined : undefined,
       order: isProject ? Number(form.order) || 0 : undefined,
       visible: isProject ? form.visible : undefined,
       featured: isProject ? (form.visible && form.featured) : undefined,
@@ -309,8 +312,12 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
             <input id="item-video" type="text" value={form.video} placeholder="https://youtu.be/..." onChange={(e) => set('video', e.target.value)} className={inputCls} />
           </div>
           <div>
-            <label htmlFor="item-loop" className={labelCls}>반복 영상 파일 (홈 대표 타일 배경 · 10~20초 · /videos/....mp4)</label>
+            <label htmlFor="item-loop" className={labelCls}>반복 영상 파일 (홈 대표 타일 영상 · 10~20초 · /videos/....mp4)</label>
             <input id="item-loop" type="text" value={form.loop} placeholder="/videos/check-six.mp4" onChange={(e) => set('loop', e.target.value)} className={inputCls} />
+          </div>
+          <div>
+            <label htmlFor="item-poster" className={labelCls}>포스터 이미지 (상세 · 갤러리에 올린 /uploads/gallery/....jpg 등)</label>
+            <input id="item-poster" type="text" value={form.poster} placeholder="/uploads/gallery/....jpg" onChange={(e) => set('poster', e.target.value)} className={inputCls} />
           </div>
           <div>
             <label htmlFor="item-slug" className={labelCls}>상세 주소 슬러그 (예: finbert-vs-llm · 비우면 id 사용)</label>

@@ -49,15 +49,19 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
   const row = rest.slice(0, 2)
   const rowSpan = (i: number) => (row.length === 1 || i === 0 ? 'col-span-2' : 'col-span-2 sm:col-span-1')
   const moreSpan = row.length === 2 ? 'col-span-1' : row.length === 1 ? 'col-span-2' : 'col-span-2 lg:col-span-4'
+  // 넓은 화면에서 대표 타일(영상 액자)이 프로필보다 길어서, 프로필은 내용만큼만 두고 그 아래 빈자리에 기록 타일을 올린다.
+  // 자리만 옮기고(lg:*-start) 문서 순서는 그대로라 좁은 화면 순서는 변하지 않는다.
+  const stacked = Boolean(lead)
   // 더보기가 한 칸이면 아주 좁은 화면에서 기록 타일이 그 옆에 붙는다
   const statsSpan =
-    (row.length === 2 ? 'col-span-1 sm:col-span-2' : 'col-span-2') + (offHours.length > 0 ? ' lg:col-span-1' : ' lg:col-span-4')
+    (row.length === 2 ? 'col-span-1 sm:col-span-2' : 'col-span-2') +
+    (stacked ? ' lg:col-span-2 lg:col-start-1 lg:row-start-2' : offHours.length > 0 ? ' lg:col-span-1' : ' lg:col-span-4')
   const moreCount = Math.max(projects.length - (lead ? 1 : 0) - row.length, 0)
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 w-full outline-none">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-3 px-4 py-10 sm:gap-4 md:px-8 lg:grid-cols-4 lg:py-14">
-        <section className={`${tile} col-span-2 flex flex-col justify-between gap-8 p-8 lg:row-span-2 lg:p-10`}>
+        <section className={`${tile} col-span-2 flex flex-col justify-between gap-8 p-8 lg:p-10 ${stacked ? 'lg:col-start-1 lg:row-start-1' : 'lg:row-span-2'}`}>
           <div>
             <h1 className="text-[2.5rem] font-bold leading-tight tracking-tight text-text-primary lg:text-[3.25rem]">{profile.name}</h1>
             {affiliation && <p className="mt-2 text-lg text-text-primary">{affiliation}</p>}
@@ -126,7 +130,7 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
         </Link>
 
         {offHours.length > 0 && (
-          <nav aria-label={t(locale, 'offHours')} className="flex flex-wrap items-center justify-between gap-4 col-span-2 lg:col-span-3 tile px-7 py-6">
+          <nav aria-label={t(locale, 'offHours')} className={`flex flex-wrap items-center justify-between gap-4 col-span-2 tile px-7 py-6 ${stacked ? 'lg:col-span-4' : 'lg:col-span-3'}`}>
             <span className="text-sm text-text-secondary">{t(locale, 'offHours')}</span>
             <ul className="flex gap-5 font-semibold text-text-primary">
               {offHours.map((l) => (
@@ -156,7 +160,7 @@ function LeadTile({ project, href, locale }: { project: PortfolioItem; href: str
   const clip = !loopSrc && video?.kind === 'youtube' && video.clip ? video : null
   const labels = { pause: t(locale, 'pause'), play: t(locale, 'play') }
   return (
-    <div className="group relative col-span-2 overflow-hidden rounded-2xl border border-text-primary bg-text-primary text-bg transition-opacity hover:opacity-95 dark:border-border dark:bg-surface dark:text-text-primary lg:row-span-2">
+    <div className="group relative col-span-2 overflow-hidden rounded-2xl border border-text-primary bg-text-primary text-bg transition-opacity hover:opacity-95 dark:border-border dark:bg-surface dark:text-text-primary lg:col-start-3 lg:row-span-2 lg:row-start-1">
       {clip && <LeadClip clipEmbed={clip.clipEmbed} start={clip.start} labels={labels} />}
       <div className={`relative flex h-full flex-col justify-between p-8 lg:p-10 ${loopSrc ? 'gap-6' : 'gap-8'}`}>
         {/* 배경 장면이 있으면 오른쪽 위에 멈춤 버튼이 앉으므로 날짜를 '최근' 옆으로 붙인다 */}

@@ -12,7 +12,7 @@
 <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=fecc04bed43b06597addefc5ad03584d&libraries=services&autoload=false"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:#f4f6fb;height:100vh;display:flex;flex-direction:column}
+body{word-break:keep-all;overflow-wrap:anywhere;text-wrap:pretty;font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:#f4f6fb;height:100vh;display:flex;flex-direction:column}
 .header{background:linear-gradient(135deg,#1a6ef5,#0d4fc9);color:white;padding:14px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0;box-shadow:0 2px 12px rgba(26,110,245,.3)}
 .logo{background:white;color:#1a6ef5;font-weight:900;font-size:16px;width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .header-info h1{font-size:16px;font-weight:700}
@@ -303,8 +303,8 @@ function fmtRent(min, max) {
 const fmtWon = v => v == null ? '산정중' : (v/10000).toLocaleString()+'만원';
 // 짧은 금액: '1.2억', '5,848만', 월세처럼 100만 아래는 '23.4만'
 const man = v => v >= 1e8 ? (Math.round(v/1e7)/10) + '억' : v >= 1e6 ? Math.round(v/1e4).toLocaleString() + '만' : (Math.round(v/1e3)/10) + '만';
-const range = (a, b) => a == null ? '산정중' : a === b ? man(a) : `${man(a)}~${man(b)}`;
-const money = (d, a, b) => `보증금 <b>${range(d[a], d[b])}</b>`;
+const range = (a, b) => a == null ? '산정중' : man(a) === man(b) ? man(a) : `${man(a)}~${man(b)}`;  // 반올림해 같으면 '1.3억~1.3억' 대신 하나만
+const money = (d, a, b) => `보증금 <b>${range(d[a], d[b])}</b>`;
 function fmtArea(min, max) {
   if (min===max) return min.toFixed(1)+'㎡';
   return min.toFixed(1)+'~'+max.toFixed(1)+'㎡';
@@ -356,7 +356,7 @@ function popupHtml(d) {
     <div class="popup-rent">
       <div class="pr-row"><span>공고</span><span>${esc(d.공고명)}</span></div>
       <div class="pr-row"><span>접수기간</span><span>${mmdd(d.신청시작)}~${mmdd(d.신청종료)}</span></div>
-      ${d.주택형.map(([t, a, n]) => `<div class="pr-row"><span>${esc(t)}</span><span>${a == null ? '' : a + '㎡ · '}${n}세대</span></div>`).join('')}
+      ${d.주택형.map(([t, a, n]) => `<div class="pr-row"><span>${esc(t)}</span><span>${a == null ? '' : a + '㎡ · '}${n}세대</span></div>`).join('')}
       ${d.임대 && d.임대.length
         ? `<div class="pr-row"><span><b>임대조건</b> (보증금 / 월)</span><span></span></div>` +
           d.임대.map(([t, who, dep, rent]) => `<div class="pr-row"><span>&nbsp;· ${esc(t)} ${esc(who)}</span><span>${man(dep)} / ${man(rent)}</span></div>`).join('')
@@ -570,18 +570,17 @@ function jeonseCard() {
   div.innerHTML = `
     <div class="card-top"><span class="gu-tag" style="background:#b45309">전국</span>
       <div class="card-name">LH 청년 전세임대 (집은 직접 구함)</div></div>
-    <div class="card-addr">${esc(j.공고명)} · ${esc(j.자격)} 1순위(수급자·한부모 등)</div>
+    <div class="card-addr">${esc(j.공고명)} · ${esc(j.자격)} 1순위(수급자·한부모 등)</div>
     <div class="card-meta">${stTag(j)}<span class="tag tag-blue">지원한도 ${esc(j.한도)}</span></div>
-    <div class="card-rent">접수 <b>${mmdd(j.신청시작)}~${mmdd(j.신청종료)}</b> · 보증금 ${esc(j.보증금)} · 월세 ${esc(j.월임대료)}
-      · <a href="${LH_LIST_URL}" target="_blank" rel="noopener">LH청약플러스</a></div>`;
+    <div class="card-rent">접수 <b>${mmdd(j.신청시작)}~${mmdd(j.신청종료)}</b> · 보증금 ${esc(j.보증금)} · 월세 ${esc(j.월임대료).replace(/%(?=\S)/g, '%\u2060')} · <a href="${LH_LIST_URL}" target="_blank" rel="noopener">LH청약플러스</a></div>`;
   return div;
 }
 
 function renderList(items, regions, base) {
   const total = items.reduce((s,d)=>s+(d.세대수||0),0);
   document.getElementById('listHdr').textContent = regions
-    ? `전국 ${regions.length}개 시도 · ${items.length}곳 · ${total}세대 — 지역을 고르세요`
-    : `${items.length}곳 · ${total}세대`;
+    ? `전국 ${regions.length}개 시도 · ${items.length}곳 · ${total}세대 — 지역을 고르세요`
+    : `${items.length}곳 · ${total}세대`;
   document.getElementById('sTotal').textContent = total.toLocaleString();
   document.getElementById('sBuildings').textContent = items.length;
   document.getElementById('sGu').textContent = new Set(items.map(place)).size;
@@ -591,9 +590,9 @@ function renderList(items, regions, base) {
   // 공개 페이지라 비공식 정리임을 항상 보이게 (계약된 집은 다음 갱신 전까지 남아 있을 수 있음)
   list.insertAdjacentHTML('beforeend', `<div class="list-hdr" style="background:#f8faff;line-height:1.5">
     비공식 정리 페이지예요. 신청 전에 원문 공고를 꼭 확인하세요. 이미 계약된 집이 남아 있을 수 있어요.
-    출처: <a href="${LH_LIST_URL}" target="_blank" rel="noopener">LH청약플러스</a> ·
-    <a href="https://soco.seoul.go.kr/youth/bbs/BMSR00015/list.do?menuNo=400008" target="_blank" rel="noopener">서울시 청년안심주택</a> ·
-    <a href="https://www.i-sh.co.kr/main/lay2/S1T222C294/sublink.do" target="_blank" rel="noopener">SH</a> · <a href="https://apply.gh.or.kr/sb/sr/sr7150/selectPbancRentHouseList.do" target="_blank" rel="noopener">GH</a></div>`);
+    출처: <a href="${LH_LIST_URL}" target="_blank" rel="noopener">LH청약플러스</a> ·
+    <a href="https://soco.seoul.go.kr/youth/bbs/BMSR00015/list.do?menuNo=400008" target="_blank" rel="noopener">서울시 청년안심주택</a> ·
+    <a href="https://www.i-sh.co.kr/main/lay2/S1T222C294/sublink.do" target="_blank" rel="noopener">SH</a> · <a href="https://apply.gh.or.kr/sb/sr/sr7150/selectPbancRentHouseList.do" target="_blank" rel="noopener">GH</a></div>`);
   const jc = jeonseCard();
   if (jc) list.appendChild(jc);
   // 지역을 고른 채로 종류를 바꿔 0곳이면, 그 종류가 있는 시도를 바로 고를 수 있게 보여 줌
@@ -607,7 +606,7 @@ function renderList(items, regions, base) {
     (regions || elsewhere).forEach(r => {
       const b = document.createElement('button');
       b.className = 'rcard';
-      b.innerHTML = `<b>${esc(r.sido)}</b><small>${r.n}곳 · ${r.units.toLocaleString()}세대</small>
+      b.innerHTML = `<b>${esc(r.sido)}</b><small>${r.n}곳 · ${r.units.toLocaleString()}세대</small>
         ${r.open ? `<span class="tag tag-st" style="background:${ST_COLOR['접수중']};align-self:flex-start">지금 접수 ${r.open}곳</span>` : ''}`;
       b.onclick = () => go(r.sido);
       grid.appendChild(b);
@@ -638,12 +637,12 @@ function renderList(items, regions, base) {
       : `${stTag(d)}<span class="tag tag-blue">${d.세대수}세대</span>${d.기관 === 'SH' ? '<span class="tag tag-green">SH</span>' : ''}<span class="tag tag-green">${esc(d.주택유형)}</span>
          ${d.성별용도구분==='여성전용'?'<span class="tag tag-pink">여성전용</span>':''}<span class="tag tag-blue">${fmtArea(d.전용면적_min,d.전용면적_max)}</span>`;
     const bottom = d.src === 'soco'
-      ? `${d.보증금_min ? `${money(d, '보증금_min', '보증금_max')} · 월 <b>${range(d.월세_min, d.월세_max)}</b> · ` : ''}청약 <b>${mmdd(d.신청시작)}${d.신청종료!==d.신청시작 ? '~'+mmdd(d.신청종료) : ''}</b>${d.보증금_min ? '' : ` · 게시 ${mmdd(d.게시일)}`}`
+      ? `${d.보증금_min ? `${money(d, '보증금_min', '보증금_max')} · 월 <b>${range(d.월세_min, d.월세_max)}</b> · ` : ''}청약 <b>${mmdd(d.신청시작)}${d.신청종료!==d.신청시작 ? '~'+mmdd(d.신청종료) : ''}</b>${d.보증금_min ? '' : ` · 게시 ${mmdd(d.게시일)}`}`
       : (d.src === 'happy' && !d.월세_min)
-      ? `임대료 <b>공고문 확인</b> · 접수 ${mmdd(d.신청시작)}~${mmdd(d.신청종료)}`
+      ? `임대료 <b>공고문 확인</b> · 접수 ${mmdd(d.신청시작)}~${mmdd(d.신청종료)}`
       : d.src !== 'lh'
-      ? `${money(d, '보증금_min', '보증금_max')} · 월 <b>${range(d.월세_min, d.월세_max)}</b> · 접수 ${mmdd(d.신청시작)}~${mmdd(d.신청종료)}`
-      : `1순위 보증금 <b>${range(d.보증금_1순위, d.보증금_1순위)}</b> · 월 <b>${range(d.월임대료_1순위_min, d.월임대료_1순위_max)}</b> · 접수 ${mmdd(d.신청시작)}~${mmdd(d.신청종료)}`;
+      ? `${money(d, '보증금_min', '보증금_max')} · 월 <b>${range(d.월세_min, d.월세_max)}</b> · 접수 ${mmdd(d.신청시작)}~${mmdd(d.신청종료)}`
+      : `1순위 보증금 <b>${range(d.보증금_1순위, d.보증금_1순위)}</b> · 월 <b>${range(d.월임대료_1순위_min, d.월임대료_1순위_max)}</b> · 접수 ${mmdd(d.신청시작)}~${mmdd(d.신청종료)}`;
     div.innerHTML = `
       <div class="card-top">
         <span class="gu-tag" style="background:${color}">${esc(place(d))}</span>

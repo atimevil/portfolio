@@ -18,7 +18,6 @@ body{font-family:'Malgun Gothic','Apple SD Gothic Neo',sans-serif;background:#f4
 .header-info h1{font-size:16px;font-weight:700}
 .header-info p{font-size:11px;opacity:.85;margin-top:2px}
 .badges{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
-button.badge{color:inherit;font-family:inherit;cursor:pointer}
 .badge{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);border-radius:14px;padding:3px 11px;font-size:12px;font-weight:600;white-space:nowrap}
 .body{display:flex;flex:1;overflow:hidden}
 /* Sidebar */
@@ -30,7 +29,10 @@ button.badge{color:inherit;font-family:inherit;cursor:pointer}
 .search-wrap button{background:#1a6ef5;color:white;border:none;border-radius:8px;padding:8px 14px;font-size:13px;cursor:pointer;font-weight:600}
 .filter-row{display:flex;gap:5px;flex-wrap:wrap}
 .filter-row:empty{display:none}
-.crumb{font-size:14px;margin-bottom:8px;color:#888}
+.crumb{font-size:14px;color:#888;min-width:0}
+.crumb-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.hide-closed{display:flex;align-items:center;gap:5px;font-size:13px;color:#444;white-space:nowrap;cursor:pointer;min-height:32px}
+.hide-closed input{width:16px;height:16px;margin:0;accent-color:#1a6ef5;cursor:pointer}
 .crumb a{color:#1a6ef5;font-weight:700;text-decoration:none}
 .crumb strong{color:#1a2340}
 .rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}
@@ -118,7 +120,7 @@ button.badge{color:inherit;font-family:inherit;cursor:pointer}
     <p id="hdrSub"></p>
   </div>
   <div class="badges">
-    <button class="badge" id="hdrOpen" title="접수 중인 곳만 보기"></button>
+    <span class="badge" id="hdrOpen"></span>
     <span class="badge" id="hdrTotal"></span>
   </div>
 </div>
@@ -130,9 +132,11 @@ button.badge{color:inherit;font-family:inherit;cursor:pointer}
         <input id="q" placeholder="단지명, 지역, 주소 검색..." aria-label="단지명, 지역, 주소 검색" oninput="clearTimeout(window._qt); window._qt = setTimeout(applyFilter, 300)">
         <button onclick="applyFilter()">검색</button>
       </div>
-      <div class="filter-row" id="typeRow" style="margin-bottom:6px"></div>
-      <div class="filter-row" id="stRow" style="margin-bottom:8px" aria-label="접수 상태"></div>
-      <nav class="crumb" id="crumb" aria-label="지역 경로"></nav>
+      <div class="filter-row" id="typeRow" style="margin-bottom:8px"></div>
+      <div class="crumb-row">
+        <nav class="crumb" id="crumb" aria-label="지역 경로"></nav>
+        <label class="hide-closed"><input type="checkbox" id="hideClosed" onchange="applyFilter()">마감 제외</label>
+      </div>
       <div class="filter-row" id="guRow"></div>
     </div>
     <div class="stats">
@@ -203,7 +207,7 @@ const DATA = [
 // 지역을 열 때마다 브라우저에서 실시간으로 주소를 찾아 이 페이지 메모리(d._loc)에만 둔다
 // ──────────────────────────────────────────────
 let map = null, geocoder = null, places = null;
-let currentType = '전체', currentSt = '모든 공고', currentSido = '전국', currentGu = '전체';
+let currentType = '전체', currentSido = '전국', currentGu = '전체';
 const mapEl = document.getElementById('map');
 const mapMsg = document.createElement('div');
 mapMsg.className = 'mapmsg';
@@ -433,14 +437,8 @@ function addBtn(row, label, cls, on, onclick) {
   document.getElementById(row).appendChild(b);
 }
 Object.keys(TYPES).forEach((t, k) => addBtn('typeRow', t, 'type', k===0, () => { currentType = t; applyFilter(); }));
-// 접수 상태는 종류와 따로 골라 함께 걸림(예: 행복주택 + 접수중만)
-const STATES = {
-  '모든 공고': () => true,
-  '접수중·예정': d => status(d) !== '마감',
-  '접수중만': d => status(d) === '접수중',
-};
-const ST_WORD = {'접수중·예정': '접수 중이거나 곧 접수할 ', '접수중만': '접수 중인 '};
-Object.keys(STATES).forEach((t, k) => addBtn('stRow', t, 'st', k===0, () => { currentSt = t; applyFilter(); }));
+// '마감 제외'는 종류·지역과 함께 걸림. 접수예정은 남김(곧 열리는 공고). 목록은 접수중이 먼저 옴
+const notClosed = d => !document.getElementById('hideClosed').checked || status(d) !== '마감';
 
 // ──────────────────────────────────────────────
 // 지역 탐색: 전국(시도 요약) → 시도 → 시군구. 주소 #경기/김포시 로 뒤로가기·바로가기가 된다
@@ -517,7 +515,7 @@ function renderGuRow(base) {
 let token = 0;  // 지역을 바꾸면 이전 지역의 늦게 온 위치 결과는 버림
 function applyFilter() {
   const q = document.getElementById('q').value.trim().toLowerCase();
-  const base = DATA.filter(d => TYPES[currentType](d) && STATES[currentSt](d) &&
+  const base = DATA.filter(d => TYPES[currentType](d) && notClosed(d) &&
     (!q || d.주소.toLowerCase().includes(q) || d.주택군이름.toLowerCase().includes(q) || place(d).includes(q)));
   const scoped = base.filter(d => (currentSido==='전국' || d.시도===currentSido) && (currentGu==='전체' || d.구===currentGu));
   // 전국 첫 화면은 시도 요약, 검색하면 전국 결과를 바로 보여 줌. 고른 지역에 그 종류가 없으면 지도엔 있는 시도 거품
@@ -563,7 +561,7 @@ function applyFilter() {
 // LH 청년 전세임대: 집 목록이 없어 핀 대신 목록 맨 위 카드로
 function jeonseCard() {
   const j = META.jeonse;
-  if (!j || currentType !== '전체' || !STATES[currentSt](j)) return null;
+  if (!j || currentType !== '전체' || !notClosed(j)) return null;
   const div = document.createElement('div');
   div.className = 'card notice';
   div.style.cssText = 'background:#fffbea;cursor:default';
@@ -600,7 +598,7 @@ function renderList(items, regions, base) {
   const elsewhere = !regions && !items.length && currentSido !== '전국' ? summarize(base) : [];
   if (regions || elsewhere.length) {
     if (elsewhere.length) list.insertAdjacentHTML('beforeend', `<div class="list-hdr" style="padding:16px 14px 6px;line-height:1.5">
-      ${esc(currentGu==='전체' ? currentSido : currentGu)}에는 지금 ${ST_WORD[currentSt] || ''}${esc(currentType==='전체' ? '' : currentType + ' ')}공고가 없어요.
+      ${esc(currentGu==='전체' ? currentSido : currentGu)}에는 지금 ${document.getElementById('hideClosed').checked ? '마감 안 된 ' : ''}${esc(currentType==='전체' ? '' : currentType + ' ')}공고가 없어요.
       <br><b>있는 지역</b></div>`);
     const grid = document.createElement('div');
     grid.className = 'rgrid';
@@ -619,7 +617,7 @@ function renderList(items, regions, base) {
     const empty = document.createElement('div');
     empty.className = 'list-hdr';
     empty.style.cssText = 'padding:24px 14px;text-align:center;font-size:13px';
-    empty.textContent = '이 조건에 맞는 곳이 없어요. 종류를 ‘전체’, 상태를 ‘모든 공고’로 바꾸거나 다른 지역을 골라 보세요.';
+    empty.textContent = '이 조건에 맞는 곳이 없어요. 종류를 ‘전체’로 바꾸거나 ‘마감 제외’를 끄거나 다른 지역을 골라 보세요.';
     list.appendChild(empty);
   }
   // 카드를 한 번에 너무 많이 그리면 느려서 300개까지만 (지도 핀도 같은 300개 — 카카오 호출 수)
@@ -677,7 +675,6 @@ function renderList(items, regions, base) {
 
 document.getElementById('hdrSub').textContent = META.sub;
 document.getElementById('hdrOpen').textContent = `지금 접수 ${DATA.filter(d=>status(d)==='접수중').length}곳`;
-document.getElementById('hdrOpen').onclick = () => [...document.querySelectorAll('.fbtn.st')].find(b => b.textContent === '접수중만').click();
 document.getElementById('hdrTotal').textContent = `총 ${DATA.length}곳`;
 if (META.warn && META.warn.length) {  // 빌드에서 빠진 공고·급감이 있으면 머리에 표시 (로그를 안 봐도 보이게)
   const w = document.createElement('span');

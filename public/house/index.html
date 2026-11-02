@@ -180,6 +180,7 @@ const ST_RANK = {'접수중':0,'접수예정':1,'마감':2};
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const mmdd = s => s.slice(5).replace('-','.');
+const SH_URL = 'https://www.i-sh.co.kr/main/lay2/S1T222C294/sublink.do';
 const LH_LIST_URL = 'https://apply.lh.or.kr/lhapply/apply/wt/wrtanc/selectWrtancList.do?mi=1026';
 
 const byStatus = (a,b) => ST_RANK[status(a)] - ST_RANK[status(b)];
@@ -393,7 +394,8 @@ function addBtn(row, label, cls, on, onclick) {
   const b = document.createElement('button');
   b.className = `fbtn ${cls}` + (on ? ' on' : '');
   b.textContent = label;
-  b.onclick = () => { document.querySelectorAll('.fbtn.'+cls).forEach(x=>x.classList.remove('on')); b.classList.add('on'); onclick(); };
+  b.onclick = () => { document.querySelectorAll('.fbtn.'+cls).forEach(x=>x.classList.remove('on')); b.classList.add('on');
+    b.scrollIntoView({block:'nearest', inline:'nearest'}); onclick(); };  // 휴대폰에서 옆으로 밀리는 줄 끝 버튼이 잘려 보이지 않게
   document.getElementById(row).appendChild(b);
 }
 Object.keys(TYPES).forEach((t, k) => addBtn('typeRow', t, 'type', k===0, () => { currentType = t; applyFilter(); }));
@@ -473,12 +475,13 @@ function applyFilter() {
   const q = document.getElementById('q').value.trim().toLowerCase();
   const base = DATA.filter(d => TYPES[currentType](d) &&
     (!q || d.주소.toLowerCase().includes(q) || d.주택군이름.toLowerCase().includes(q) || place(d).includes(q)));
-  const overview = currentSido==='전국' && !q;  // 전국 첫 화면은 시도 요약, 검색하면 전국 결과를 바로 보여 줌
   const scoped = base.filter(d => (currentSido==='전국' || d.시도===currentSido) && (currentGu==='전체' || d.구===currentGu));
+  // 전국 첫 화면은 시도 요약, 검색하면 전국 결과를 바로 보여 줌. 고른 지역에 그 종류가 없으면 지도엔 있는 시도 거품
+  const overview = (currentSido==='전국' && !q) || (!scoped.length && base.length);
   const regions = overview ? summarize(base) : null;
   renderCrumb();
   renderGuRow(base);
-  renderList(scoped, regions);
+  renderList(scoped, currentSido==='전국' && !q ? regions : null, base);
   if (!map) return;
 
   const my = ++token;
@@ -530,7 +533,7 @@ function jeonseCard() {
   return div;
 }
 
-function renderList(items, regions) {
+function renderList(items, regions, base) {
   const total = items.reduce((s,d)=>s+(d.세대수||0),0);
   document.getElementById('listHdr').textContent = regions
     ? `전국 ${regions.length}개 시도 · ${items.length}곳 · ${total}세대 — 지역을 고르세요`
@@ -548,10 +551,16 @@ function renderList(items, regions) {
     <a href="https://soco.seoul.go.kr/youth/bbs/BMSR00015/list.do?menuNo=400008" target="_blank" rel="noopener">서울시 청년안심주택</a></div>`);
   const jc = jeonseCard();
   if (jc) list.appendChild(jc);
-  if (regions) {
+  // 지역을 고른 채로 종류를 바꿔 0곳이면, 그 종류가 있는 시도를 바로 고를 수 있게 보여 줌
+  const elsewhere = !regions && !items.length && currentSido !== '전국' ? summarize(base) : [];
+  if (regions || elsewhere.length) {
+    if (elsewhere.length) list.insertAdjacentHTML('beforeend', `<div class="list-hdr" style="padding:16px 14px 6px;line-height:1.5">
+      ${esc(currentGu==='전체' ? currentSido : currentGu)}에는 지금 ${esc(currentType==='전체' ? '' : currentType + ' ')}공고가 없어요.
+      ${currentSido==='서울' && currentType==='LH 행복주택' ? `서울 행복주택은 대부분 SH가 따로 공고해요 → <a href="${SH_URL}" target="_blank" rel="noopener">SH 공고 및 공지</a>` : ''}
+      <br><b>있는 지역</b></div>`);
     const grid = document.createElement('div');
     grid.className = 'rgrid';
-    regions.forEach(r => {
+    (regions || elsewhere).forEach(r => {
       const b = document.createElement('button');
       b.className = 'rcard';
       b.innerHTML = `<b>${esc(r.sido)}</b><small>${r.n}곳 · ${r.units.toLocaleString()}세대</small>

@@ -27,6 +27,16 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
   const video = parseVideo(project.video)
   const loop = parseVideo(project.loop)
   const loopSrc = loop?.kind === 'file' ? loop.src : null
+  const clip =
+    video?.kind === 'youtube' && video.clip ? (
+      <YouTubeClip
+        embed={video.embed}
+        clipEmbed={video.clipEmbed}
+        start={video.start}
+        title={`${title} — ${t(locale, 'video')}`}
+        labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }}
+      />
+    ) : null
   const columns = (
     [
       ['csProblem', localized(project, 'problem', locale)],
@@ -95,16 +105,11 @@ export default function ProjectDetail({ project, locale = 'ko' }: { project: Por
       {/* 영상은 눌러야 불러온다(유튜브는 loading=lazy, 파일은 preload=metadata) — 상세를 열자마자 무거워지지 않게 */}
       {video?.kind === 'youtube' && video.clip && (
         <figure className="mb-8">
+          {/* 반복 파일을 못 받으면 같은 장면의 유튜브로 바꾼다 — 아래 구간·유튜브 링크 설명이 빈 칸 밑에 남지 않게 */}
           {loopSrc ? (
-            <LoopVideo src={loopSrc} title={`${title} — ${t(locale, 'video')}`} labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }} />
+            <LoopVideo src={loopSrc} title={`${title} — ${t(locale, 'video')}`} labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }} fallback={clip} />
           ) : (
-            <YouTubeClip
-              embed={video.embed}
-              clipEmbed={video.clipEmbed}
-              start={video.start}
-              title={`${title} — ${t(locale, 'video')}`}
-              labels={{ pause: t(locale, 'pause'), play: t(locale, 'play') }}
-            />
+            clip
           )}
           <figcaption className="mt-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-1 text-xs text-text-muted">
             <span className="font-mono">

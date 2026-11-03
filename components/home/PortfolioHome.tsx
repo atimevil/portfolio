@@ -5,35 +5,35 @@ import { getOrderedProjects, getTimeline, projectSlug } from '@/lib/items'
 import { splitTitle, outcome } from '@/lib/projectCard'
 import { cleanEmail } from '@/lib/email'
 import { githubHandle } from '@/lib/github'
-import { hiddenFromPublic } from '@/lib/publicGate'
-import { t, type Locale } from '@/lib/i18n'
+import { t, localized, type Locale } from '@/lib/i18n'
 import { parseVideo } from '@/lib/projectVideo'
 import LeadClip from '@/components/home/LeadClip'
 import LoopVideo from '@/components/work/LoopVideo'
 
 /** 대표 작업을 하나도 안 골랐을 때만 최신순으로 이만큼 띄운다. */
 const FALLBACK_COUNT = 4
+/** 기록 타일에 이름으로 적는 최근 수상 수. 숫자만으로는 무엇을 받았는지 안 보여서 이름을 앞에 둔다. */
+const RECENT_AWARDS = 3
 
-// 홈은 타일 몇 장으로 끝낸다: 누구인지(이름·소속·연락처), 대표 작업(밖에서 확인되는 결과 + 내 역할), 숫자 두 개, 개인 공간.
+// 홈은 타일 몇 장으로 끝낸다: 누구인지(이름·소속·기술·연락처), 대표 작업(밖에서 확인되는 결과 + 내 역할), 최근 수상.
+// 갤러리·음악·책은 개인 기록이라 홈에 두지 않고 위쪽 메뉴로만 들어간다 — 홈이 작업과 기록으로 끝나게.
 // 문장은 관리자 설정의 '홈 문장'이 있을 때만 이름 아래에 나온다 — 고민할 슬로건을 기본값으로 두지 않는다.
 // 글·전체 이력은 소개와 글 페이지에서 본다.
-const OFF_HOURS = [
-  { href: '/gallery', key: 'gallery' },
-  { href: '/music', key: 'music' },
-  { href: '/books', key: 'books' },
-] as const
 
 const tile = 'tile'
 const tileLink = `${tile} transition-colors hover:border-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent`
 
-export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
+export default function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
   const { profile } = getSettings()
   const projects = getOrderedProjects()
   // getOrderedProjects가 최신순이라 고른 것 중 가장 최근 작업이 큰 타일에 온다
   const picked = projects.filter((p) => p.featured)
   const [lead, ...rest] = picked.length > 0 ? picked : projects.slice(0, FALLBACK_COUNT)
   const timeline = getTimeline()
-  const awardCount = timeline.filter((i) => i.type === 'award').length
+  const awards = timeline.filter((i) => i.type === 'award')
+  const awardCount = awards.length
+  // 제목이 빈 항목은 건너뛴다 — 굵은 빈 줄이 목록 사이에 끼지 않게
+  const recentAwards = awards.map((a) => localized(a, 'title', locale).trim()).filter(Boolean).slice(0, RECENT_AWARDS)
   const activityCount = timeline.filter((i) => i.type === 'activity').length
 
   const mail = cleanEmail(profile.email)
@@ -41,32 +41,29 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
   const en = locale === 'en'
   const affiliation = (en ? profile.affiliation_en : profile.affiliation)?.trim()
   const headline = (en ? profile.headline_en : profile.headline)?.trim()
+  // 구분점이 줄 머리에 오지 않게 앞 단어에 붙인다(nbsp)
+  const skills = profile.skills.join('\u00a0· ')
   const aboutHref = en ? '/en/about' : '/about'
   const workBase = en ? '/en/work' : '/work'
-  // 비공개로 둔 메뉴는 방문자에게 빼고, 로그인한 관리자에게는 보여 준다(헤더 메뉴와 같은 기준)
-  const hidden = await Promise.all(OFF_HOURS.map((l) => hiddenFromPublic(l.key)))
-  const offHours = OFF_HOURS.filter((_, i) => !hidden[i])
   // 대표 작업 줄은 넓은 화면에서 4칸: 둘이면 넓게·좁게 + 더보기, 하나면 반 + 더보기, 없으면 더보기만 한 줄.
-  // 좁은 화면(2칸)에서는 넓은 카드가 한 줄을 다 쓰고, 더보기와 기록이 나란히 선다.
+  // 640px 아래(2칸)에서는 카드마다 한 줄을 다 쓴다. 기록 타일은 수상 이름이 길어 반 칸에 넣지 않는다.
   const row = rest.slice(0, 2)
   const rowSpan = (i: number) => (row.length === 1 || i === 0 ? 'col-span-2' : 'col-span-2 sm:col-span-1')
-  const moreSpan = row.length === 2 ? 'col-span-1' : row.length === 1 ? 'col-span-2' : 'col-span-2 lg:col-span-4'
+  const moreSpan = row.length === 2 ? 'col-span-2 sm:col-span-1' : row.length === 1 ? 'col-span-2' : 'col-span-2 lg:col-span-4'
   // 넓은 화면에서 대표 타일(영상 액자)이 프로필보다 길어서, 프로필은 내용만큼만 두고 그 아래 빈자리에 기록 타일을 올린다.
-  // 자리만 옮기고(lg:*-start) 문서 순서는 그대로라 좁은 화면 순서는 변하지 않는다.
+  // 문서 순서(프로필 → 대표 → 기록 → 작업)가 넓은 화면의 읽는 순서와 같아 탭 순서도 어긋나지 않는다.
   const stacked = Boolean(lead)
-  // 더보기가 한 칸이면 아주 좁은 화면에서 기록 타일이 그 옆에 붙는다
-  const statsSpan =
-    (row.length === 2 ? 'col-span-1 sm:col-span-2' : 'col-span-2') +
-    (stacked ? ' lg:col-span-2 lg:col-start-1 lg:row-start-2' : offHours.length > 0 ? ' lg:col-span-1' : ' lg:col-span-4')
+  const statsSpan = 'col-span-2' + (stacked ? ' lg:col-span-2 lg:col-start-1 lg:row-start-2' : ' lg:col-span-4')
   const moreCount = Math.max(projects.length - (lead ? 1 : 0) - row.length, 0)
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 w-full outline-none">
       <div className="mx-auto grid max-w-6xl grid-cols-2 gap-3 px-4 py-10 sm:gap-4 md:px-8 lg:grid-cols-4 lg:py-14">
-        <section className={`${tile} col-span-2 flex flex-col justify-between gap-8 p-8 lg:p-10 ${stacked ? 'lg:col-start-1 lg:row-start-1' : 'lg:row-span-2'}`}>
+        <section className={`${tile} col-span-2 flex flex-col justify-between gap-6 p-6 sm:gap-8 sm:p-8 lg:p-10 ${stacked ? 'lg:col-start-1 lg:row-start-1' : 'lg:col-span-4'}`}>
           <div>
             <h1 className="text-[2.5rem] font-bold leading-tight tracking-tight text-text-primary lg:text-[3.25rem]">{profile.name}</h1>
             {affiliation && <p className="mt-2 text-lg text-text-primary">{affiliation}</p>}
+            {skills && <p className="mt-3 max-w-md text-sm leading-relaxed text-text-secondary">{skills}</p>}
             {headline && <p className="mt-4 max-w-md text-[15px] leading-relaxed text-text-secondary">{headline}</p>}
           </div>
           <ul className="flex flex-wrap gap-2 text-sm">
@@ -87,7 +84,7 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
             {githubOrg && (
               <li>
                 <a href={githubOrg} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-[40px] items-center rounded-full border border-border px-4 text-text-primary transition-colors hover:border-accent">
-                  GitHub · {githubHandle(githubOrg)} ↗
+                  {t(locale, 'githubOrg')} · {githubHandle(githubOrg)} ↗
                 </a>
               </li>
             )}
@@ -103,6 +100,29 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
 
         {lead && <LeadTile project={lead} href={`${workBase}/${projectSlug(lead)}`} locale={locale} />}
 
+        {/* 대표 작업 바로 다음에 수상 기록 — 좁은 화면에서도 결과가 작업 목록 끝에 묻히지 않게 문서 순서를 이렇게 둔다 */}
+        <Link
+          href={`${aboutHref}#awards`}
+          className={`${tileLink} group flex flex-col justify-between gap-6 p-6 ${statsSpan}`}
+        >
+          <span className="font-mono text-xs text-text-muted">{t(locale, 'record')}</span>
+          {recentAwards.length > 0 && (
+            <ul className="flex flex-col gap-2.5">
+              {recentAwards.map((title) => (
+                <li key={title} className="font-semibold leading-snug text-text-primary">
+                  {title}
+                </li>
+              ))}
+            </ul>
+          )}
+          <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-[13px]">
+            <span className="text-text-secondary">
+              {t(locale, 'awardCount')}&nbsp;{awardCount}&nbsp;· {t(locale, 'activityCount')}&nbsp;{activityCount}
+            </span>
+            <span className="text-accent transition-colors group-hover:text-accent-hover">{t(locale, 'viewAllWork')}</span>
+          </span>
+        </Link>
+
         {row.map((p, i) => (
           <ProjectTile
             key={p.id}
@@ -114,44 +134,18 @@ export default async function PortfolioHome({ locale = 'ko' }: { locale?: Locale
           />
         ))}
 
-        {/* 대표로 고르지 않은 작업은 숫자 하나로 묶어 소개의 전체 목록으로 보낸다 */}
-        <Link href={`${aboutHref}#projects`} className={`${tileLink} group flex flex-col justify-between gap-6 p-6 ${moreSpan}`}>
+        {/* 대표로 고르지 않은 작업은 개수 한 줄로 묶어 소개의 전체 목록으로 보낸다. 큰 숫자는 무엇을 가리키는지 안 보여서 문장으로 쓴다 */}
+        <Link href={`${aboutHref}#projects`} className={`${tileLink} group flex flex-col justify-between gap-4 p-6 ${moreSpan}`}>
           <span className="font-mono text-xs text-text-muted">{t(locale, 'more')}</span>
-          {moreCount > 0 && (
-            <span className="flex flex-col">
-              <span className="text-[2.75rem] font-bold leading-none tracking-tight text-text-primary">+{moreCount}</span>
-              <span className="mt-1 text-[13px] text-text-secondary">{t(locale, 'projects')}</span>
-            </span>
-          )}
-          <span className="text-[13px] text-accent transition-colors group-hover:text-accent-hover">{t(locale, 'viewAllWork')}</span>
-        </Link>
-
-        <Link
-          href={`${aboutHref}#awards`}
-          className={`${tileLink} group flex flex-col justify-between gap-6 p-6 ${statsSpan}`}
-        >
-          <span className="font-mono text-xs text-text-muted">{t(locale, 'record')}</span>
-          <span className="flex gap-6">
-            <Stat value={awardCount} label={t(locale, 'awardCount')} />
-            <Stat value={activityCount} label={t(locale, 'activityCount')} />
+          <span className="font-semibold leading-snug text-text-primary transition-colors group-hover:text-accent-hover">
+            {moreCount === 0
+              ? t(locale, 'allProjects')
+              : en
+                ? `${moreCount} more ${moreCount === 1 ? 'project' : 'projects'}`
+                : `다른 프로젝트 ${moreCount}개`}
+            &nbsp;→
           </span>
-          <span className="text-[13px] text-accent transition-colors group-hover:text-accent-hover">{t(locale, 'viewAllWork')}</span>
         </Link>
-
-        {offHours.length > 0 && (
-          <nav aria-label={t(locale, 'offHours')} className={`flex flex-wrap items-center justify-between gap-4 col-span-2 tile px-7 py-6 ${stacked ? 'lg:col-span-4' : 'lg:col-span-3'}`}>
-            <span className="text-sm text-text-secondary">{t(locale, 'offHours')}</span>
-            <ul className="flex gap-5 font-semibold text-text-primary">
-              {offHours.map((l) => (
-                <li key={l.key}>
-                  <Link href={l.href} className="inline-flex min-h-[24px] items-center transition-colors hover:text-accent">
-                    {t(locale, l.key)}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        )}
       </div>
     </main>
   )
@@ -232,14 +226,5 @@ function ProjectTile({
         </span>
       )}
     </Link>
-  )
-}
-
-function Stat({ value, label }: { value: number; label?: string }) {
-  return (
-    <span className="flex flex-col">
-      <span className="text-[2.75rem] font-bold leading-none tracking-tight text-text-primary">{value}</span>
-      {label && <span className="mt-1 text-[13px] text-text-secondary">{label}</span>}
-    </span>
   )
 }

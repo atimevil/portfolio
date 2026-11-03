@@ -15,7 +15,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
     name: '이름',
     bio: '개발자입니다.',
     avatar: '',
-    skills: ['Next.js', 'TypeScript', 'React'],
+    skills: [],
     github: '',
     linkedin: '',
     email: '',

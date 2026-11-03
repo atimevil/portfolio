@@ -84,7 +84,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
     isEn && link.href === '/blog' ? (
       <>
         {t(locale, link.labelKey)}
-        <span className="ml-1 text-[10px] uppercase tracking-wide text-text-muted">KO</span>
+        <span className="ml-1 text-xs text-text-muted">{t(locale, 'inKorean')}</span>
       </>
     ) : (
       t(locale, link.labelKey)
@@ -99,7 +99,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
     <Link
       href={otherLocaleHref}
       hrefLang={isEn ? 'ko' : 'en'}
-      className="inline-flex min-h-[26px] items-center rounded border border-border px-2 py-1 text-[11px] font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      className="inline-flex min-h-[26px] items-center rounded border border-border px-2 py-1 text-xs font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
       {isEn ? 'KO' : 'EN'}
     </Link>
@@ -129,7 +129,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
             </Link>
           ))}
           {localeToggle}
-          <ThemeToggle />
+          <ThemeToggle locale={locale} />
         </div>
 
         {/* ☰/✕는 텍스트 글리프라 폰트에 따라 깨진다 → 인라인 SVG.
@@ -172,7 +172,7 @@ export default function NavBar({ isAdmin = false, navVisibility, locale = 'ko' }
         ))}
         <div className="flex min-h-[44px] items-center gap-4">
           {localeToggle}
-          <ThemeToggle />
+          <ThemeToggle locale={locale} />
         </div>
       </div>
     </header>

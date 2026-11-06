@@ -44,6 +44,7 @@ type FormState = {
   order: number
   visible: boolean
   featured: boolean
+  onHome: boolean
 }
 
 function toForm(item: PortfolioItem | null): FormState {
@@ -78,6 +79,7 @@ function toForm(item: PortfolioItem | null): FormState {
     order: item?.order ?? 0,
     visible: item?.visible ?? false,
     featured: item?.featured ?? false,
+    onHome: item?.onHome ?? false,
   }
 }
 
@@ -160,6 +162,7 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
       order: isProject ? Number(form.order) || 0 : undefined,
       visible: isProject ? form.visible : undefined,
       featured: isProject ? (form.visible && form.featured) : undefined,
+      onHome: form.type === 'activity' ? form.onHome : undefined,
     }
     // 실패(로그인 만료 401 등)하면 패널을 닫지 않고 알린다 — 닫으면 입력한 내용이 저장된 줄 알고 사라진다
     try {
@@ -208,6 +211,12 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
         <label htmlFor="item-desc-en" className={labelCls}>영문 설명</label>
         <textarea id="item-desc-en" value={form.description_en} rows={3} onChange={(e) => set('description_en', e.target.value)} className={`${inputCls} resize-none`} />
       </div>
+      {form.type === 'activity' && (
+        <label className="flex items-center gap-2 text-sm text-text-primary">
+          <input type="checkbox" checked={form.onHome} onChange={(e) => set('onHome', e.target.checked)} />
+          홈 기록 타일에 올리기 (결선·본선 진출 등 · 수상은 항상 올라간다)
+        </label>
+      )}
 
       {isProject && (
         <>

@@ -41,6 +41,7 @@ const ItemSchema = z.object({
   order: z.number().optional(),
   visible: z.boolean().optional(),
   featured: z.boolean().optional(),
+  onHome: z.boolean().optional(),
 })
 
 export async function GET() {

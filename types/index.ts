@@ -71,6 +71,8 @@ export interface PortfolioItem {
   poster?: string
   /** 무언가를 재고 평가한 작업(연구·경진대회). 홈의 '연구 · 경진대회'에 모인다. 종류(type)와 무관하다. */
   measure?: boolean
+  /** 활동 중 결선·본선 진출처럼 결과로 보일 것. 켜면 홈 기록 타일에 수상과 함께 날짜순으로 나온다(수상은 항상 나온다). */
+  onHome?: boolean
   /** 소개(/about)에 노출한다. 꺼져 있으면 등록만 되고 목록에는 안 나온다(직접 URL로는 열림). */
   visible?: boolean
   /** 홈 '프로젝트'에 띄울 대표 작업. visible 중에서 고른다. */

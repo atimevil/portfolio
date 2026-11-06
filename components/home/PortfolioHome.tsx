@@ -13,7 +13,7 @@ import LoopVideo from '@/components/work/LoopVideo'
 /** 대표 작업을 하나도 안 골랐을 때만 최신순으로 이만큼 띄운다. */
 const FALLBACK_COUNT = 4
 /** 기록 타일에 이름으로 적는 최근 수상 수. 숫자만으로는 무엇을 받았는지 안 보여서 이름을 앞에 둔다. */
-const RECENT_AWARDS = 3
+const RECENT_RECORDS = 3
 
 // 홈은 타일 몇 장으로 끝낸다: 누구인지(이름·소속·기술·연락처), 대표 작업(밖에서 확인되는 결과 + 내 역할), 최근 수상.
 // 갤러리·음악·책은 개인 기록이라 홈에 두지 않고 위쪽 메뉴로만 들어간다 — 홈이 작업과 기록으로 끝나게.
@@ -32,8 +32,13 @@ export default function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
   const timeline = getTimeline()
   const awards = timeline.filter((i) => i.type === 'award')
   const awardCount = awards.length
+  // 수상과, 홈에 올리기로 한 활동(결선·본선 진출 등)을 날짜순으로 섞는다.
   // 제목이 빈 항목은 건너뛴다 — 굵은 빈 줄이 목록 사이에 끼지 않게
-  const recentAwards = awards.map((a) => localized(a, 'title', locale).trim()).filter(Boolean).slice(0, RECENT_AWARDS)
+  const recentRecords = timeline
+    .filter((i) => i.type === 'award' || (i.type === 'activity' && i.onHome))
+    .map((a) => localized(a, 'title', locale).trim())
+    .filter(Boolean)
+    .slice(0, RECENT_RECORDS)
   const activityCount = timeline.filter((i) => i.type === 'activity').length
 
   const mail = cleanEmail(profile.email)
@@ -106,9 +111,9 @@ export default function PortfolioHome({ locale = 'ko' }: { locale?: Locale }) {
           className={`${tileLink} group flex flex-col justify-between gap-6 p-6 ${statsSpan}`}
         >
           <span className="font-mono text-xs text-text-muted">{t(locale, 'record')}</span>
-          {recentAwards.length > 0 && (
+          {recentRecords.length > 0 && (
             <ul className="flex flex-col gap-2.5">
-              {recentAwards.map((title) => (
+              {recentRecords.map((title) => (
                 <li key={title} className="font-semibold leading-snug text-text-primary">
                   {title}
                 </li>

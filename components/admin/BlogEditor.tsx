@@ -51,6 +51,9 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
     excerpt: initialPost?.excerpt ?? '',
   }
   const serverRef = useRef(serverSnapshot)
+  // 저장에 성공한 뒤에는 자동저장을 멈춘다. 저장 직전에 걸어 둔 자동저장 타이머가 초안을 지운 뒤에 실행돼
+  // 이미 저장한 내용이 초안으로 다시 남았다(다음에 열면 복구 배너가 뜸).
+  const savedRef = useRef(false)
 
   // 열 때: 저장된 초안이 서버본과 다르면 복구 배너를 띄운다.
   useEffect(() => {
@@ -70,6 +73,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
     if (recoverable) return // 복구 배너가 떠 있는 동안은 저장된 초안을 덮어쓰지 않는다
     const draft: DraftData = { title, date, tags, category, content, excerpt }
     const t = setTimeout(() => {
+      if (savedRef.current) return
       // 고친 게 있을 때만 보관한다. 예전엔 글을 열기만 해도 그때의 서버 글이 초안으로 남아서, 나중에 다른 기기에서
       // 고친 뒤 다시 열면 "저장하지 않은 편집 내용"으로 떠 복구하면 새 글을 옛 내용으로 덮어썼다.
       if (draftDiffersFrom(draft, serverRef.current)) {
@@ -133,6 +137,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
 
     setLoading(false)
     if (res.ok) {
+      savedRef.current = true
       clearDraft(window.localStorage, key) // 저장 성공 → 초안 폐기
       router.push(`/admin/blog`)
       router.refresh()

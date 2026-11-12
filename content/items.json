@@ -5,7 +5,7 @@
     "order": 0,
     "year": "2026.11.05~06",
     "title": "자이카 자율주행 — 영상 처리 3바퀴 + E2E AI 2바퀴",
-    "description": "2026 METAmobility 자율주행 자동차 경진대회에 3인 팀 팀장으로 나가 자이카 C(라즈베리파이 4B, ROS2)의 주행 코드를 설계하고 Claude Code와 함께 구현했다. 1~3바퀴는 영상 처리, 4~5바퀴는 donkeycar로 학습한 E2E 모델로 달려 감점 포함 146초에 5바퀴를 완주했고, 2위로 금상을 받았다.",
+    "description": "2026 METAmobility 자율주행 자동차 경진대회에 3인 팀 팀장으로 나가 자이카(라즈베리파이 4B, ROS2)의 주행 코드를 설계하고 Claude Code와 함께 구현했다. 1~3바퀴는 영상 처리, 4~5바퀴는 donkeycar로 학습한 E2E 모델로 달려 감점 포함 146초에 5바퀴를 완주했고, 2위로 금상을 받았다.",
     "problem": "1박 2일 동안 받은 차로 신호등 출발, 빨간 컵 라바콘 통로, AR박스 정차와 따라가기, 차선 주행, 결승 게이트까지 한 번에 달려 주행 시간과 감점을 합친 기록으로 순위를 정한다. 4~5바퀴는 AI 모델로 주행해야 했고, 대회 당일 규칙이 바뀌어 4바퀴째부터는 차선 위에 장애물 차가 여러 번 나올 수 있어 볼 때마다 피해야 했다.",
     "contribution": "판단 코드(구간 상태 흐름, 영상 처리, 조향)를 ROS와 분리해 차 없이 도는 테스트 29개와 주행 기록 재계산으로 값을 정했다. 라바콘은 컵이 차선 위에 놓인 점을 이용해 차선 PID로 지나가고 초음파는 감속에만 썼다. AprilTag 거리 구간별 조향으로 AR박스를 스쳐 지나가고, 조향 크기로 속도를 정해 직선에서만 크게 가속하고 코너에 들어서면 바로 감속하게 했다. 4~5바퀴는 직접 몰며 모은 주행 사진 약 1만 2천 장으로 donkeycar에서 학습한 E2E 모델(tflite)이 카메라 화면에서 조향을 내고, 속도는 고정한 채 장애물 감시·회피는 영상 처리 구간과 같은 코드가 이어서 맡게 했다. 장애물이 보이는데도 부딪힌 원인이 앞·뒤 보드를 타임아웃 없이 번갈아 읽는 공식 초음파 노드라는 것을 찾아, 보드마다 따로 읽고 멈추면 USB를 다시 연결하는 노드로 바꿨다. 컵·게이트 기둥·코너의 옆 물체를 장애물로 잘못 보는 문제는 빨강 비율, 게이트 태그, 조향 크기 조건으로 걸렀다.",
     "result": "본선에서 1~3바퀴 영상 처리, 4~5바퀴 E2E 모델로 감점 포함 146초에 5바퀴를 완주해 2위, 금상을 받았다.",
@@ -23,7 +23,7 @@
     ],
     "slug": "xycar-autonomous",
     "title_en": "Xycar autonomous driving: three vision laps and two end-to-end AI laps",
-    "description_en": "Led a three-person team at the 2026 METAmobility Autonomous Vehicle Competition, designing the driving code for a Xycar C (Raspberry Pi 4B, ROS2) and building it with Claude Code. Laps 1–3 ran on image processing and laps 4–5 on an end-to-end model trained with donkeycar, finishing five laps in 146 seconds including penalties for second place and a Gold Award.",
+    "description_en": "Led a three-person team at the 2026 METAmobility Autonomous Vehicle Competition, designing the driving code for a Xycar (Raspberry Pi 4B, ROS2) and building it with Claude Code. Laps 1–3 ran on image processing and laps 4–5 on an end-to-end model trained with donkeycar, finishing five laps in 146 seconds including penalties for second place and a Gold Award.",
     "problem_en": "Over two days, teams take a car they are handed on site through a traffic-light start, a corridor of red cups, stopping at and weaving past AR boxes, lane driving, and the finish gate in one run, ranked by driving time plus penalties. Laps 4–5 had to be driven by an AI model, and a race-day rule change meant obstacle cars could appear on the lane several times from lap 4, each of which had to be avoided.",
     "contribution_en": "I kept the decision code (mission state flow, image processing, steering) separate from ROS, so values were set with 29 tests that run without the car and by recomputing recorded runs. The cup corridor is driven with lane PID because the cups sit on the lane lines, and ultrasonic sensors only slow the car down. AprilTag distance bands steer the car past AR boxes, and speed is set by steering size, so the car accelerates hard only on straights and slows at once entering a corner. For laps 4–5, an end-to-end model trained with donkeycar on about 12,000 images collected while driving the car by hand (TFLite) steers from the camera image at a fixed speed, while the same obstacle detection and avoidance code from the vision laps keeps running. When the car hit obstacles it had already seen, I traced it to the official ultrasonic node reading the front and rear boards in turn with no timeout, and replaced it with a node that reads each board separately and reconnects a stalled board over USB. False obstacles from cups, gate posts, and objects beside corners were filtered by red-pixel share, gate tags, and steering size.",
     "result_en": "In the final, the car ran laps 1–3 on image processing and laps 4–5 on the end-to-end model, finishing five laps in 146 seconds including penalties for second place and a Gold Award.",
@@ -635,7 +635,17 @@
     "year": "2026.11.05~06",
     "title": "2026 METAmobility 자율주행 자동차 경진대회 금상",
     "title_en": "2026 METAmobility Autonomous Vehicle Competition: Gold Award",
-    "description": "3인 팀 팀장으로 자이카 C의 주행 코드를 설계했다. 1~3바퀴는 영상 처리, 4~5바퀴는 E2E AI 모델로 감점 포함 146초에 5바퀴를 완주해 2위.",
-    "description_en": "Led a three-person team and designed the driving code for a Xycar C. Laps 1–3 ran on image processing and laps 4–5 on an end-to-end AI model, finishing five laps in 146 seconds including penalties for second place."
+    "description": "3인 팀 팀장으로 자이카의 주행 코드를 설계했다. 1~3바퀴는 영상 처리, 4~5바퀴는 E2E AI 모델로 감점 포함 146초에 5바퀴를 완주해 2위.",
+    "description_en": "Led a three-person team and designed the driving code for a Xycar. Laps 1–3 ran on image processing and laps 4–5 on an end-to-end AI model, finishing five laps in 146 seconds including penalties for second place."
+  },
+  {
+    "type": "activity",
+    "year": "2026.10.31",
+    "title": "AITOP100 본선 진출",
+    "description": "https://aitop100.org/",
+    "title_en": "AITOP100: Advanced to the Finals",
+    "description_en": "Passed the qualifying round and advanced to the finals.",
+    "id": "1793938410097",
+    "onHome": true
   }
 ]

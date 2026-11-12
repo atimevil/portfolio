@@ -56,13 +56,18 @@ type Editing = {
 export default function MapsManager({ initial }: Props) {
   const router = useRouter()
   const [tab, setTab] = useState<Tab>('all')
-  const [selected, setSelected] = useState<Place | null>(null)
+  // 선택은 id로만 기억하고 장소는 최신 목록에서 찾는다. 장소 객체를 통째로 들고 있으면 수정한 뒤에도
+  // 정보창이 옛 사진·메모를 보여준다.
+  const [selectedId, setSelectedId] = useState<number | null>(null)
+  const selected = initial.find((p) => p.id === selectedId) ?? null
   const [draft, setDraft] = useState<Draft | null>(null)
   // 새로 등록할 때 어떤 종류로 넣을지 (검색 전에 미리 고른다)
   const [addType, setAddType] = useState<PlaceType>('food')
   const [filter, setFilter] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  // 목록 쪽(수정·삭제) 오류. 등록 폼의 오류(error)와 따로 둔다 — 한 칸을 같이 쓰면 수정 실패가 등록 폼 안에 떴다.
+  const [listError, setListError] = useState<string | null>(null)
   const [editing, setEditing] = useState<Editing | null>(null)
   // 사진을 올리는 중 — 끝나기 전에 저장하면 사진 없이 저장된다
   const [uploading, setUploading] = useState(false)
@@ -77,7 +82,10 @@ export default function MapsManager({ initial }: Props) {
     return Array.from(counts.entries()).sort((a, b) => b[1] - a[1])
   }, [byTab])
 
-  const visible = filter ? byTab.filter((p) => p.category === filter) : byTab
+  // 고른 카테고리가 목록에서 사라졌으면(마지막 한 곳을 지우거나 카테고리를 바꿈) 필터를 없는 것으로 본다.
+  // 안 그러면 "이 카테고리엔 없습니다"에 갇히고, 남은 카테고리가 없으면 필터 버튼 줄도 사라져 풀 수가 없었다.
+  const activeFilter = filter && categories.some(([name]) => name === filter) ? filter : null
+  const visible = activeFilter ? byTab.filter((p) => p.category === activeFilter) : byTab
 
   const counts = {
     all: initial.length,
@@ -137,7 +145,7 @@ export default function MapsManager({ initial }: Props) {
   async function saveEdit() {
     if (!editing) return
     setBusy(true)
-    setError(null)
+    setListError(null)
     try {
       const res = await fetch('/api/places', {
         method: 'PUT',
@@ -152,13 +160,13 @@ export default function MapsManager({ initial }: Props) {
       })
       if (!res.ok) {
         const body = await res.json().catch(() => ({}))
-        setError(typeof body.error === 'string' ? body.error : '수정에 실패했습니다.')
+        setListError(typeof body.error === 'string' ? body.error : '수정에 실패했습니다.')
         return
       }
       setEditing(null)
       router.refresh()
     } catch {
-      setError('수정에 실패했습니다.')
+      setListError('수정에 실패했습니다.')
     } finally {
       setBusy(false)
     }
@@ -167,7 +175,7 @@ export default function MapsManager({ initial }: Props) {
   async function remove(id: number) {
     if (!confirm('이 장소를 삭제할까요?')) return
     setBusy(true)
-    setError(null)
+    setListError(null)
     try {
       const res = await fetch('/api/places', {
         method: 'DELETE',
@@ -176,13 +184,13 @@ export default function MapsManager({ initial }: Props) {
       })
       // 실패(로그인 만료 등)를 성공처럼 넘기지 않는다
       if (!res.ok) {
-        setError('삭제에 실패했습니다.')
+        setListError('삭제에 실패했습니다.')
         return
       }
-      if (selected?.id === id) setSelected(null)
+      setSelectedId((cur) => (cur === id ? null : cur))
       router.refresh()
     } catch {
-      setError('삭제에 실패했습니다.')
+      setListError('삭제에 실패했습니다.')
     } finally {
       setBusy(false)
     }
@@ -216,7 +224,8 @@ export default function MapsManager({ initial }: Props) {
         <PlacesMap
           places={visible}
           selected={selected}
-          onSelect={setSelected}
+          onSelect={(p) => setSelectedId(p ? p.id : null)}
+          onDeselect={(id) => setSelectedId((cur) => (cur === id ? null : cur))}
           draft={draft ? { lat: draft.lat, lng: draft.lng } : null}
         />
 
@@ -346,7 +355,7 @@ export default function MapsManager({ initial }: Props) {
               <button
                 onClick={() => setFilter(null)}
                 className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                  !filter
+                  !activeFilter
                     ? 'border-accent bg-accent-soft text-accent'
                     : 'border-border text-text-secondary hover:text-text-primary'
                 }`}
@@ -358,7 +367,7 @@ export default function MapsManager({ initial }: Props) {
                   key={name}
                   onClick={() => setFilter(name)}
                   className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
-                    filter === name
+                    activeFilter === name
                       ? 'border-accent bg-accent-soft text-accent'
                       : 'border-border text-text-secondary hover:text-text-primary'
                   }`}
@@ -369,7 +378,7 @@ export default function MapsManager({ initial }: Props) {
             </div>
           )}
 
-          {error && !draft && <p className="mb-2 text-xs text-red-500">{error}</p>}
+          {listError && <p className="mb-2 text-xs text-red-500">{listError}</p>}
 
           {visible.length === 0 ? (
             <p className="py-12 text-center text-sm text-text-muted">
@@ -428,7 +437,7 @@ export default function MapsManager({ initial }: Props) {
                       <button
                         onClick={() => {
                           setEditing(null)
-                          setError(null)
+                          setListError(null)
                         }}
                         className="rounded-md border border-border px-3 py-1.5 text-xs text-text-secondary transition-colors hover:text-text-primary"
                       >
@@ -438,7 +447,7 @@ export default function MapsManager({ initial }: Props) {
                   </li>
                 ) : (
                   <li key={p.id} className="flex items-start justify-between gap-4 py-3">
-                    <button onClick={() => setSelected(p)} className="group flex min-w-0 flex-1 gap-3 text-left">
+                    <button onClick={() => setSelectedId(p.id)} className="group flex min-w-0 flex-1 gap-3 text-left">
                       {p.photo && (
                         <img src={p.photo} alt="" className="h-14 w-14 shrink-0 rounded-md object-cover" />
                       )}
@@ -469,7 +478,7 @@ export default function MapsManager({ initial }: Props) {
                             memo: p.memo ?? '',
                             photo: p.photo ?? '',
                           })
-                          setError(null)
+                          setListError(null)
                         }}
                         disabled={busy}
                         className="text-xs text-text-muted transition-colors hover:text-accent disabled:opacity-50"

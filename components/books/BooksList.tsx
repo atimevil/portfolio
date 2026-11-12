@@ -27,6 +27,12 @@ function groupByGenre(books: Book[]): [string, Book[]][] {
   return Array.from(groups.entries()).sort((a, b) => a[0].localeCompare(b[0], 'ko'))
 }
 
+// 별점은 1~5로 저장되지만(API가 검사), 범위를 벗어난 값이 들어 있어도 repeat()가 던져 목록 전체가 죽지 않게 가둔다
+function stars(rating: number): string {
+  const n = Math.max(0, Math.min(5, Math.round(rating)))
+  return '★'.repeat(n) + '☆'.repeat(5 - n)
+}
+
 export default function BooksList({ books }: Props) {
   const [tab, setTab] = useState<Tab>('reading')
 
@@ -72,7 +78,7 @@ export default function BooksList({ books }: Props) {
                 <h3 className="font-medium text-text-primary">{book.title}</h3>
                 <p className="text-sm text-text-secondary mt-0.5">{book.author}</p>
                 {book.status === 'done' && book.rating != null && (
-                  <p className="text-sm text-accent mt-2">{'★'.repeat(book.rating)}{'☆'.repeat(5 - book.rating)}</p>
+                  <p className="text-sm text-accent mt-2">{stars(book.rating)}</p>
                 )}
                 {book.memo && <p className="text-sm text-text-secondary mt-2">{book.memo}</p>}
               </div>

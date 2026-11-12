@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef, type ReactNode } from 'react'
 import { MapContainer, TileLayer, Marker, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import L from 'leaflet'
 import type { Place } from '@prisma/client'
@@ -10,6 +10,8 @@ interface Props {
   places: Place[]
   selected: Place | null
   onSelect: (p: Place | null) => void
+  /** 정보창이 닫혔을 때. 그 장소가 아직 선택돼 있을 때만 선택을 푼다(부모가 id로 확인) */
+  onDeselect: (id: number) => void
   /** 등록 폼에서 방금 고른 위치 (아직 저장 전) */
   draft: { lat: number; lng: number } | null
 }
@@ -62,9 +64,44 @@ function DeselectOnMapClick({ onClick }: { onClick: () => void }) {
   return null
 }
 
+// 핀 하나. 선택되면 정보창을 직접 연다 — 정보창(<Popup>)은 선택된 뒤에야 붙기 때문에, Leaflet이 클릭으로
+// 열어 주지 못한다(목록에서 고르면 안 뜨고, 핀은 두 번 눌러야 떴다).
+function PlaceMarker({
+  place,
+  active,
+  onSelect,
+  onDeselect,
+  children,
+}: {
+  place: Place
+  active: boolean
+  onSelect: (p: Place) => void
+  onDeselect: (id: number) => void
+  children: ReactNode
+}) {
+  const ref = useRef<L.Marker>(null)
+  useEffect(() => {
+    if (active) ref.current?.openPopup()
+  }, [active])
+
+  return (
+    <Marker
+      ref={ref}
+      position={[place.lat, place.lng]}
+      icon={pinIcon(pinColor(place.type, active))}
+      eventHandlers={{
+        click: () => onSelect(place),
+        popupclose: () => onDeselect(place.id),
+      }}
+    >
+      {children}
+    </Marker>
+  )
+}
+
 const SEOUL = { lat: 37.5665, lng: 126.978 }
 
-export default function PlacesMap({ places, selected, onSelect, draft }: Props) {
+export default function PlacesMap({ places, selected, onSelect, onDeselect, draft }: Props) {
   // 필터로 핀이 사라진 곳의 정보창이 공중에 남지 않도록,
   // 현재 표시 중인 목록에 있는 경우에만 정보창을 띄운다.
   const activeSelected = selected && places.some((p) => p.id === selected.id) ? selected : null
@@ -92,17 +129,7 @@ export default function PlacesMap({ places, selected, onSelect, draft }: Props) 
         />
 
         {places.map((p) => (
-          <Marker
-            key={p.id}
-            position={[p.lat, p.lng]}
-            icon={pinIcon(pinColor(p.type, selected?.id === p.id))}
-            eventHandlers={{
-              click: () => onSelect(p),
-              popupclose: () => {
-                if (selected?.id === p.id) onSelect(null)
-              },
-            }}
-          >
+          <PlaceMarker key={p.id} place={p} active={activeSelected?.id === p.id} onSelect={onSelect} onDeselect={onDeselect}>
             <Tooltip direction="top" offset={[0, -10]}>
               <div className="max-w-[200px] text-xs text-neutral-900">
                 {p.items || p.memo ? (
@@ -148,7 +175,7 @@ export default function PlacesMap({ places, selected, onSelect, draft }: Props) 
                 </div>
               </Popup>
             )}
-          </Marker>
+          </PlaceMarker>
         ))}
 
         {/* 아직 저장하지 않은 후보 위치는 주황으로 구분 */}

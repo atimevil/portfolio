@@ -15,13 +15,11 @@ export default function ThemeToggle({ locale = 'ko' }: { locale?: Locale }) {
   function toggle() {
     const next = !isDark
     setIsDark(next)
-    if (next) {
-      document.documentElement.classList.add('dark')
-      localStorage.setItem('theme', 'dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-      localStorage.setItem('theme', 'light')
-    }
+    document.documentElement.classList.toggle('dark', next)
+    // 저장소가 막힌 브라우저(사생활 보호 모드 등)에서는 setItem이 던진다 — 이번 화면에서만 바뀌고 기억은 못 한다
+    try {
+      localStorage.setItem('theme', next ? 'dark' : 'light')
+    } catch {}
   }
 
   return (

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Button from '@/components/ui/Button'
 import type { GalleryImage } from '@/types'
 import { galleryThumbSrc } from '@/lib/galleryUrl'
@@ -17,6 +17,13 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
   const [description, setDescription] = useState('')
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+
+  // 미리보기 주소(blob:)는 바뀌거나 화면을 떠날 때 풀어 준다 — 안 풀면 고른 파일이 탭을 닫을 때까지 메모리에 남는다
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview)
+    }
+  }, [preview])
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -156,7 +163,7 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
               </div>
               <button
                 onClick={() => handleDelete(image.id)}
-                className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 focus-visible:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity hover:bg-red-600"
               >
                 삭제
               </button>

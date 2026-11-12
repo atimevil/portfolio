@@ -2,14 +2,6 @@ import type { PortfolioItem } from '@/types'
 
 export type Locale = 'ko' | 'en'
 
-export const LOCALES: Locale[] = ['ko', 'en']
-export const DEFAULT_LOCALE: Locale = 'ko'
-
-/** '/en' 이하 경로면 en, 아니면 ko */
-export function localeFromPath(pathname: string): Locale {
-  return pathname === '/en' || pathname.startsWith('/en/') ? 'en' : 'ko'
-}
-
 /** 블로그 인덱스 경로. 홈(/)은 포트폴리오이고 글 목록은 여기 산다. */
 export function blogBase(_locale: Locale): string {
   // 글은 한국어로만 쓴다. 목록만 영어로 두면 글을 눌렀을 때 /en 밖으로 나가버려서
@@ -38,14 +30,10 @@ const UI = {
   csResult: { ko: '결과', en: 'Result' },
   linkPaper: { ko: '논문', en: 'Paper' },
   linkSite: { ko: '사이트', en: 'Website' },
-  backToAbout: { ko: '← 소개', en: '← About' },
   home: { ko: '홈', en: 'Home' },
   prevProject: { ko: '← 이전 프로젝트', en: '← Previous' },
   nextProject: { ko: '다음 프로젝트 →', en: 'Next →' },
   // 홈 섹션 이름은 "전체 보기"로 도착하는 /about의 섹션 이름과 같게 둔다.
-  research: { ko: '연구 · 경진대회', en: 'Research & Competitions' },
-  projectsLede: { ko: '직접 만들어 돌려본 시스템입니다.', en: 'Systems I built and ran.' },
-  researchLede: { ko: '연구와 경진대회에서 잰 숫자부터 적었습니다.', en: 'Research and competition results, number first.' },
   viewAllWork: { ko: '전체 보기 →', en: 'View all →' },
   all: { ko: '전체', en: 'All' },
   searchPosts: { ko: '글 검색', en: 'Search posts' },
@@ -62,7 +50,6 @@ const UI = {
   allPosts: { ko: '← 전체 글', en: '← All posts' },
   searchResult: { ko: '검색 결과', en: 'search results' },
   postsInKorean: { ko: '', en: 'Posts are in Korean.' },
-  aboutArrow: { ko: '소개 →', en: 'About →' },
   // 홈 타일
   latest: { ko: '최근', en: 'Latest' },
   awardCount: { ko: '수상', en: 'Awards' },

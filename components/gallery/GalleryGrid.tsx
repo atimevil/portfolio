@@ -129,7 +129,10 @@ function scrapStyle(id: string) {
 /** createdAt(ISO) → "2026.10" */
 function monthLabel(createdAt: string): string {
   const d = new Date(createdAt)
-  return Number.isNaN(d.getTime()) ? '' : `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}`
+  if (Number.isNaN(d.getTime())) return ''
+  // 한국 시간으로 고정한다. 실행 환경의 시간대를 쓰면 서버(UTC)와 브라우저(KST)가 월초 0~9시 사진의 달을 다르게 그린다.
+  const kst = new Date(d.getTime() + 9 * 60 * 60 * 1000)
+  return `${kst.getUTCFullYear()}.${String(kst.getUTCMonth() + 1).padStart(2, '0')}`
 }
 
 export default function GalleryGrid({ images }: GalleryGridProps) {

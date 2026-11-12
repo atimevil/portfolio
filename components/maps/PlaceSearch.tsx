@@ -34,6 +34,8 @@ export default function PlaceSearch({ onPick, placeholder }: Props) {
   const [error, setError] = useState<string | null>(null)
   // 두 글자 미만이면 지난 검색 결과를 보여주지 않는다
   const shown = input.trim().length < 2 ? [] : suggestions
+  // 요청 도중에 글자를 지우거나 결과를 고르면 그 요청은 버려지고 loading이 켜진 채 남는다 — 검색어가 없을 때는 감춘다
+  const searching = loading && input.trim().length >= 2
 
   useEffect(() => {
     const query = input.trim()
@@ -92,7 +94,7 @@ export default function PlaceSearch({ onPick, placeholder }: Props) {
         placeholder={placeholder ?? '가게명 검색'}
         className="w-full rounded-md border border-border bg-bg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted transition-colors focus:border-accent focus:outline-none"
       />
-      {loading && <span className="absolute right-3 top-2.5 text-xs text-text-muted">검색 중…</span>}
+      {searching && <span className="absolute right-3 top-2.5 text-xs text-text-muted">검색 중…</span>}
       {error && <p className="mt-1.5 text-xs text-red-500">{error}</p>}
 
       {shown.length > 0 && (

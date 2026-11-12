@@ -63,7 +63,13 @@ function timeParam(url: string, names: string[]): number {
   for (const name of names) {
     const m = url.match(new RegExp(`[?&#]${name}=([^&#]+)`))
     if (!m) continue
-    const v = decodeURIComponent(m[1])
+    // 잘못된 % 표기(?t=%zz)는 decodeURIComponent가 던진다 — 홈·프로젝트 페이지가 500이 되지 않게 못 읽은 것으로 둔다
+    let v: string
+    try {
+      v = decodeURIComponent(m[1])
+    } catch {
+      continue
+    }
     if (/^\d+s?$/.test(v)) return parseInt(v, 10)
     const hms = v.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$/)
     if (hms && v) return Number(hms[1] ?? 0) * 3600 + Number(hms[2] ?? 0) * 60 + Number(hms[3] ?? 0)

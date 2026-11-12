@@ -17,7 +17,8 @@ export default function AdminBlogList({ posts: initialPosts }: AdminBlogListProp
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ slug }),
-    })
+    }).catch(() => null)
+    if (!res) { alert('삭제 실패: 네트워크 오류'); return }
     if (res.ok) {
       setPosts((prev) => prev.filter((p) => p.slug !== slug))
     } else {

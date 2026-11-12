@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import {
-  draftKey, saveDraft, loadDraft, clearDraft, draftDiffersFrom,
+  draftKey, saveDraft, loadDraft, clearDraft, draftDiffersFrom, snapshotFingerprint, draftIsStale,
   type DraftData, type StorageLike,
 } from '@/lib/draftStorage'
 
@@ -56,5 +56,29 @@ describe('draftDiffersFrom', () => {
   })
   it('내용이 실제로 다르면 true', () => {
     expect(draftDiffersFrom({ ...sample, content: '다른 본문' }, sample)).toBe(true)
+  })
+})
+
+describe('요약도 초안에 들어간다', () => {
+  it('요약만 달라도 다른 것으로 본다', () => {
+    expect(draftDiffersFrom({ ...sample, excerpt: '새 요약' }, { ...sample, excerpt: '' })).toBe(true)
+  })
+  it('요약 칸이 없는 예전 초안은 요약을 비교하지 않는다', () => {
+    expect(draftDiffersFrom(sample, { ...sample, excerpt: '서버에 있는 요약' })).toBe(false)
+  })
+})
+
+describe('draftIsStale', () => {
+  const server = { ...sample, excerpt: '' }
+  it('초안을 쓴 뒤 서버 글이 그대로면 false', () => {
+    const draft = { ...sample, content: '고친 본문', base: snapshotFingerprint(server) }
+    expect(draftIsStale(draft, server)).toBe(false)
+  })
+  it('초안을 쓴 뒤 서버 글이 바뀌었으면 true', () => {
+    const draft = { ...sample, content: '고친 본문', base: snapshotFingerprint(server) }
+    expect(draftIsStale(draft, { ...server, content: '다른 기기에서 고친 본문' })).toBe(true)
+  })
+  it('지문이 없는 예전 초안은 false', () => {
+    expect(draftIsStale(sample, { ...server, content: '바뀜' })).toBe(false)
   })
 })

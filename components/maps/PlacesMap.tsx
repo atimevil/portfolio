@@ -21,14 +21,20 @@ const PIN_COLORS = {
   draft: '#f5a97f',
 } as const
 
+// 색마다 한 번만 만든다. 렌더할 때마다 새 아이콘을 넘기면 react-leaflet이 모든 핀의 DOM을 다시 만든다.
+const iconCache = new Map<string, L.DivIcon>()
 function pinIcon(color: string) {
-  return L.divIcon({
+  const cached = iconCache.get(color)
+  if (cached) return cached
+  const icon = L.divIcon({
     className: '',
     html: `<span style="display:block;width:16px;height:16px;border-radius:50%;background:${color};border:2px solid #131317;box-shadow:0 1px 3px rgba(0,0,0,.4)"></span>`,
     iconSize: [16, 16],
     iconAnchor: [8, 8],
     popupAnchor: [0, -8],
   })
+  iconCache.set(color, icon)
+  return icon
 }
 
 function pinColor(type: string, isActive: boolean) {
@@ -39,10 +45,14 @@ function pinColor(type: string, isActive: boolean) {
 // 선택된 장소가 바뀌면 지도를 그 위치로 부드럽게 이동시킨다.
 function PanTo({ target }: { target: { lat: number; lng: number } | null }) {
   const map = useMap()
+  // 좌표 값으로 비교한다. target 객체는 렌더마다 새로 만들어져서, 객체로 비교하면 메모를 한 글자 칠 때마다
+  // 지도가 그 위치로 다시 날아갔다(직접 옮겨 둔 화면이 되돌아옴).
+  const lat = target?.lat
+  const lng = target?.lng
   useEffect(() => {
-    if (!target) return
-    map.flyTo([target.lat, target.lng], Math.max(map.getZoom(), 15))
-  }, [map, target])
+    if (lat === undefined || lng === undefined) return
+    map.flyTo([lat, lng], Math.max(map.getZoom(), 15))
+  }, [map, lat, lng])
   return null
 }
 

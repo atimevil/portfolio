@@ -15,7 +15,9 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const formData = await req.formData()
+  // multipart가 아닌 본문이면 formData()가 던진다 — 500 대신 400으로 답한다
+  const formData = await req.formData().catch(() => null)
+  if (!formData) return NextResponse.json({ error: '파일을 선택하세요' }, { status: 400 })
   const file = formData.get('file') as File | null
   const category = (formData.get('category') as string) || '기타'
   const description = (formData.get('description') as string) || ''
@@ -34,7 +36,9 @@ export async function POST(req: NextRequest) {
     } catch {
       return NextResponse.json({ error: 'PDF 변환에 실패했습니다' }, { status: 422 })
     }
-    return NextResponse.json(await saveGalleryImage(jpeg, category, description), { status: 201 })
+    const converted = await saveGalleryImage(jpeg, category, description)
+    if (!converted) return NextResponse.json({ error: 'PDF 변환에 실패했습니다' }, { status: 422 })
+    return NextResponse.json(converted, { status: 201 })
   }
 
   if (!allowed.includes(file.type)) {

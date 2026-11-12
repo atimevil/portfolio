@@ -1,6 +1,6 @@
 import { Extension, type Editor, type Range } from '@tiptap/core'
 import Suggestion, { type SuggestionOptions } from '@tiptap/suggestion'
-import { uploadBlogImage } from '@/lib/uploadBlogImage'
+import { insertUploadedImage } from '../insertUploadedImage'
 
 export interface SlashCommandItem {
   title: string
@@ -8,8 +8,8 @@ export interface SlashCommandItem {
   command: (props: { editor: Editor; range: Range }) => void
 }
 
-// range(입력된 "/query" 구간)를 지우고, RichEditor의 fileInputRef에 의존하지 않는
-// 임시 파일 input을 만들어 이미지를 업로드·삽입한다(자기 완결적 — 툴바 🖼 버튼과 별개 경로).
+// range(입력된 "/query" 구간)를 지우고 파일 선택 창을 띄워, 고른 이미지를 툴바 🖼 버튼과 같은 경로로 올려 넣는다.
+// (예전엔 여기만 따로 구현해서, 표 칸 안에서는 파일만 올라가고 본문에는 아무것도 안 들어갔다.)
 function insertImageViaSlash({ editor, range }: { editor: Editor; range: Range }) {
   editor.chain().focus().deleteRange(range).run()
 
@@ -17,18 +17,12 @@ function insertImageViaSlash({ editor, range }: { editor: Editor; range: Range }
   input.type = 'file'
   input.accept = 'image/*'
   input.style.display = 'none'
-
+  // 고르든 취소하든 임시 input은 치운다
+  input.addEventListener('cancel', () => input.remove())
   input.addEventListener('change', () => {
     const file = input.files?.[0]
     input.remove()
-    if (!file) return
-    uploadBlogImage(file)
-      .then((url) => {
-        editor.chain().focus().setImage({ src: url }).run()
-      })
-      .catch(() => {
-        alert('이미지 업로드에 실패했습니다.')
-      })
+    if (file) void insertUploadedImage(editor, file)
   })
 
   document.body.appendChild(input)

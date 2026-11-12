@@ -27,6 +27,12 @@ describe('parseVideo', () => {
     expect(parseVideo('https://www.youtube.com/watch?v=86x1i86nqeE&t=1m30s')).toMatchObject({ embed: expect.stringContaining('start=90') })
   })
 
+  it('잘못된 % 표기가 든 시각은 던지지 않고 시작 시각 없이 읽는다', () => {
+    const v = parseVideo('https://youtu.be/86x1i86nqeE?t=%zz')
+    expect(v).toMatchObject({ kind: 'youtube', id: '86x1i86nqeE' })
+    expect(v && 'embed' in v ? v.embed : '').not.toContain('start=')
+  })
+
   it('끝 시각으로 한 장면만 자른다', () => {
     const v = parseVideo('https://www.youtube.com/watch?v=VKvAJJC_hAE&t=12895&end=12906')
     expect(v).toMatchObject({ embed: 'https://www.youtube-nocookie.com/embed/VKvAJJC_hAE?rel=0&start=12895&end=12906' })

@@ -64,6 +64,8 @@ export default function MapsManager({ initial }: Props) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [editing, setEditing] = useState<Editing | null>(null)
+  // 사진을 올리는 중 — 끝나기 전에 저장하면 사진 없이 저장된다
+  const [uploading, setUploading] = useState(false)
 
   const byTab = tab === 'all' ? initial : initial.filter((p) => p.type === tab)
 
@@ -165,14 +167,22 @@ export default function MapsManager({ initial }: Props) {
   async function remove(id: number) {
     if (!confirm('이 장소를 삭제할까요?')) return
     setBusy(true)
+    setError(null)
     try {
-      await fetch('/api/places', {
+      const res = await fetch('/api/places', {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id }),
       })
+      // 실패(로그인 만료 등)를 성공처럼 넘기지 않는다
+      if (!res.ok) {
+        setError('삭제에 실패했습니다.')
+        return
+      }
       if (selected?.id === id) setSelected(null)
       router.refresh()
+    } catch {
+      setError('삭제에 실패했습니다.')
     } finally {
       setBusy(false)
     }
@@ -294,7 +304,15 @@ export default function MapsManager({ initial }: Props) {
 
               <div>
                 <label className="mb-1.5 block text-xs text-text-muted">사진</label>
-                <PhotoUpload value={draft.photo} onChange={(url) => setDraft({ ...draft, photo: url })} />
+                {/* 올리는 동안 다른 칸을 고치거나 취소할 수 있다. 끝났을 때 "지금" 폼에 사진만 얹는다 —
+                    고를 때의 폼으로 되돌리면 그 사이 쓴 메모가 지워지고, 취소한 폼이 되살아난다. */}
+                <PhotoUpload
+                  value={draft.photo}
+                  onBusyChange={setUploading}
+                  onChange={(url) =>
+                    setDraft((d) => (d && d.lat === draft.lat && d.lng === draft.lng ? { ...d, photo: url } : d))
+                  }
+                />
               </div>
 
               {error && <p className="text-xs text-red-500">{error}</p>}
@@ -302,7 +320,7 @@ export default function MapsManager({ initial }: Props) {
               <div className="flex gap-2">
                 <button
                   onClick={save}
-                  disabled={busy}
+                  disabled={busy || uploading}
                   className="rounded-md bg-accent px-4 py-2 text-sm font-medium text-bg transition-colors hover:bg-accent-hover disabled:opacity-50"
                 >
                   {busy ? '저장 중…' : '저장'}
@@ -396,12 +414,13 @@ export default function MapsManager({ initial }: Props) {
                     />
                     <PhotoUpload
                       value={editing.photo}
-                      onChange={(url) => setEditing({ ...editing, photo: url })}
+                      onBusyChange={setUploading}
+                      onChange={(url) => setEditing((e) => (e && e.id === editing.id ? { ...e, photo: url } : e))}
                     />
                     <div className="flex gap-2">
                       <button
                         onClick={saveEdit}
-                        disabled={busy}
+                        disabled={busy || uploading}
                         className="rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-bg transition-colors hover:bg-accent-hover disabled:opacity-50"
                       >
                         저장
@@ -472,7 +491,8 @@ export default function MapsManager({ initial }: Props) {
           )}
         </section>
 
-        <PhotoCleanup />
+        {/* 등록·수정 중에는 숨긴다. 방금 올렸지만 아직 저장 안 한 사진도 "안 쓰는 사진"이라, 정리하면 지워진다. */}
+        {!draft && !editing && <PhotoCleanup />}
       </div>
   )
 }

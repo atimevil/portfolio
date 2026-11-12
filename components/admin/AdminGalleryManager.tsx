@@ -67,7 +67,8 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
-    })
+    }).catch(() => null)
+    if (!res) { alert('삭제 실패: 네트워크 오류'); return }
     if (res.ok) setImages((prev) => prev.filter((i) => i.id !== id))
     else alert(res.status === 401 ? '삭제 실패: 로그인이 만료됐습니다. 다시 로그인해 주세요.' : `삭제 실패 (오류 ${res.status})`)
   }

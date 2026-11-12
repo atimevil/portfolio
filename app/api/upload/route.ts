@@ -5,14 +5,16 @@ import path from 'path'
 import { stripImageMetadata } from '@/lib/stripMetadata'
 import { detectImageExt } from '@/lib/imageExt'
 import { PHOTO_DIR, URL_PREFIX as PHOTO_URL_PREFIX } from '@/lib/place-photos'
+import { uniqueStamp } from '@/lib/uniqueStamp'
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const formData = await req.formData()
-  const file = formData.get('file') as File | null
-  if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+  // multipart가 아닌 본문이면 formData()가 던진다 — 500 대신 400으로 답한다
+  const formData = await req.formData().catch(() => null)
+  const file = formData?.get('file')
+  if (!formData || !(file instanceof File)) return NextResponse.json({ error: 'No file provided' }, { status: 400 })
 
   // type별로 저장 폴더를 나눈다. 정해진 값만 허용해서 경로 조작(../ 등)을 막는다.
   const type = formData.get('type')
@@ -23,7 +25,7 @@ export async function POST(req: NextRequest) {
   // 확장자는 파일명이 아니라 실제 내용으로 정한다. 이미지가 아니면 저장하지 않는다
   const ext = await detectImageExt(buffer)
   if (!ext) return NextResponse.json({ error: '이미지 파일이 아닙니다' }, { status: 400 })
-  const filename = `${prefix}-${Date.now()}.${ext}`
+  const filename = `${prefix}-${uniqueStamp()}.${ext}`
 
   // 지도 사진은 비공개(로그인해야 보이는 /maps용)라 public 밖에 두고 인증 라우트로 서빙한다
   if (subdir === 'maps') {

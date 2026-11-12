@@ -88,4 +88,28 @@ describe('POST /api/upload', () => {
     const res = await POST(makeUploadRequest({ type: 'blog' }))
     expect(res.status).toBe(400)
   })
+
+  it('multipart가 아닌 본문이면 500이 아니라 400', async () => {
+    const req = new NextRequest('http://localhost/api/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+    })
+    expect((await POST(req)).status).toBe(400)
+  })
+
+  it('같은 ms에 올린 두 파일이 서로 다른 이름으로 저장된다', async () => {
+    const now = vi.spyOn(Date, 'now').mockReturnValue(1_800_000_000_000)
+    try {
+      const [a, b] = await Promise.all([
+        POST(makeUploadRequest({ file: pngFile('a.png'), type: 'blog' })),
+        POST(makeUploadRequest({ file: pngFile('b.png'), type: 'blog' })),
+      ])
+      const urls = [(await a.json()).url as string, (await b.json()).url as string]
+      for (const url of urls) written.push(path.join(process.cwd(), 'public', url))
+      expect(urls[0]).not.toBe(urls[1])
+    } finally {
+      now.mockRestore()
+    }
+  })
 })

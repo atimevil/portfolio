@@ -36,6 +36,8 @@ const SlashMenuList = forwardRef<SlashMenuListRef, SlashMenuListProps>(({ items,
 
   useImperativeHandle(ref, () => ({
     onKeyDown: ({ event }) => {
+      // 맞는 명령이 없으면 키를 가로채지 않는다. 예전엔 "/usr"처럼 쓰고 Enter를 누르면 아무 일도 없었다.
+      if (items.length === 0) return false
       if (event.key === 'ArrowUp') {
         setSelectedIndex((index) => (index + items.length - 1) % items.length)
         return true
@@ -88,10 +90,14 @@ SlashMenuList.displayName = 'SlashMenuList'
 // tippy.js로 커서 위치에 붙인다(Tiptap 공식 slash-commands/mention 예제 패턴).
 export function renderSlashMenu() {
   let component: ReactRenderer<SlashMenuListRef, SlashMenuListProps>
-  let popup: TippyInstance[]
+  let popup: TippyInstance[] | undefined
+  // Esc로 닫은 뒤에도 suggestion 플러그인은 계속 살아 있다. 닫힌 동안에는 키를 가로채지 않는다 —
+  // 안 그러면 보이지 않는 메뉴의 선택 항목이 다음 Enter에 실행되고 화살표 키도 먹힌다.
+  let dismissed = false
 
   return {
     onStart: (props: SuggestionProps<SlashCommandItem>) => {
+      dismissed = false
       component = new ReactRenderer(SlashMenuList, {
         props,
         editor: props.editor,
@@ -115,21 +121,24 @@ export function renderSlashMenu() {
 
       if (!props.clientRect) return
 
-      popup[0]?.setProps({
+      popup?.[0]?.setProps({
         getReferenceClientRect: props.clientRect as () => DOMRect,
       })
     },
 
     onKeyDown(props: SuggestionKeyDownProps) {
+      if (dismissed) return false
       if (props.event.key === 'Escape') {
-        popup[0]?.hide()
+        dismissed = true
+        popup?.[0]?.hide()
         return true
       }
       return component.ref?.onKeyDown(props) ?? false
     },
 
     onExit() {
-      popup[0]?.destroy()
+      popup?.[0]?.destroy()
+      popup = undefined
       component.destroy()
     },
   }

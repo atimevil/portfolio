@@ -33,12 +33,14 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
     if (pw.next !== pw.confirm) { setPwMsg({ ok: false, text: '새 비밀번호 확인이 일치하지 않습니다.' }); return }
     setPwSaving(true)
     setPwMsg(null)
+    // 네트워크 오류를 잡지 않으면 버튼이 "변경 중..."에서 멈춘다
     const res = await fetch('/api/password', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ currentPassword: pw.current, newPassword: pw.next }),
-    })
+    }).catch(() => null)
     setPwSaving(false)
+    if (!res) { setPwMsg({ ok: false, text: '변경 실패: 네트워크 오류' }); return }
     if (res.ok) {
       setPw({ current: '', next: '', confirm: '' })
       setPwMsg({ ok: true, text: '비밀번호가 변경되었습니다.' })

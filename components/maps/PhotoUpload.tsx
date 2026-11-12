@@ -5,16 +5,19 @@ import { useRef, useState } from 'react'
 interface Props {
   value: string
   onChange: (url: string) => void
+  /** 올리는 중인지 알린다 — 부모가 그동안 저장 버튼을 막는다(사진 없이 저장되는 것 방지) */
+  onBusyChange?: (busy: boolean) => void
 }
 
 // 사진 한 장 업로드 — 기존 /api/upload를 재사용하고 type=maps로 폴더만 나눈다.
-export default function PhotoUpload({ value, onChange }: Props) {
+export default function PhotoUpload({ value, onChange, onBusyChange }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   async function handleFile(file: File) {
     setBusy(true)
+    onBusyChange?.(true)
     setError(null)
     try {
       const body = new FormData()
@@ -31,6 +34,7 @@ export default function PhotoUpload({ value, onChange }: Props) {
       setError('업로드에 실패했습니다.')
     } finally {
       setBusy(false)
+      onBusyChange?.(false)
       // 같은 파일을 다시 골라도 change 이벤트가 나도록 초기화
       if (inputRef.current) inputRef.current.value = ''
     }

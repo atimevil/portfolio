@@ -7,7 +7,7 @@ import RichEditor from '@/components/admin/RichEditor'
 import { markdownToEditorHtml } from '@/lib/markdownToEditorHtml'
 import { todayKST } from '@/lib/today'
 import {
-  draftKey, saveDraft, loadDraft, clearDraft, draftDiffersFrom, type DraftData,
+  draftKey, saveDraft, loadDraft, clearDraft, draftDiffersFrom, draftIsStale, snapshotFingerprint, type DraftData,
 } from '@/lib/draftStorage'
 import type { BlogPost } from '@/types'
 
@@ -38,6 +38,8 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
   const [excerpt, setExcerpt] = useState(initialPost?.excerpt ?? '')
   const [loading, setLoading] = useState(false)
   const [recoverable, setRecoverable] = useState<DraftData | null>(null)
+  // 복구할 초안이 서버 글보다 옛 버전에서 쓴 것인지(다른 기기에서 그 사이 저장됨)
+  const [recoverableStale, setRecoverableStale] = useState(false)
 
   const key = draftKey(initialPost?.slug)
   const serverSnapshot: DraftData = {
@@ -46,6 +48,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
     tags: initialPost?.tags?.join(', ') ?? '',
     category: initialPost?.category ?? '',
     content: initialHtml, // 변환 후 html 기준 — 복구 배너 오탐 방지
+    excerpt: initialPost?.excerpt ?? '',
   }
   const serverRef = useRef(serverSnapshot)
 
@@ -55,6 +58,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
     const saved = loadDraft(window.localStorage, key)
     if (saved && draftDiffersFrom(saved, serverRef.current)) {
       setRecoverable(saved)
+      setRecoverableStale(draftIsStale(saved, serverRef.current))
     }
     // key는 마운트 시 고정(같은 글 편집 화면), 의존성 최소화
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,10 +68,18 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
   useEffect(() => {
     if (typeof window === 'undefined') return
     if (recoverable) return // 복구 배너가 떠 있는 동안은 저장된 초안을 덮어쓰지 않는다
-    const draft: DraftData = { title, date, tags, category, content }
-    const t = setTimeout(() => saveDraft(window.localStorage, key, draft), 800)
+    const draft: DraftData = { title, date, tags, category, content, excerpt }
+    const t = setTimeout(() => {
+      // 고친 게 있을 때만 보관한다. 예전엔 글을 열기만 해도 그때의 서버 글이 초안으로 남아서, 나중에 다른 기기에서
+      // 고친 뒤 다시 열면 "저장하지 않은 편집 내용"으로 떠 복구하면 새 글을 옛 내용으로 덮어썼다.
+      if (draftDiffersFrom(draft, serverRef.current)) {
+        saveDraft(window.localStorage, key, { ...draft, base: snapshotFingerprint(serverRef.current) })
+      } else {
+        clearDraft(window.localStorage, key)
+      }
+    }, 800)
     return () => clearTimeout(t)
-  }, [title, date, tags, category, content, key, recoverable])
+  }, [title, date, tags, category, content, excerpt, key, recoverable])
 
   function recover() {
     if (!recoverable) return
@@ -76,6 +88,7 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
     setTags(recoverable.tags)
     setCategory(recoverable.category)
     setContent(recoverable.content)
+    if (recoverable.excerpt !== undefined) setExcerpt(recoverable.excerpt)
     setRecoverable(null)
   }
 
@@ -104,11 +117,19 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
 
     const payload = initialPost ? { originalSlug: initialPost.slug, ...body } : body
 
-    const res = await fetch('/api/blog', {
-      method: initialPost ? 'PUT' : 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
+    // 네트워크가 끊기면 fetch가 던진다. 잡지 않으면 저장 버튼이 꺼진 채로 남고 아무 안내도 없었다.
+    let res: Response
+    try {
+      res = await fetch('/api/blog', {
+        method: initialPost ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+    } catch {
+      setLoading(false)
+      alert('저장 실패: 네트워크 오류입니다. 연결을 확인하고 다시 저장해 주세요 (작성 중인 글은 이 브라우저에 임시 보관돼 있습니다).')
+      return
+    }
 
     setLoading(false)
     if (res.ok) {
@@ -130,7 +151,11 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
 
       {recoverable && (
         <div className="mb-4 flex items-center justify-between gap-3 rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-300">
-          <span>저장하지 않은 편집 내용이 있습니다. 복구하시겠어요?</span>
+          <span>
+            {recoverableStale
+              ? '이 브라우저에 저장하지 않은 편집 내용이 있지만, 그 뒤에 글이 다른 곳에서 수정됐습니다. 복구해서 저장하면 지금 글을 덮어씁니다.'
+              : '저장하지 않은 편집 내용이 있습니다. 복구하시겠어요?'}
+          </span>
           <div className="flex gap-2 shrink-0">
             <button type="button" onClick={recover} className="underline font-medium">복구</button>
             <button type="button" onClick={dismissRecovery} className="text-text-muted hover:text-text-secondary">무시</button>

@@ -5,6 +5,7 @@ import { stripImageMetadata } from '@/lib/stripMetadata'
 import { detectImageExt } from '@/lib/imageExt'
 import { readJsonFile, readJsonFileOr, writeJsonAtomic } from '@/lib/jsonFile'
 import type { GalleryImage } from '@/types'
+import { uniqueStamp } from '@/lib/uniqueStamp'
 
 const META_FILE = path.join(process.cwd(), 'content/gallery.json')
 const UPLOAD_DIR = path.join(process.cwd(), 'public/uploads/gallery')
@@ -47,7 +48,7 @@ export async function saveGalleryImage(
   const ext = await detectImageExt(buffer)
   if (!ext) return null
   if (!fs.existsSync(UPLOAD_DIR)) fs.mkdirSync(UPLOAD_DIR, { recursive: true })
-  const id = Date.now().toString()
+  const id = uniqueStamp()
   const filename = `${id}.${ext}`
   fs.writeFileSync(path.join(UPLOAD_DIR, filename), buffer)
   // 썸네일을 못 만들어도(드문 포맷 등) 업로드 자체는 살린다. 그리드는 원본으로 대신 보여준다.

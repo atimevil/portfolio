@@ -32,6 +32,9 @@ export async function generateMetadata(props: Props) {
   const params = await props.params
   const post = await getPost(params.slug)
   if (!post) return {}
+  // 임시 글의 제목·요약은 비로그인 방문자에게 내보내지 않는다. 페이지는 404지만 메타데이터는 따로 실려 나가서,
+  // 주소를 아는 사람은 응답 본문에서 제목과 요약을 읽을 수 있었다.
+  if (post.status !== 'published' && !(await getServerSession(authOptions))) return {}
   const meta = buildPageMetadata({
     path: `/blog/${params.slug}`,
     title: post.title,

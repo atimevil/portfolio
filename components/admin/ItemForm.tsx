@@ -156,9 +156,10 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
       slug: isProject ? form.slug : undefined,
       link: isProject ? form.link : undefined,
       thumbnail: isProject ? form.thumbnail : undefined,
-      video: isProject ? form.video.trim() || undefined : undefined,
-      loop: isProject ? form.loop.trim() || undefined : undefined,
-      poster: isProject ? form.poster.trim() || undefined : undefined,
+      // 비운 칸은 ''로 보낸다 — undefined면 JSON에서 키가 빠져 서버 병합에서 옛 값이 남는다(영상을 지워도 되살아났다)
+      video: isProject ? form.video.trim() : undefined,
+      loop: isProject ? form.loop.trim() : undefined,
+      poster: isProject ? form.poster.trim() : undefined,
       order: isProject ? Number(form.order) || 0 : undefined,
       visible: isProject ? form.visible : undefined,
       featured: isProject ? (form.visible && form.featured) : undefined,

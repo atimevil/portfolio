@@ -1,6 +1,6 @@
 import type { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { verifyPassword } from '@/lib/auth-password'
+import { verifyPassword, passwordVersion } from '@/lib/auth-password'
 import { ipKey, isLocked, recordFailure, recordSuccess } from '@/lib/rate-limit'
 
 export const authOptions: NextAuthOptions = {
@@ -31,6 +31,17 @@ export const authOptions: NextAuthOptions = {
   ],
   pages: {
     signIn: '/admin/login',
+  },
+  callbacks: {
+    // 로그인할 때(user가 있을 때)만 그 시점의 비밀번호 버전을 토큰에 적는다. 검사는 lib/session.ts·proxy.ts가 한다.
+    jwt({ token, user }) {
+      if (user) token.pv = passwordVersion()
+      return token
+    },
+    session({ session, token }) {
+      session.pv = token.pv
+      return session
+    },
   },
   session: {
     strategy: 'jwt',

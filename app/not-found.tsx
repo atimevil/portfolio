@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import NavBar from '@/components/layout/NavBar'
 import Footer from '@/components/layout/Footer'
 import { getSettings } from '@/lib/settings'
@@ -16,7 +16,7 @@ export default async function NotFound() {
   const { profile, navVisibility, devMode } = getSettings()
   // 루트 404는 (site) 레이아웃 밖에서 그려져 그쪽의 개발중 모드 차단을 거치지 않는다.
   // 같은 규칙을 여기서도 건다 — 안 그러면 없는 주소로 헤더·푸터(연락처)가 새어 나간다.
-  if (devMode && !(await getServerSession())) redirect('/coming-soon')
+  if (devMode && !(await getAdminSession())) redirect('/coming-soon')
   const en = locale === 'en'
   const home = en ? '/en' : '/'
   const about = en ? '/en/about' : '/about'

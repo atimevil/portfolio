@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseJsonObject, badJson } from '@/lib/bulkSchema'
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { z } from 'zod'
 import { hiddenFromPublic } from '@/lib/publicGate'
 import { getItems, createItem, updateItem, deleteItem, slugTaken } from '@/lib/items'
@@ -48,12 +48,12 @@ export async function GET() {
   if (await hiddenFromPublic()) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   // 비로그인에게는 소개에서 숨긴 프로젝트를 빼고 준다
   const items = getItems()
-  if (await getServerSession()) return NextResponse.json(items)
+  if (await getAdminSession()) return NextResponse.json(items)
   return NextResponse.json(items.filter((i) => i.type !== 'project' || i.visible))
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const body = await parseJsonObject(req)
   if (!body) return badJson()
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const body = await parseJsonObject(req)
   if (!body) return badJson()
@@ -79,7 +79,7 @@ export async function PUT(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const body = await parseJsonObject(req)
   if (!body) return badJson()

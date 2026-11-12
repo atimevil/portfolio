@@ -3,8 +3,8 @@ import { NextRequest } from 'next/server'
 import { resetDb } from '@/lib/__tests__/helpers/resetDb'
 import { POST, PUT } from '../route'
 
-vi.mock('next-auth', () => ({
-  getServerSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
+vi.mock('@/lib/session', () => ({
+  getAdminSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
 }))
 
 beforeEach(resetDb)

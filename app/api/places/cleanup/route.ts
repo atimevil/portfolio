@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { findOrphanPhotos, deleteOrphanPhotos } from '@/lib/place-photos'
 
 async function requireSession() {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   return !!session
 }
 

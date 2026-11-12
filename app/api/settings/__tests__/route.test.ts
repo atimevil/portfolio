@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
 
-vi.mock('next-auth', () => ({
-  getServerSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
+vi.mock('@/lib/session', () => ({
+  getAdminSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
 }))
 const updateSettings = vi.fn((u: unknown) => u)
 vi.mock('@/lib/settings', () => ({ getSettings: () => ({}), updateSettings: (u: unknown) => updateSettings(u) }))

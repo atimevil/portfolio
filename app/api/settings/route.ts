@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseJsonObject, badJson } from '@/lib/bulkSchema'
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { z } from 'zod'
 import { getSettings, updateSettings } from '@/lib/settings'
 
@@ -39,7 +39,7 @@ export async function GET() {
 }
 
 export async function PUT(req: NextRequest) {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const body = await parseJsonObject(req)
   if (!body) return badJson()

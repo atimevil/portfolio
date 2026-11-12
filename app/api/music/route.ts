@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { Prisma } from '@prisma/client'
@@ -8,7 +8,7 @@ import { IdsSchema, parseJsonBody, parseJsonObject, badJson } from '@/lib/bulkSc
 import { hiddenFromPublic } from '@/lib/publicGate'
 
 async function requireSession() {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   return !!session
 }
 

@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { getSettings } from '@/lib/settings'
 
 type NavKey = 'books' | 'music' | 'gallery'
@@ -8,5 +8,5 @@ type NavKey = 'books' | 'music' | 'gallery'
 export async function hiddenFromPublic(nav?: NavKey): Promise<boolean> {
   const { devMode, navVisibility } = getSettings()
   if (!devMode && (!nav || navVisibility[nav])) return false
-  return !(await getServerSession())
+  return !(await getAdminSession())
 }

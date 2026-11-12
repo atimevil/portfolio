@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import AdminLayout from '@/components/admin/AdminLayout'
 import AdminBookManager from '@/components/admin/AdminBookManager'
@@ -9,7 +9,7 @@ export default async function AdminBooksPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   if (!session) redirect('/admin/login')
   const [books, query] = await Promise.all([getAllBooks(), searchParams])
 

@@ -41,6 +41,18 @@ describe('auth-password', () => {
     expect(verifyPassword('legacy-pass')).toBe(true)
   })
 
+  it('비밀번호를 바꾸면 버전이 달라진다(같은 비밀번호로 다시 설정해도)', async () => {
+    const { setPassword, passwordVersion } = await load()
+    setPassword('first-password')
+    const v1 = passwordVersion()
+    expect(passwordVersion()).toBe(v1)
+    setPassword('second-password')
+    const v2 = passwordVersion()
+    expect(v2).not.toBe(v1)
+    setPassword('second-password')
+    expect(passwordVersion()).not.toBe(v2)
+  })
+
   it('해시가 없으면 ADMIN_PASSWORD 환경변수로 검증한다(길이가 달라도 거부)', async () => {
     vi.stubEnv('ADMIN_PASSWORD', 'env-secret-pw')
     const { verifyPassword } = await load()

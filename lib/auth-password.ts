@@ -62,6 +62,15 @@ function verifyHash(input: string, stored: string): boolean {
   }
 }
 
+/**
+ * 지금 비밀번호의 버전. 비밀번호가 바뀌면(저장된 해시의 salt가 새로 만들어진다) 값이 달라진다.
+ * 로그인 토큰에 적어 두고 요청마다 비교해, 비밀번호를 바꾸기 전에 만든 세션을 끊는 데 쓴다.
+ */
+export function passwordVersion(): string {
+  const source = readHash() ?? `env:${process.env.ADMIN_PASSWORD ?? ''}`
+  return createHash('sha256').update(source).digest('hex').slice(0, 16)
+}
+
 /** Hash and persist a new admin password (overwrites any env fallback). */
 export function setPassword(newPassword: string): void {
   const salt = randomBytes(16).toString('hex')

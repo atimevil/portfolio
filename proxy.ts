@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getToken } from 'next-auth/jwt'
 import { buildCsp, makeNonce } from '@/lib/csp'
+import { passwordVersion } from '@/lib/auth-password'
 
 // Next 16에서 middleware.ts가 proxy.ts로 이름이 바뀌었다(동작은 같다). 관리자 인증과 /en 로케일 표시만 한다.
 // devMode 차단은 content/settings.json을 읽어야 해서 app/(site)/layout.tsx에 있다.
@@ -32,7 +33,10 @@ export async function proxy(req: NextRequest) {
   if (!protectedPath) return pass()
 
   const isLoginPage = pathname === '/admin/login'
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  // 비밀번호를 바꾸기 전에 만든 토큰은 로그인하지 않은 것으로 본다(lib/session.ts와 같은 기준).
+  // 여기서 같이 보지 않으면 옛 토큰이 "로그인 페이지 → /admin → 로그인 페이지"로 끝없이 튕긴다.
+  const raw = await getToken({ req, secret: process.env.NEXTAUTH_SECRET })
+  const token = raw && raw.pv === passwordVersion() ? raw : null
 
   if (isLoginPage) {
     // 이미 로그인했는데 로그인 페이지로 오면 대시보드로 보낸다

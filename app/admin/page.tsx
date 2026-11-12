@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import AdminLayout from '@/components/admin/AdminLayout'
@@ -9,7 +9,7 @@ import { getAllViews } from '@/lib/views'
 import { getOpsWarnings } from '@/lib/opsStatus'
 
 export default async function AdminDashboardPage() {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   if (!session) redirect('/admin/login')
 
   const posts = await getAllPostsAdmin()

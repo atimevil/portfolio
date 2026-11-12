@@ -3,10 +3,10 @@ import { NextRequest } from 'next/server'
 import { resetDb } from '@/lib/__tests__/helpers/resetDb'
 import { createTrack } from '@/lib/music'
 import { GET, POST, PUT, PATCH, DELETE } from '../route'
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 
-vi.mock('next-auth', () => ({
-  getServerSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
+vi.mock('@/lib/session', () => ({
+  getAdminSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
 }))
 
 vi.mock('next/cache', () => ({
@@ -17,7 +17,7 @@ beforeEach(resetDb)
 // 공개 GET은 메뉴가 보일 때 세션을 묻지 않아서, 한 테스트에서 걸어둔 mockResolvedValueOnce(null)가
 // 소비되지 않고 다음 테스트로 넘어간다. 테스트마다 기본값(관리자)으로 되돌린다.
 beforeEach(() => {
-  vi.mocked(getServerSession).mockReset().mockResolvedValue({ user: { name: 'admin' } })
+  vi.mocked(getAdminSession).mockReset().mockResolvedValue({ user: { name: 'admin' } })
 })
 
 function makeRequest(method: string, body?: unknown): NextRequest {
@@ -77,15 +77,15 @@ describe('DELETE /api/music', () => {
 
 describe('인증', () => {
   it('세션 없이 POST하면 401', async () => {
-    const { getServerSession } = await import('next-auth')
-    vi.mocked(getServerSession).mockResolvedValueOnce(null)
+    const { getAdminSession } = await import('@/lib/session')
+    vi.mocked(getAdminSession).mockResolvedValueOnce(null)
     const res = await POST(makeRequest('POST', { title: 'T', artist: 'A' }))
     expect(res.status).toBe(401)
   })
 
   it('세션 없이 GET하면 200 (공개 조회)', async () => {
-    const { getServerSession } = await import('next-auth')
-    vi.mocked(getServerSession).mockResolvedValueOnce(null)
+    const { getAdminSession } = await import('@/lib/session')
+    vi.mocked(getAdminSession).mockResolvedValueOnce(null)
     const res = await GET()
     expect(res.status).toBe(200)
   })
@@ -134,7 +134,7 @@ describe('PATCH /api/music (일괄)', () => {
   })
 
   it('세션 없으면 401', async () => {
-    vi.mocked(getServerSession).mockResolvedValueOnce(null)
+    vi.mocked(getAdminSession).mockResolvedValueOnce(null)
     const res = await PATCH(makeRequest('PATCH', { ids: [1], set: { favorite: true } }))
     expect(res.status).toBe(401)
   })

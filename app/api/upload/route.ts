@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { stripImageMetadata } from '@/lib/stripMetadata'
@@ -8,7 +8,7 @@ import { PHOTO_DIR, URL_PREFIX as PHOTO_URL_PREFIX } from '@/lib/place-photos'
 import { uniqueStamp } from '@/lib/uniqueStamp'
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   // multipart가 아닌 본문이면 formData()가 던진다 — 500 대신 400으로 답한다

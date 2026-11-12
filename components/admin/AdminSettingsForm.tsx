@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import { signIn } from 'next-auth/react'
 import Button from '@/components/ui/Button'
 import type { SiteSettings } from '@/types'
 
@@ -42,8 +43,12 @@ export default function AdminSettingsForm({ initialSettings }: AdminSettingsForm
     setPwSaving(false)
     if (!res) { setPwMsg({ ok: false, text: '변경 실패: 네트워크 오류' }); return }
     if (res.ok) {
+      // 비밀번호가 바뀌면 그 전에 만든 세션은 전부 끊긴다(이 브라우저 포함). 새 비밀번호로 바로 다시 로그인해 둔다.
+      const again = await signIn('credentials', { password: pw.next, redirect: false }).catch(() => null)
       setPw({ current: '', next: '', confirm: '' })
-      setPwMsg({ ok: true, text: '비밀번호가 변경되었습니다.' })
+      setPwMsg(again?.ok
+        ? { ok: true, text: '비밀번호가 변경되었습니다. 다른 기기의 로그인은 끊겼습니다.' }
+        : { ok: true, text: '비밀번호가 변경되었습니다. 새 비밀번호로 다시 로그인해 주세요.' })
     } else {
       const data = await res.json().catch(() => ({}))
       setPwMsg({ ok: false, text: data.error || '변경에 실패했습니다.' })

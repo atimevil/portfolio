@@ -3,6 +3,8 @@ import { NextRequest } from 'next/server'
 
 const getToken = vi.fn()
 vi.mock('next-auth/jwt', () => ({ getToken: (...a: unknown[]) => getToken(...a) }))
+// 토큰의 비밀번호 버전(pv)이 지금 버전과 같아야 로그인으로 본다
+vi.mock('@/lib/auth-password', () => ({ passwordVersion: () => 'v-now' }))
 
 import { proxy } from '../../proxy'
 
@@ -36,14 +38,25 @@ describe('proxy', () => {
 
   it('로그인 페이지는 로그인 전엔 열리고 로그인 후엔 대시보드로 보낸다', async () => {
     expect((await proxy(req('/admin/login'))).status).toBe(200)
-    getToken.mockResolvedValue({ name: 'admin' })
+    getToken.mockResolvedValue({ name: 'admin', pv: 'v-now' })
     const res = await proxy(req('/admin/login'))
     expect(new URL(res.headers.get('location')!).pathname).toBe('/admin')
   })
 
   it('로그인했으면 /admin은 통과한다', async () => {
-    getToken.mockResolvedValue({ name: 'admin' })
+    getToken.mockResolvedValue({ name: 'admin', pv: 'v-now' })
     expect((await proxy(req('/admin/items'))).status).toBe(200)
+  })
+
+  it('비밀번호를 바꾸기 전에 만든 토큰은 로그인하지 않은 것으로 본다', async () => {
+    for (const stale of [{ name: 'admin', pv: 'v-old' }, { name: 'admin' }]) {
+      getToken.mockResolvedValue(stale)
+      const res = await proxy(req('/admin/items'))
+      expect(res.status).toBe(307)
+      expect(new URL(res.headers.get('location')!).pathname).toBe('/admin/login')
+      // 로그인 페이지는 열려야 한다 — 대시보드로 보내면 두 페이지 사이를 끝없이 튕긴다
+      expect((await proxy(req('/admin/login'))).status).toBe(200)
+    }
   })
 
   it('/en은 로그인 없이 통과하고 x-locale을 넘긴다', async () => {

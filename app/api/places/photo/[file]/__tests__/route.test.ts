@@ -2,12 +2,12 @@ import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 import fs from 'fs'
 import path from 'path'
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { GET } from '../route'
 import { PHOTO_DIR } from '@/lib/place-photos'
 
-vi.mock('next-auth', () => ({
-  getServerSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
+vi.mock('@/lib/session', () => ({
+  getAdminSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
 }))
 
 const FILE = 'maps-1.png'
@@ -28,7 +28,7 @@ describe('GET /api/places/photo/[file]', () => {
   })
 
   it('로그인 안 하면 401', async () => {
-    vi.mocked(getServerSession).mockResolvedValueOnce(null)
+    vi.mocked(getAdminSession).mockResolvedValueOnce(null)
     expect((await get(FILE)).status).toBe(401)
   })
 

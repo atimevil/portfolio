@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseJsonObject, badJson } from '@/lib/bulkSchema'
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { z } from 'zod'
 import { Prisma } from '@prisma/client'
 import { getPlaces, createPlace, updatePlace, deletePlace } from '@/lib/places'
 
 // 맛집/쇼핑 지도는 비공개 기능이라 조회(GET)까지 전부 로그인이 필요하다.
 async function requireSession() {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   return !!session
 }
 

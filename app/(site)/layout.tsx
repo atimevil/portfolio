@@ -1,4 +1,4 @@
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import { getSettings } from '@/lib/settings'
 import NavBar from '@/components/layout/NavBar'
@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
   // 세션은 두 곳에서 쓴다: devMode 차단, 그리고 관리자 전용 메뉴(맛집) 노출 여부.
-  const session = await getServerSession()
+  const session = await getAdminSession()
   const settings = getSettings()
 
   // 개발중 모드: 로그인 안 한 방문자는 coming-soon으로 리다이렉트해서

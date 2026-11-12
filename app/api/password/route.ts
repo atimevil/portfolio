@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseJsonObject, badJson } from '@/lib/bulkSchema'
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { verifyPassword, setPassword } from '@/lib/auth-password'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await parseJsonObject(req)

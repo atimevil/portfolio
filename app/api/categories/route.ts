@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { parseJsonObject, badJson } from '@/lib/bulkSchema'
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { getCategories, addCategory, deleteCategory } from '@/lib/categories'
 
 export async function GET() {
@@ -8,7 +8,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const body = await parseJsonObject(req)
   if (!body) return badJson()
@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const body = await parseJsonObject(req)
   if (!body) return badJson()

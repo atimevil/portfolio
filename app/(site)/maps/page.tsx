@@ -1,6 +1,6 @@
 export const dynamic = 'force-dynamic'
 
-import { getServerSession } from 'next-auth'
+import { getAdminSession } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import { getPlaces } from '@/lib/places'
 import MapsManager from '@/components/maps/MapsManager'
@@ -13,7 +13,7 @@ export const metadata = {
 // 비공개 개인 도구 — 로그인한 관리자만 접근 가능.
 // proxy.ts에서도 막지만, 라우트 자체에서 한 번 더 확인한다(방어적).
 export default async function MapsPage() {
-  const session = await getServerSession()
+  const session = await getAdminSession()
   if (!session) redirect('/admin/login?callbackUrl=/maps')
 
   const places = await getPlaces()

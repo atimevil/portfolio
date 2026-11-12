@@ -6,8 +6,8 @@ import path from 'path'
 import sharp from 'sharp'
 import { POST } from '../route'
 
-vi.mock('next-auth', () => ({
-  getServerSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
+vi.mock('@/lib/session', () => ({
+  getAdminSession: vi.fn().mockResolvedValue({ user: { name: 'admin' } }),
 }))
 
 function makeUploadRequest(fields: { file?: File; type?: string }): NextRequest {

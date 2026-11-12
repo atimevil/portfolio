@@ -2,8 +2,7 @@ import { cache } from 'react'
 import { notFound } from 'next/navigation'
 import 'katex/dist/katex.min.css' // 수식은 글 본문에만 있다 — 전역에 두면 모든 페이지가 받는다
 import Link from 'next/link'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
+import { getAdminSession } from '@/lib/session'
 import { getPostBySlug, getAdjacentPosts } from '@/lib/blog'
 import { buildPageMetadata } from '@/lib/site'
 import { MDXRemote } from 'next-mdx-remote/rsc'
@@ -34,7 +33,7 @@ export async function generateMetadata(props: Props) {
   if (!post) return {}
   // 임시 글의 제목·요약은 비로그인 방문자에게 내보내지 않는다. 페이지는 404지만 메타데이터는 따로 실려 나가서,
   // 주소를 아는 사람은 응답 본문에서 제목과 요약을 읽을 수 있었다.
-  if (post.status !== 'published' && !(await getServerSession(authOptions))) return {}
+  if (post.status !== 'published' && !(await getAdminSession())) return {}
   const meta = buildPageMetadata({
     path: `/blog/${params.slug}`,
     title: post.title,
@@ -48,7 +47,7 @@ export default async function BlogPostPage(props: Props) {
   const post = await getPost(slug)
   if (!post) notFound()
 
-  const session = await getServerSession(authOptions)
+  const session = await getAdminSession()
   // 미발행(임시) 글은 로그인한 관리자만 미리보기로 볼 수 있다 (비로그인은 404)
   const isDraft = post.status !== 'published'
   if (isDraft && !session) notFound()

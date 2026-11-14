@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button'
 import RichEditor from '@/components/admin/RichEditor'
 import { markdownToEditorHtml } from '@/lib/markdownToEditorHtml'
 import { todayKST } from '@/lib/today'
+import { BODY_TEMPLATES, REVIEW_TEMPLATES, buildTemplateHtml, hasWrittenText } from '@/lib/postTemplates'
 import {
   draftKey, saveDraft, loadDraft, clearDraft, draftDiffersFrom, draftIsStale, snapshotFingerprint, type DraftData,
 } from '@/lib/draftStorage'
@@ -37,6 +38,8 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
   const [category, setCategory] = useState(initialPost?.category ?? '')
   const [excerpt, setExcerpt] = useState(initialPost?.excerpt ?? '')
   const [loading, setLoading] = useState(false)
+  const [bodyTpl, setBodyTpl] = useState('')
+  const [reviewTpl, setReviewTpl] = useState('')
   const [recoverable, setRecoverable] = useState<DraftData | null>(null)
   // 복구할 초안이 서버 글보다 옛 버전에서 쓴 것인지(다른 기기에서 그 사이 저장됨)
   const [recoverableStale, setRecoverableStale] = useState(false)
@@ -94,6 +97,14 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
     setContent(recoverable.content)
     if (recoverable.excerpt !== undefined) setExcerpt(recoverable.excerpt)
     setRecoverable(null)
+  }
+
+  function applyTemplate() {
+    const html = buildTemplateHtml(bodyTpl, reviewTpl)
+    if (!html) return
+    // 직접 쓴 내용이 있으면 덮어쓰기 전에 확인한다 (소제목·빈 문단뿐이면 잃을 게 없다)
+    if (hasWrittenText(content) && !confirm('본문에 쓴 내용이 지워지고 틀로 바뀝니다. (Ctrl+Z로 되돌릴 수 있습니다) 계속할까요?')) return
+    setContent(html)
   }
 
   function dismissRecovery() {
@@ -200,6 +211,28 @@ export default function BlogEditor({ initialPost, categories }: BlogEditorProps)
       <div className="mb-5">
         <label className="block text-xs text-text-muted mb-1">요약 (목록·검색 결과에 보임 — 비워두면 본문 앞부분으로 자동 생성)</label>
         <textarea value={excerpt} onChange={(e) => setExcerpt(e.target.value)} rows={2} maxLength={300} className={`${inputClass} resize-y`} />
+      </div>
+
+      <div className="mb-3 flex flex-wrap items-end gap-3">
+        <div className="w-48">
+          <label htmlFor="tpl-body" className="block text-xs text-text-muted mb-1">본문 틀</label>
+          <select id="tpl-body" value={bodyTpl} onChange={(e) => setBodyTpl(e.target.value)} className={inputClass}>
+            <option value="">선택 안 함</option>
+            {BODY_TEMPLATES.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+          </select>
+        </div>
+        <div className="w-56">
+          <label htmlFor="tpl-review" className="block text-xs text-text-muted mb-1">돌아보기 틀</label>
+          <select id="tpl-review" value={reviewTpl} onChange={(e) => setReviewTpl(e.target.value)} className={inputClass}>
+            <option value="">선택 안 함</option>
+            {REVIEW_TEMPLATES.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
+          </select>
+        </div>
+        <Button variant="secondary" onClick={applyTemplate} disabled={!bodyTpl && !reviewTpl}>틀 적용</Button>
+        <p className="basis-full text-xs text-text-muted">
+          {[BODY_TEMPLATES.find((t) => t.id === bodyTpl), REVIEW_TEMPLATES.find((t) => t.id === reviewTpl)]
+            .filter(Boolean).map((t) => `${t!.label}: ${t!.description}`).join(' / ')}
+        </p>
       </div>
 
       <label className="block text-xs text-text-muted mb-1">본문</label>

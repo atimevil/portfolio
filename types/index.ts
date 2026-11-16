@@ -35,6 +35,8 @@ export interface PortfolioItem {
   slug?: string
   /** 논문·발표 자료 링크. 연구 프로젝트는 결과물이 저장소가 아니라 논문이다. */
   paper?: string
+  /** 이 프로젝트를 풀어 쓴 회고 글의 슬러그(/blog/<슬러그>). 상세 페이지에 "회고 글" 링크로 보인다. */
+  post?: string
   link?: string
   thumbnail?: string
   order?: number

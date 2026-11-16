@@ -35,6 +35,7 @@ type FormState = {
   skills: string
   github: string
   paper: string
+  post: string
   slug: string
   link: string
   thumbnail: string
@@ -70,6 +71,7 @@ function toForm(item: PortfolioItem | null): FormState {
     skills: (item?.skills ?? []).join(', '),
     github: item?.github ?? '',
     paper: item?.paper ?? '',
+    post: item?.post ?? '',
     slug: item?.slug ?? '',
     link: item?.link ?? '',
     thumbnail: item?.thumbnail ?? '',
@@ -153,6 +155,8 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
       skills: isProject ? form.skills.split(',').map((s) => s.trim()).filter(Boolean) : undefined,
       github: isProject ? form.github : undefined,
       paper: isProject ? form.paper : undefined,
+      // 비운 칸은 ''로 보낸다 — undefined면 서버 병합에서 옛 값이 남는다
+      post: isProject ? form.post.trim() : undefined,
       slug: isProject ? form.slug : undefined,
       link: isProject ? form.link : undefined,
       thumbnail: isProject ? form.thumbnail : undefined,
@@ -328,6 +332,10 @@ export default function ItemForm({ item, onSaved, onCancel, registerDirtyCheck }
           <div>
             <label htmlFor="item-poster" className={labelCls}>포스터 이미지 (상세 · 갤러리에 올린 /uploads/gallery/....jpg 등)</label>
             <input id="item-poster" type="text" value={form.poster} placeholder="/uploads/gallery/....jpg" onChange={(e) => set('poster', e.target.value)} className={inputCls} />
+          </div>
+          <div>
+            <label htmlFor="item-post" className={labelCls}>회고 글 슬러그 (블로그 글 주소의 마지막 부분 · 상세 페이지에 회고 글 링크가 생김)</label>
+            <input id="item-post" type="text" value={form.post} placeholder="ai-pilot-top-gun-retrospective" onChange={(e) => set('post', e.target.value)} className={inputCls} />
           </div>
           <div>
             <label htmlFor="item-slug" className={labelCls}>상세 주소 슬러그 (예: finbert-vs-llm · 비우면 id 사용)</label>

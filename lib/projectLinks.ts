@@ -4,6 +4,8 @@ import { t, type Locale } from '@/lib/i18n'
 export interface ProjectLink {
   label: string
   href: string
+  /** 사이트 안 글로 가는 링크 — 같은 탭에서 열고 바깥 링크 표시(↗)를 달지 않는다 */
+  internal?: boolean
 }
 
 /**
@@ -13,7 +15,9 @@ export interface ProjectLink {
  * 링크가 하나뿐이면 제목에 걸고, 둘 이상이면 아래에 나란히 둔다(호출부 판단).
  */
 export function projectLinks(item: PortfolioItem, locale: Locale): ProjectLink[] {
+  const post = item.post?.trim()
   return [
+    ...(post ? [{ label: t(locale, 'linkPost'), href: `/blog/${encodeURIComponent(post)}`, internal: true }] : []),
     { label: t(locale, 'linkPaper'), href: item.paper },
     { label: 'GitHub', href: item.github },
     { label: t(locale, 'linkSite'), href: item.link },

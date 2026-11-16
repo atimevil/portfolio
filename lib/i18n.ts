@@ -30,6 +30,7 @@ const UI = {
   csResult: { ko: '결과', en: 'Result' },
   linkPaper: { ko: '논문', en: 'Paper' },
   linkSite: { ko: '사이트', en: 'Website' },
+  linkPost: { ko: '회고 글', en: 'Write-up (Korean)' },
   home: { ko: '홈', en: 'Home' },
   prevProject: { ko: '← 이전 프로젝트', en: '← Previous' },
   nextProject: { ko: '다음 프로젝트 →', en: 'Next →' },

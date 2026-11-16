@@ -31,6 +31,8 @@ const ItemSchema = z.object({
   github: z.string().optional(),
   slug: z.string().optional(),
   paper: z.string().optional(),
+  // 회고 글 슬러그. 글자·숫자·하이픈만(경로 조작 방지), 비우면 ''
+  post: z.string().max(200).regex(/^[\p{L}\p{N}_-]*$/u).optional(),
   link: z.string().optional(),
   thumbnail: z.string().optional(),
   video: z.string().max(500).optional(),

@@ -169,7 +169,7 @@ code {
    title 속성은 쓰지 않는다(느리고 터치에서 안 뜸). */
 .prose abbr[data-tip] {
   position: relative;
-  padding: 0.05em 0.35em;
+  padding: 0.05em 0.18em;
   border-radius: 0.3rem;
   background: var(--color-accent-soft);
   text-decoration: none;

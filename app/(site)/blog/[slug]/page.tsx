@@ -14,6 +14,7 @@ import rehypeCollapsibleCode from '@/lib/mdx/rehypeCollapsibleCode'
 import rehypeUnwrapBoldParagraphs from '@/lib/mdx/rehypeUnwrapBoldParagraphs'
 import rehypePostA11y from '@/lib/mdx/rehypePostA11y'
 import { renderBlogHtml } from '@/lib/renderBlogHtml'
+import { glossaryFor } from '@/lib/glossary'
 import ViewIncrementer from '@/components/blog/ViewIncrementer'
 import TagBadges from '@/components/blog/TagBadges'
 
@@ -56,7 +57,7 @@ export default async function BlogPostPage(props: Props) {
   const { prev: prevPost, next: nextPost } = await getAdjacentPosts(post.slug)
 
   // html 글은 정제+하이라이트한 HTML을, markdown 글은 기존 MDX 파이프라인을 쓴다.
-  const htmlRendered = post.contentFormat === 'html' ? await renderBlogHtml(post.content) : null
+  const htmlRendered = post.contentFormat === 'html' ? await renderBlogHtml(post.content, glossaryFor(post.slug)) : null
 
   return (
     <main id="main" tabIndex={-1} className="flex-1 max-w-3xl mx-auto w-full px-4 md:px-8 py-8 outline-none">

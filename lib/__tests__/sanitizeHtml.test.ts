@@ -137,4 +137,16 @@ describe('sanitizeBlogHtml', () => {
     expect(out).not.toContain('position:fixed')
     expect(out).toContain('y')
   })
+
+  it('용어 풀이 abbr — data-tip·tabindex=0만 보존하고 title·다른 tabindex·on* 은 제거', () => {
+    const out = sanitizeBlogHtml(
+      '<p><abbr data-tip="행동 트리" tabindex="0" title="x" onclick="alert(1)">BT</abbr>' +
+        '<abbr data-tip="a" tabindex="5">c</abbr></p>'
+    )
+    expect(out).toContain('<abbr data-tip="행동 트리" tabindex="0">BT</abbr>')
+    expect(out).not.toContain('title=')
+    expect(out).not.toContain('onclick')
+    expect(out).not.toContain('tabindex="5"')
+    expect(out).toContain('<abbr data-tip="a">c</abbr>')
+  })
 })

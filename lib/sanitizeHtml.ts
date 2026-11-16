@@ -23,6 +23,8 @@ export function sanitizeBlogHtml(html: string): string {
       'a', 'img',
       'ul', 'ol', 'li',
       'blockquote', 'pre', 'code', 'span',
+      // 용어 풀이 — <abbr data-tip="뜻" tabindex="0">. 호버·탭·포커스에서 CSS로 말풍선을 띄운다.
+      'abbr',
       'table', 'thead', 'tbody', 'tr', 'td', 'th',
       // 콜아웃(div[data-callout])·토글(details/summary) — 커스텀 블록 노드
       'div', 'details', 'summary',
@@ -45,6 +47,8 @@ export function sanitizeBlogHtml(html: string): string {
       // 전역 class 허용은 Tailwind 유틸 class(fixed/inset-0/z-50 등)로 전체화면 오버레이 클릭재킹이 가능해 제거함(보안 리뷰).
       code: ['class'],
       pre: ['class'],
+      // 말풍선 글은 data-tip에만 담고 title은 막는다(기본 툴팁과 겹침). tabindex는 0만 — 탭 순서를 바꾸는 값은 거른다.
+      abbr: ['data-tip', 'tabindex'],
     },
     // class 값은 language-*/hljs만(코드 하이라이트). 그 외 class는 전부 제거.
     allowedClasses: {
@@ -53,6 +57,10 @@ export function sanitizeBlogHtml(html: string): string {
     },
     // target=_blank 링크엔 rel="noopener noreferrer" 강제 — 역-탭내빙(window.opener) 방지.
     transformTags: {
+      abbr: (tagName, attribs) => {
+        if (attribs.tabindex !== '0') delete attribs.tabindex
+        return { tagName, attribs }
+      },
       a: (tagName, attribs) => {
         if (attribs.target) attribs.rel = 'noopener noreferrer'
         return { tagName, attribs }

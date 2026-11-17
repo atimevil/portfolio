@@ -4,7 +4,6 @@ import { useEditor, EditorContent, BubbleMenu, type Editor } from '@tiptap/react
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
 import Link from '@tiptap/extension-link'
-import Image from '@tiptap/extension-image'
 import Table from '@tiptap/extension-table'
 import TableRow from '@tiptap/extension-table-row'
 import TableCell from '@tiptap/extension-table-cell'
@@ -23,6 +22,7 @@ import { useEffect, useRef } from 'react'
 import { insertUploadedImage } from './insertUploadedImage'
 import { Callout } from './extensions/Callout'
 import { Toggle } from './extensions/Toggle'
+import { ResizableImage } from './extensions/ResizableImage'
 import { SlashCommand } from './extensions/SlashCommand'
 import { renderSlashMenu } from './SlashMenu'
 
@@ -35,7 +35,7 @@ export const richEditorExtensions = [
   CodeBlockLowlight.configure({ lowlight }),
   Underline,
   Link.configure({ openOnClick: false }),
-  Image,
+  ResizableImage, // <img data-width data-align> — 모서리를 끌어 크기, 메뉴로 글 옆 배치
   Table.configure({ resizable: true }),
   TableRow,
   TableCell,
@@ -193,7 +193,38 @@ export default function RichEditor({ content, onChange }: RichEditorProps) {
         <ToolbarButton onClick={() => editor.chain().focus().redo().run()} title="다시실행">↪</ToolbarButton>
         <input ref={fileInputRef} type="file" accept="image/*" onChange={onPickImage} className="hidden" />
       </div>
-      <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+      {/* 이미지를 누르면 크기 메뉴만 뜬다(글자 꾸미기 메뉴는 숨김) */}
+      <BubbleMenu
+        editor={editor}
+        pluginKey="imageSizeMenu"
+        tippyOptions={{ duration: 100 }}
+        shouldShow={({ editor: e }) => e.isEditable && e.isActive('image')}
+      >
+        <div className="flex items-center gap-0.5 p-1 rounded-lg border border-border bg-bg-secondary shadow-lg">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setImageAlign('left').run()}
+            active={editor.isActive('image', { align: 'left' })}
+            title="이미지를 왼쪽에 두고 글을 오른쪽으로"
+          >◧ 왼쪽</ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setImageAlign(null).run()}
+            active={editor.isActive('image') && !editor.getAttributes('image').align}
+            title="이미지를 가운데에(글은 위아래로)"
+          >가운데</ToolbarButton>
+          <ToolbarButton
+            onClick={() => editor.chain().focus().setImageAlign('right').run()}
+            active={editor.isActive('image', { align: 'right' })}
+            title="이미지를 오른쪽에 두고 글을 왼쪽으로"
+          >오른쪽 ◨</ToolbarButton>
+          <div className="w-px h-5 bg-border mx-1" />
+          <ToolbarButton onClick={() => editor.chain().focus().resetImageLayout().run()} title="원래 크기(글 폭)·가운데로">원래대로</ToolbarButton>
+        </div>
+      </BubbleMenu>
+      <BubbleMenu
+        editor={editor}
+        tippyOptions={{ duration: 100 }}
+        shouldShow={({ editor: e, state, from, to }) => e.isEditable && from !== to && !e.isActive('image') && !state.selection.empty}
+      >
         <div className="flex items-center gap-0.5 p-1 rounded-lg border border-border bg-bg-secondary shadow-lg">
           <ToolbarButton onClick={() => editor.chain().focus().toggleBold().run()} active={editor.isActive('bold')} title="Bold"><strong>B</strong></ToolbarButton>
           <ToolbarButton onClick={() => editor.chain().focus().toggleItalic().run()} active={editor.isActive('italic')} title="Italic"><em>I</em></ToolbarButton>

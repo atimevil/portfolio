@@ -1,4 +1,5 @@
 import sanitizeHtml from 'sanitize-html'
+import { isImageAlign, isImageWidth } from '@/lib/imageLayout'
 
 // 텍스트 색(span[style])·형광펜(mark[style])의 color/background-color 값으로 허용하는 패턴.
 // hex/rgb/rgba/hsl/hsla/명명색(named color)만 통과 — url(...)·expression(...)·`/*` 등 괄호·특수문자가
@@ -31,7 +32,8 @@ export function sanitizeBlogHtml(html: string): string {
     ],
     allowedAttributes: {
       a: ['href', 'title', 'target', 'rel'],
-      img: ['src', 'alt', 'title'],
+      // data-width(10~90, 글 폭 대비 %)·data-align(left|right) — 다른 값은 아래 transformTags에서 지운다
+      img: ['src', 'alt', 'title', 'data-width', 'data-align'],
       td: ['colspan', 'rowspan'],
       th: ['colspan', 'rowspan'],
       // 텍스트 색(span[style])·형광펜(mark[style], mark[data-color])
@@ -57,6 +59,11 @@ export function sanitizeBlogHtml(html: string): string {
     },
     // target=_blank 링크엔 rel="noopener noreferrer" 강제 — 역-탭내빙(window.opener) 방지.
     transformTags: {
+      img: (tagName, attribs) => {
+        if (!isImageWidth(attribs['data-width'])) delete attribs['data-width']
+        if (!isImageAlign(attribs['data-align'])) delete attribs['data-align']
+        return { tagName, attribs }
+      },
       abbr: (tagName, attribs) => {
         if (attribs.tabindex !== '0') delete attribs.tabindex
         return { tagName, attribs }

@@ -149,4 +149,13 @@ describe('sanitizeBlogHtml', () => {
     expect(out).not.toContain('tabindex="5"')
     expect(out).toContain('<abbr data-tip="a">c</abbr>')
   })
+
+  it('이미지 배치 data-width·data-align — 정해진 값만 남긴다', () => {
+    const ok = sanitizeBlogHtml('<img src="/u/a.png" data-width="40" data-align="left">')
+    expect(ok).toContain('data-width="40"')
+    expect(ok).toContain('data-align="left"')
+    const bad = sanitizeBlogHtml('<img src="/u/a.png" data-width="45" data-align="top">')
+    expect(bad).not.toContain('data-width')
+    expect(bad).not.toContain('data-align')
+  })
 })

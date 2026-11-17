@@ -165,6 +165,14 @@ code {
   content: none;
 }
 
+/* 다크 모드 전환 — ThemeToggle이 원이 퍼지는 애니메이션을 직접 건다. 브라우저 기본 페이드는 끄고,
+   전환 중에는 각 요소의 색 transition이 겹치지 않게 새 화면을 그대로 보여 준다. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
 /* 글 안 이미지 배치 — <img data-width="10~90" data-align="left|right">. 에디터에서 모서리를 끌어 크기를,
    이미지를 누르면 뜨는 메뉴로 위치를 고른다. 편집 화면은 .image-view 래퍼에 같은 data 속성이 붙는다. */
 .prose :is(img, .image-view)[data-width='10'] { width: 10%; }

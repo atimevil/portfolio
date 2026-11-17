@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { t, type Locale } from '@/lib/i18n'
 
 // 스위치는 이름이 고정이고 켜짐/꺼짐(aria-checked)이 상태를 말한다 — "라이트 모드로 전환, 켜짐"처럼 서로 어긋나게 읽히지 않게
@@ -12,14 +13,38 @@ export default function ThemeToggle({ locale = 'ko' }: { locale?: Locale }) {
     setIsDark(document.documentElement.classList.contains('dark'))
   }, [])
 
-  function toggle() {
-    const next = !isDark
+  function apply(next: boolean) {
     setIsDark(next)
     document.documentElement.classList.toggle('dark', next)
     // 저장소가 막힌 브라우저(사생활 보호 모드 등)에서는 setItem이 던진다 — 이번 화면에서만 바뀌고 기억은 못 한다
     try {
       localStorage.setItem('theme', next ? 'dark' : 'light')
     } catch {}
+  }
+
+  // 스위치 위치에서 원이 퍼지며 새 테마가 드러난다(View Transitions). 지원하지 않거나 움직임 줄이기를 켠 경우 바로 바꾼다.
+  function toggle(e: React.MouseEvent<HTMLButtonElement>) {
+    const next = !isDark
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (!document.startViewTransition || reduce) {
+      apply(next)
+      return
+    }
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = rect.left + rect.width / 2
+    const y = rect.top + rect.height / 2
+    const r = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y))
+    const transition = document.startViewTransition(() => {
+      flushSync(() => apply(next))
+    })
+    transition.ready
+      .then(() => {
+        document.documentElement.animate(
+          { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
+          { duration: 550, easing: 'cubic-bezier(0.4, 0, 0.2, 1)', pseudoElement: '::view-transition-new(root)' }
+        )
+      })
+      .catch(() => {})
   }
 
   return (

@@ -43,6 +43,8 @@ export async function saveGalleryImage(
   original: Buffer,
   category: string,
   description: string,
+  /** 사진 날짜(ISO). 없으면 올린 시각 — 갤러리의 월 표시와 정렬 기준이다 */
+  createdAt?: string,
 ): Promise<GalleryImage | null> {
   const buffer = await stripImageMetadata(original)
   const ext = await detectImageExt(buffer)
@@ -59,7 +61,7 @@ export async function saveGalleryImage(
     filename,
     category,
     description,
-    createdAt: new Date().toISOString(),
+    createdAt: createdAt ?? new Date().toISOString(),
     ...(thumbnail && { thumbnail }),
   }
   writeMeta([...meta, image])

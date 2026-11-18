@@ -4,6 +4,7 @@ import { getAdminSession } from '@/lib/session'
 import { getGalleryImages, saveGalleryImage, deleteGalleryImage } from '@/lib/gallery'
 import { hiddenFromPublic } from '@/lib/publicGate'
 import { isPdf, pdfFirstPageToJpeg } from '@/lib/pdfToImage'
+import { galleryDateToCreatedAt } from '@/lib/galleryDate'
 
 export async function GET() {
   if (await hiddenFromPublic('gallery')) return NextResponse.json({ error: 'Not found' }, { status: 404 })
@@ -21,6 +22,14 @@ export async function POST(req: NextRequest) {
   const file = formData.get('file') as File | null
   const category = (formData.get('category') as string) || '기타'
   const description = (formData.get('description') as string) || ''
+  // 상장·사진 날짜(YYYY-MM-DD, 선택). 비우면 올린 시각을 쓴다.
+  const rawDate = formData.get('date')
+  let createdAt: string | undefined
+  if (typeof rawDate === 'string' && rawDate) {
+    const parsed = galleryDateToCreatedAt(rawDate)
+    if (!parsed) return NextResponse.json({ error: '날짜 형식이 올바르지 않습니다' }, { status: 400 })
+    createdAt = parsed
+  }
 
   if (!file) return NextResponse.json({ error: '파일을 선택하세요' }, { status: 400 })
 
@@ -36,7 +45,7 @@ export async function POST(req: NextRequest) {
     } catch {
       return NextResponse.json({ error: 'PDF 변환에 실패했습니다' }, { status: 422 })
     }
-    const converted = await saveGalleryImage(jpeg, category, description)
+    const converted = await saveGalleryImage(jpeg, category, description, createdAt)
     if (!converted) return NextResponse.json({ error: 'PDF 변환에 실패했습니다' }, { status: 422 })
     return NextResponse.json(converted, { status: 201 })
   }
@@ -46,7 +55,7 @@ export async function POST(req: NextRequest) {
   }
 
   // 브라우저가 보낸 MIME은 위조할 수 있으므로, 저장 형식은 파일 내용으로 다시 판별한다
-  const image = await saveGalleryImage(buffer, category, description)
+  const image = await saveGalleryImage(buffer, category, description, createdAt)
   if (!image) return NextResponse.json({ error: '이미지 파일이 아닙니다' }, { status: 400 })
   return NextResponse.json(image, { status: 201 })
 }

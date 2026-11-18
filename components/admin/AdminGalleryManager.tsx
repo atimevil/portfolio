@@ -15,6 +15,8 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
   const [preview, setPreview] = useState<string | null>(null)
   const [category, setCategory] = useState('')
   const [description, setDescription] = useState('')
+  // 상장·사진 날짜. 비우면 올린 날로 표시된다
+  const [date, setDate] = useState('')
   const [uploading, setUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -37,6 +39,7 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
     setPreview(null)
     setCategory('')
     setDescription('')
+    setDate('')
     if (fileRef.current) fileRef.current.value = ''
   }
 
@@ -47,11 +50,13 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
     formData.append('file', selectedFile)
     formData.append('category', category || '기타')
     formData.append('description', description)
+    if (date) formData.append('date', date)
     try {
       const res = await fetch('/api/gallery', { method: 'POST', body: formData })
       if (res.ok) {
         const image = await res.json()
-        setImages((prev) => [image, ...prev])
+        // 날짜를 고르면 목록 중간에 들어가므로 갤러리와 같은 순서(날짜 최신순)로 다시 줄 세운다
+        setImages((prev) => [image, ...prev].sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)))
         handleCancel()
       } else if (res.status === 401) {
         alert('업로드 실패: 로그인이 만료됐습니다. 다른 탭에서 다시 로그인한 뒤 올려 주세요.')
@@ -110,7 +115,7 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
             </div>
             <div className="flex-1 min-w-0 flex flex-col gap-3">
               <p className="text-xs text-text-muted truncate">{selectedFile.name}</p>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 <div>
                   <label className="block text-xs text-text-muted mb-1">카테고리</label>
                   <input
@@ -128,6 +133,15 @@ export default function AdminGalleryManager({ initialImages }: AdminGalleryManag
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="이미지 설명"
+                    className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-text-muted mb-1">날짜 (비우면 오늘)</label>
+                  <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
                     className="w-full px-3 py-2 text-sm border border-border rounded-md bg-bg text-text-primary focus:outline-none focus:border-accent transition-colors"
                   />
                 </div>

@@ -53,6 +53,33 @@
   --color-tape:           rgba(214, 204, 172, 0.30);
 }
 
+/* 갤러리 종이 화면 — 갤러리에 있는 동안만(GalleryScene이 html에 붙인다). 테마와 상관없이 같은 색이다.
+   먹색 글자는 아이보리(#fbf8f1)·크라프트(#ebe4d6) 위에서 작은 글씨도 4.5:1을 넘는다. */
+html.gallery-paper {
+  --color-bg:             #ebe4d6;
+  --color-bg-secondary:   #e3dbcb;
+  --color-surface:        #ddd4c2;
+  --color-border:         #d3c8b3;
+  --color-text-primary:   #2b2620;
+  --color-text-secondary: #5c5347;
+  --color-text-muted:     #6f6556;
+  --color-accent:         #2b2620;
+  --color-accent-hover:   #000000;
+  --color-accent-soft:    rgba(43, 38, 32, 0.07);
+  --color-bg-translucent: rgba(235, 228, 214, 0.85);
+  --color-text-soft:      rgba(43, 38, 32, 0.08);
+  --color-paper:          #fbf8f1;
+  --color-tape:           rgba(214, 194, 146, 0.72);
+}
+html.gallery-fade body {
+  transition-duration: 0.6s;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.gallery-fade body {
+    transition: none;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

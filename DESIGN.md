@@ -166,7 +166,7 @@ components:
 
 A board of evidence set out in a quiet vitrine, labeled like a lab notebook. Each tile holds one checkable result: a project with its outcome and role, a named award, a looping competition clip. The interface itself is a neutral case of graded grays so the work (video, architecture figures, numbers) is the only thing with color or motion. Dates, years, and small labels are set in a monospace face, the way a notebook records when something was tried.
 
-Density is low and calm. The home page ends in a handful of tiles rather than a scroll of sections; detail pages are a single readable column with figures framed in the same rounded tile language. Dark is the default world; light is the same system inverted, opted into by the visitor. Everything is flat and bordered rather than lifted. The one deliberate exception is the gallery, which keeps warm paper, masking tape, and tilted polaroids because it is a personal scrapbook, not part of the pitch.
+Density is low and calm. The home page ends in a handful of tiles rather than a scroll of sections; detail pages are a single readable column with figures framed in the same rounded tile language. Dark is the default world; light is the same system inverted, opted into by the visitor. Everything is flat and bordered rather than lifted. The one deliberate exception is the gallery, which keeps warm paper, masking tape, and tilted polaroids because it is a personal scrapbook, not part of the pitch. Entering the gallery fades the whole page (header included) to a kraft-paper ground in both themes over 0.6s, and leaving fades back; without its own ground the polaroids sank into black (dark) or white (light).
 
 Components are calm and precise: thin rules, no shadows at rest, hover darkens a border or a word instead of moving anything.
 
@@ -241,7 +241,7 @@ Breakpoints are Tailwind defaults (640 / 768 / 1024 / 1280). Layout must hold at
 Flat by default. Depth is tonal: ground → tile (one gray step) → surface (another step), separated by 1px rules. The sticky header uses an 80% translucent ground with a medium backdrop blur. Shadows appear only on things that float above the page (modal, dropdown/search menus, the theme toggle knob) and on gallery polaroids.
 
 ### Shadow Vocabulary
-- **Polaroid** (`box-shadow: 0 1px 2px rgba(0,0,0,0.08), 0 8px 24px rgba(0,0,0,0.08)`): gallery photo cards only.
+- **Polaroid** (`box-shadow: 0 1px 2px rgba(60,45,20,0.12), 0 10px 26px rgba(60,45,20,0.16)`): gallery photo cards only, a warm shadow for the kraft-paper ground.
 - **Overlay** (Tailwind `shadow-lg` / `shadow-2xl`): modal panel and floating menus.
 
 ### Named Rules

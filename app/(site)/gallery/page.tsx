@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic'
 import { notFound } from 'next/navigation'
 import { hiddenFromPublic } from '@/lib/publicGate'
 import GalleryGrid from '@/components/gallery/GalleryGrid'
+import GalleryScene from '@/components/gallery/GalleryScene'
 import { getGalleryImages } from '@/lib/gallery'
 import { getSettings } from '@/lib/settings'
 import { buildPageMetadata } from '@/lib/site'
@@ -23,6 +24,7 @@ export default async function GalleryPage() {
         <h1 className="page-title">갤러리</h1>
         <p className="mt-1 text-sm text-text-secondary">사진 {images.length}장</p>
       </header>
+      <GalleryScene />
       <GalleryGrid images={images} />
     </main>
   )

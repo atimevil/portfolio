@@ -158,7 +158,7 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
         transition={{ delay: Math.min(idx, 12) * 0.04 }}
         aria-label={image.description ? `${image.description} 크게 보기` : '이미지 크게 보기'}
         style={{ '--tilt': `${tilt}deg` } as React.CSSProperties}
-        className="group relative mb-6 block w-full bg-paper p-2.5 pb-3 text-left shadow-[0_1px_2px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.08)] [transform:rotate(var(--tilt))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:[transform:rotate(0deg)_translateY(-4px)] md:mb-10 md:p-3 md:pb-3.5"
+        className="group relative mb-6 block w-full bg-paper p-2.5 pb-3 text-left shadow-[0_1px_2px_rgba(60,45,20,0.12),0_10px_26px_rgba(60,45,20,0.16)] [transform:rotate(var(--tilt))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:[transform:rotate(0deg)_translateY(-4px)] md:mb-10 md:p-3 md:pb-3.5"
         onClick={() => setSelected(image)}
         onMouseEnter={() => {
           const img = new window.Image()

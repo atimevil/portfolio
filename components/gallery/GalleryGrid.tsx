@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import Modal from '@/components/ui/Modal'
 import type { GalleryImage } from '@/types'
 import { galleryFullSrc, galleryThumbSrc } from '@/lib/galleryUrl'
+import { distributeColumns } from '@/lib/galleryColumns'
 
 // 이미지 모양과 상관없이 볼 수 있게 두 단계로 보여준다.
 // - 기본: 보통 사진은 화면 안에 다 들어오게, 세로로 긴 포스터는 폭에 맞춰(글자가 읽히게) 띄우고 스크롤한다.
@@ -143,6 +144,50 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
   const categories = ['전체', ...Array.from(new Set(images.map((i) => i.category)))]
   const filtered = activeCategory === '전체' ? images : images.filter((i) => i.category === activeCategory)
 
+  // 사진 한 장(폴라로이드). 단 배치마다 같은 카드를 쓴다
+  const renderCard = (image: GalleryImage, idx: number) => {
+    const { tilt, tape, tapeTilt } = scrapStyle(image.id)
+    const month = monthLabel(image.createdAt)
+    return (
+      // 버튼이라 키보드(Tab·Enter·Space)로도 열 수 있다
+      <motion.button
+        type="button"
+        key={image.id}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: Math.min(idx, 12) * 0.04 }}
+        aria-label={image.description ? `${image.description} 크게 보기` : '이미지 크게 보기'}
+        style={{ '--tilt': `${tilt}deg` } as React.CSSProperties}
+        className="group relative mb-6 block w-full bg-paper p-2.5 pb-3 text-left shadow-[0_1px_2px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.08)] [transform:rotate(var(--tilt))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:[transform:rotate(0deg)_translateY(-4px)] md:mb-10 md:p-3 md:pb-3.5"
+        onClick={() => setSelected(image)}
+        onMouseEnter={() => {
+          const img = new window.Image()
+          img.src = galleryFullSrc(image)
+        }}
+      >
+        {tape && (
+          <span
+            aria-hidden="true"
+            style={{ transform: `translateX(-50%) rotate(${tapeTilt}deg)` }}
+            className="absolute -top-3 left-1/2 h-6 w-20 bg-tape"
+          />
+        )}
+        <img
+          src={galleryThumbSrc(image)}
+          alt={image.description}
+          loading="lazy"
+          className="block h-auto w-full bg-surface"
+        />
+        {(image.description || month) && (
+          <span className="flex items-baseline justify-between gap-3 pt-2.5">
+            <span className="line-clamp-2 text-[13px] leading-snug text-text-primary">{image.description}</span>
+            {month && <span className="shrink-0 font-mono text-[11px] text-text-muted">{month}</span>}
+          </span>
+        )}
+      </motion.button>
+    )
+  }
+
   return (
     <>
       {/* 카테고리 필터 */}
@@ -168,50 +213,23 @@ export default function GalleryGrid({ images }: GalleryGridProps) {
       {filtered.length === 0 ? (
         <p className="text-center text-text-secondary py-16">이미지가 없습니다.</p>
       ) : (
-        <div className="columns-2 gap-5 md:columns-3 md:gap-8 lg:columns-4">
-          {filtered.map((image, idx) => {
-            const { tilt, tape, tapeTilt } = scrapStyle(image.id)
-            const month = monthLabel(image.createdAt)
-            return (
-              // 버튼이라 키보드(Tab·Enter·Space)로도 열 수 있다
-              <motion.button
-                type="button"
-                key={image.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: Math.min(idx, 12) * 0.04 }}
-                aria-label={image.description ? `${image.description} 크게 보기` : '이미지 크게 보기'}
-                style={{ '--tilt': `${tilt}deg` } as React.CSSProperties}
-                className="group relative mb-6 block w-full break-inside-avoid bg-paper p-2.5 pb-3 text-left shadow-[0_1px_2px_rgba(0,0,0,0.08),0_8px_24px_rgba(0,0,0,0.08)] [transform:rotate(var(--tilt))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bg motion-safe:transition-transform motion-safe:duration-300 motion-safe:hover:[transform:rotate(0deg)_translateY(-4px)] md:mb-10 md:p-3 md:pb-3.5"
-                onClick={() => setSelected(image)}
-                onMouseEnter={() => {
-                  const img = new window.Image()
-                  img.src = galleryFullSrc(image)
-                }}
-              >
-                {tape && (
-                  <span
-                    aria-hidden="true"
-                    style={{ transform: `translateX(-50%) rotate(${tapeTilt}deg)` }}
-                    className="absolute -top-3 left-1/2 h-6 w-20 bg-tape"
-                  />
-                )}
-                <img
-                  src={galleryThumbSrc(image)}
-                  alt={image.description}
-                  loading="lazy"
-                  className="block h-auto w-full bg-surface"
-                />
-                {(image.description || month) && (
-                  <span className="flex items-baseline justify-between gap-3 pt-2.5">
-                    <span className="line-clamp-2 text-[13px] leading-snug text-text-primary">{image.description}</span>
-                    {month && <span className="shrink-0 font-mono text-[11px] text-text-muted">{month}</span>}
-                  </span>
-                )}
-              </motion.button>
-            )
-          })}
-        </div>
+        <>
+          {/* 단 수가 화면 폭마다 달라서 배치를 세 벌 만들고 폭에 맞는 것만 보인다(숨긴 쪽 사진은 lazy라 받지 않는다).
+              JS로 폭을 재면 서버 렌더와 첫 화면이 달라져 사진이 한 번 튄다 */}
+          {([
+            [2, 'flex gap-5 md:hidden'],
+            [3, 'hidden gap-8 md:flex lg:hidden'],
+            [4, 'hidden gap-8 lg:flex'],
+          ] as const).map(([n, cls]) => (
+            <div key={n} className={cls}>
+              {distributeColumns(filtered.map((image, idx) => ({ image, idx })), n).map((col, c) => (
+                <div key={c} className="flex min-w-0 flex-1 flex-col">
+                  {col.map(({ image, idx }) => renderCard(image, idx))}
+                </div>
+              ))}
+            </div>
+          ))}
+        </>
       )}
 
       {/* 이미지 모달 */}

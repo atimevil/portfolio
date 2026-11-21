@@ -53,9 +53,13 @@ export default function LoginPage() {
           className="bg-bg-secondary border border-border rounded-lg p-6 flex flex-col gap-4"
         >
           <div>
-            <label className="block text-xs text-text-muted mb-1.5">비밀번호</label>
+            <label htmlFor="admin-password" className="block text-xs text-text-muted mb-1.5">비밀번호</label>
             <input
+              // name은 두지 않는다 — 하이드레이션 전에 Enter로 제출되면 GET ?password=… 로 주소·접근 로그에 남는다
+              id="admin-password"
               type="password"
+              // 비밀번호 관리자가 저장한 값을 채워 넣게 한다
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 text-sm rounded-md border border-border bg-bg text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"

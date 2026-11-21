@@ -21,8 +21,8 @@ function getGenres(tracks: Track[]): string[] {
 function sortTracks(tracks: Track[], key: SortKey | null, dir: SortDir): Track[] {
   if (!key) return tracks
   const value = (t: Track) => (key === 'genre' ? t.genre || '기타' : t[key])
-  const sorted = [...tracks].sort((a, b) => value(a).localeCompare(value(b), 'ko'))
-  return dir === 'asc' ? sorted : sorted.reverse()
+  const sorted = tracks.toSorted((a, b) => value(a).localeCompare(value(b), 'ko'))
+  return dir === 'asc' ? sorted : sorted.toReversed()
 }
 
 // 컴포넌트 밖에 둔다 — 렌더 안에서 정의하면 렌더마다 새 컴포넌트가 되어 버튼이 다시 마운트되고,

@@ -15,6 +15,7 @@
 /* 라이트: 흑백 (Vercel식 회색 단계). 포인트 색도 글자색과 같은 먹색이라 링크는 화살표·굵기로 구분한다.
    파랑 같은 포인트를 다시 넣으려면 accent 세 줄만 바꾸면 된다. */
 :root {
+  color-scheme: light;
   --color-bg:             #ffffff;
   --color-bg-secondary:   #fafafa;
   --color-surface:        #f5f5f5;
@@ -37,6 +38,8 @@
 
 /* 다크(기본): 흑백 */
 .dark {
+  /* 입력칸·날짜 선택기·스크롤바 같은 브라우저 기본 부품도 다크로 그린다(없으면 다크 화면에 흰 입력칸이 떴다) */
+  color-scheme: dark;
   --color-bg:             #0a0a0a;
   --color-bg-secondary:   #111111;
   --color-surface:        #1a1a1a;
@@ -56,6 +59,7 @@
 /* 갤러리 종이 화면 — 갤러리에 있는 동안만(GalleryScene이 html에 붙인다). 테마와 상관없이 같은 색이다.
    먹색 글자는 아이보리(#fbf8f1)·크라프트(#ebe4d6) 위에서 작은 글씨도 4.5:1을 넘는다. */
 html.gallery-paper {
+  color-scheme: light;
   --color-bg:             #ebe4d6;
   --color-bg-secondary:   #e3dbcb;
   --color-surface:        #ddd4c2;
@@ -596,16 +600,44 @@ code {
   pointer-events: none;
 }
 
-/* 스크롤바 */
-::-webkit-scrollbar {
-  width: 6px;
+/* 스크롤바 — 표준 속성(scrollbar-color·scrollbar-width)으로 칠하고, 표준을 모르는 옛 브라우저에서만 WebKit 선택자를 쓴다.
+   손잡이는 트랙과 3:1 이상이어야 스크롤 위치가 보인다(예전 손잡이는 테두리색이라 다크에서 1.3:1로 거의 안 보였다).
+   scrollbar-width는 상속되지 않아서 모든 요소에 준다(예전 ::-webkit-scrollbar도 모든 스크롤 영역에 걸렸다). */
+:root {
+  --scrollbar-thumb: #8f8f8f;
+  --scrollbar-track: var(--color-bg-secondary);
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
-::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
+.dark {
+  --scrollbar-thumb: #666666;
 }
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 3px;
+html.gallery-paper {
+  --scrollbar-thumb: #7d7262;
+}
+/* 코드 블록은 두 테마 모두 어두운 바탕(#1e293b)이라 트랙도 그 색으로 — 라이트에서 흰 띠가 생기고 다크에선 손잡이가 안 보였다 */
+pre {
+  --scrollbar-thumb: #8f8f8f;
+  --scrollbar-track: #1e293b;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+* {
+  scrollbar-width: thin;
+}
+@supports not (scrollbar-color: auto) {
+  * {
+    scrollbar-width: auto;
+  }
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 3px;
+  }
 }
 
 /* ── 다이어그램 팔레트 ──
